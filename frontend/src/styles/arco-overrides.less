@@ -1,0 +1,275 @@
+@import './variables.less';
+
+// ─── Buttons ─────────────────────────────────────────────
+.arco-btn {
+  font-weight: @font-weight-medium;
+  letter-spacing: @letter-spacing-normal;
+  transition: all @transition-normal;
+}
+
+.arco-btn-primary {
+  border-radius: @border-radius-md;
+  transition: background-color @transition-normal, border-color @transition-normal, box-shadow @transition-normal, transform @transition-normal;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(35, 131, 226, 0.25);
+    transform: translateY(-0.5px);
+  }
+}
+
+.arco-btn-secondary {
+  border-radius: @border-radius-md;
+  color: @color-text-secondary;
+
+  &:hover {
+    color: @color-text-primary;
+    background: @color-bg-hover;
+  }
+}
+
+.arco-btn-text {
+  border-radius: @border-radius-md;
+  color: @color-text-secondary;
+
+  &:hover {
+    color: @color-text-primary;
+    background: @color-bg-hover;
+  }
+}
+
+.arco-btn-outline {
+  border-radius: @border-radius-md;
+  border-color: @color-border;
+  color: @color-text-primary;
+
+  &:hover {
+    border-color: @color-primary;
+    color: @color-primary;
+    background: @color-primary-light;
+  }
+}
+
+// ─── Form Inputs ─────────────────────────────────────────
+.arco-input-wrapper {
+  border-radius: @border-radius-md;
+  border: 1px solid @color-border;
+  background: @color-bg-input;
+  font-size: @font-size-body;
+  transition: border-color @transition-normal, box-shadow @transition-normal;
+
+  &:hover {
+    border-color: @color-border-dark;
+  }
+
+  &.arco-input-wrapper-focus,
+  &:focus-within {
+    border-color: @color-primary;
+    box-shadow: 0 0 0 3px rgba(35, 131, 226, 0.1);
+  }
+}
+
+.arco-input-password {
+  border-radius: @border-radius-md;
+}
+
+.arco-input-wrapper.arco-input-wrapper-large {
+  height: 40px;
+}
+
+.arco-form-label-item > label {
+  color: @color-text-secondary;
+  font-size: @font-size-sm;
+  font-weight: @font-weight-medium;
+}
+
+.arco-form-item {
+  margin-bottom: @spacing-md;
+}
+
+// ─── Menu (Sidebar) ─────────────────────────────────────
+.arco-menu {
+  background: transparent;
+}
+
+.arco-menu-light .arco-menu-inner {
+  padding: @spacing-xs 0;
+}
+
+.arco-menu-light .arco-menu-item {
+  border-radius: @border-radius-md;
+  margin: @spacing-xxs @spacing-sm;
+  padding: 6px 12px;
+  font-size: @font-size-body;
+  color: @color-text-secondary;
+  transition: all @transition-fast;
+  line-height: 28px;
+
+  &:hover {
+    background: @color-bg-hover;
+    color: @color-text-primary;
+  }
+
+  &.arco-menu-selected {
+    background: @color-bg-active;
+    color: @color-text-primary;
+    font-weight: @font-weight-medium;
+  }
+}
+
+// Remove Arco's default blue selected indicator
+.arco-menu-light .arco-menu-item::after {
+  display: none;
+}
+
+.arco-menu-selected-label {
+  display: none;
+}
+
+.arco-menu-item .arco-icon {
+  margin-right: @spacing-sm;
+  font-size: @font-size-lg;
+}
+
+// ─── Cards ───────────────────────────────────────────────
+.arco-card {
+  border-radius: @border-radius-lg;
+  border: 1px solid @color-border-light;
+  box-shadow: @shadow-xs;
+}
+
+.arco-card-header {
+  border-bottom: 1px solid @color-border-light;
+  font-weight: @font-weight-medium;
+}
+
+// ─── Tabs ────────────────────────────────────────────────
+.arco-tabs-header-nav-line .arco-tabs-header-ink-bar {
+  background: @gradient-primary;
+  height: 2px;
+}
+
+.arco-tabs-header-title {
+  font-size: @font-size-body;
+  color: @color-text-secondary;
+  font-weight: @font-weight-medium;
+  transition: color @transition-fast;
+
+  &:hover {
+    color: @color-text-primary;
+  }
+}
+
+.arco-tabs-header-title-active,
+.arco-tabs-header-title-active:hover {
+  color: @color-text-primary;
+  font-weight: @font-weight-semibold;
+}
+
+// ─── Tooltip ─────────────────────────────────────────────
+.arco-tooltip-content {
+  border-radius: @border-radius-sm;
+  font-size: @font-size-xs;
+}
+
+// ─── Messages / Toasts ──────────────────────────────────
+.arco-message {
+  border-radius: @border-radius-md;
+  box-shadow: @shadow-md;
+  font-size: @font-size-sm;
+}
+
+// ─── Avatar ──────────────────────────────────────────────
+.arco-avatar {
+  font-weight: @font-weight-medium;
+  font-size: @font-size-sm;
+}
+
+// ─── Spin ────────────────────────────────────────────────
+.arco-spin-icon {
+  color: @color-primary;
+}
+
+// ─── Dark Mode ───────────────────────────────────────────
+body[arco-theme='dark'] {
+  .arco-btn-secondary {
+    color: var(--color-text-2);
+
+    &:hover {
+      color: var(--color-text-1);
+      background: rgba(255, 255, 255, 0.08);
+    }
+  }
+
+  .arco-btn-text {
+    color: var(--color-text-2);
+
+    &:hover {
+      color: var(--color-text-1);
+      background: rgba(255, 255, 255, 0.08);
+    }
+  }
+
+  .arco-btn-outline {
+    border-color: var(--color-border);
+    color: var(--color-text-1);
+
+    &:hover {
+      border-color: @color-primary;
+      color: @color-primary;
+    }
+  }
+
+  .arco-input-wrapper {
+    border-color: var(--color-border);
+    background: var(--color-bg-2);
+
+    &:hover {
+      border-color: var(--color-border-2);
+    }
+
+    &.arco-input-wrapper-focus,
+    &:focus-within {
+      border-color: @color-primary;
+      box-shadow: 0 0 0 2px rgba(35, 131, 226, 0.2);
+    }
+  }
+
+  .arco-form-label-item > label {
+    color: var(--color-text-2);
+  }
+
+  .arco-menu-light .arco-menu-item {
+    color: var(--color-text-2);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--color-text-1);
+    }
+
+    &.arco-menu-selected {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--color-text-1);
+    }
+  }
+
+  .arco-card {
+    border-color: var(--color-border);
+  }
+
+  .arco-card-header {
+    border-color: var(--color-border);
+  }
+
+  .arco-tabs-header-title {
+    color: var(--color-text-2);
+
+    &:hover {
+      color: var(--color-text-1);
+    }
+  }
+
+  .arco-tabs-header-title-active,
+  .arco-tabs-header-title-active:hover {
+    color: var(--color-text-1);
+  }
+}

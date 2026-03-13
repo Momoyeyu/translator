@@ -1,0 +1,28 @@
+@import '../styles/variables.less';
+
+.main-layout {
+  display: flex;
+  height: 100vh;
+
+  &__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    background-color: @color-bg-page;
+    background-image: radial-gradient(circle, @dot-pattern-color 1px, transparent 1px);
+    background-size: @dot-pattern-size @dot-pattern-size;
+  }
+}
+
+body[arco-theme='dark'] {
+  .main-layout__content {
+    background-color: var(--color-bg-1);
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  }
+}

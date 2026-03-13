@@ -1,0 +1,48 @@
+@import '../styles/variables.less';
+
+.sidebar-nav {
+  width: @sidebar-width;
+  background: @color-bg-sidebar;
+  border-right: 1px solid @color-border-light;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  transition: width @transition-layout;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: @spacing-sm;
+    padding: 14px @spacing-md;
+
+    img {
+      width: 22px;
+      height: 22px;
+    }
+
+    span {
+      font-size: @font-size-md;
+      font-weight: @font-weight-semibold;
+      color: @color-text-primary;
+      letter-spacing: @letter-spacing-tight;
+    }
+  }
+
+  &__menu {
+    flex: 1;
+    padding: @spacing-xs 0;
+    overflow-y: auto;
+  }
+}
+
+// Dark mode
+body[arco-theme='dark'] {
+  .sidebar-nav {
+    background: var(--color-bg-2);
+    border-color: var(--color-border);
+
+    &__header span {
+      color: var(--color-text-1);
+    }
+  }
+}
