@@ -320,6 +320,7 @@ class PipelineExecutor(BaseWorker):
                     "action": "execute_stage",
                     "stage": next_stage.value,
                 }).encode("utf-8"),
+            key=str(project_id).encode("utf-8"),
             )
             await publish_event(project_id, {
                 "seq": 0,

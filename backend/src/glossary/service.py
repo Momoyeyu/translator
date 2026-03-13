@@ -7,7 +7,14 @@ from conf.db import AsyncSessionLocal
 from glossary.model import GlossaryTerm
 
 
-async def get_project_glossary(project_id: UUID) -> list[GlossaryTerm]:
+async def _verify_project_ownership(project_id: UUID, username: str) -> None:
+    from project.service import get_project_detail
+
+    await get_project_detail(project_id, username)
+
+
+async def get_project_glossary(project_id: UUID, username: str) -> list[GlossaryTerm]:
+    await _verify_project_ownership(project_id, username)
     async with AsyncSessionLocal() as session:
         result = await session.execute(
             select(GlossaryTerm).where(GlossaryTerm.project_id == project_id)
@@ -15,7 +22,8 @@ async def get_project_glossary(project_id: UUID) -> list[GlossaryTerm]:
         return list(result.scalars().all())
 
 
-async def update_term(project_id: UUID, term_id: UUID, translated_term: str) -> GlossaryTerm:
+async def update_term(project_id: UUID, term_id: UUID, translated_term: str, username: str) -> GlossaryTerm:
+    await _verify_project_ownership(project_id, username)
     async with AsyncSessionLocal() as session:
         result = await session.execute(
             select(GlossaryTerm).where(GlossaryTerm.id == term_id, GlossaryTerm.project_id == project_id)

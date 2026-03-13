@@ -24,6 +24,6 @@ async def get_history(
     cursor: UUID | None = None,
     limit: int = 50,
 ) -> Response:
-    auth.get_username(request)
-    messages = await service.get_chat_history(project_id, cursor=cursor, limit=min(limit, 100))
+    username = auth.get_username(request)
+    messages = await service.get_chat_history(project_id, username, cursor=cursor, limit=min(limit, 100))
     return ok(data=[MessageResponse.model_validate(m).model_dump(mode="json") for m in messages])

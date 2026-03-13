@@ -21,6 +21,27 @@ async def start_pipeline(project_id: UUID, username: str) -> list[PipelineTask]:
     if project.status != ProjectStatus.CREATED:
         raise erri.bad_request("Pipeline already started or project not in 'created' status")
 
+    # Check concurrency limit
+    from conf.config import settings
+
+    running_statuses = [ProjectStatus.PLANNING, ProjectStatus.CLARIFYING, ProjectStatus.TRANSLATING, ProjectStatus.UNIFYING]
+    async with AsyncSessionLocal() as session:
+        from sqlalchemy import func
+
+        count_result = await session.execute(
+            select(func.count()).select_from(TranslationProject).where(
+                TranslationProject.user_id == project.user_id,
+                TranslationProject.status.in_(running_statuses),
+                TranslationProject.is_deleted == False,  # noqa: E712
+            )
+        )
+        running_count = count_result.scalar() or 0
+        if running_count >= settings.max_concurrent_projects_per_user:
+            raise erri.bad_request(
+                f"Too many running projects ({running_count}). "
+                f"Max: {settings.max_concurrent_projects_per_user}"
+            )
+
     async with AsyncSessionLocal() as session:
         # Update project status
         result = await session.execute(
@@ -50,6 +71,7 @@ async def start_pipeline(project_id: UUID, username: str) -> list[PipelineTask]:
             "action": "execute_stage",
             "stage": "plan",
         }).encode("utf-8"),
+            key=str(project_id).encode("utf-8"),
     )
 
     await publish_event(project_id, {"seq": 1, "event": "pipeline_stage_started", "data": {"stage": "plan"}})
@@ -120,6 +142,7 @@ async def confirm_glossary(project_id: UUID, username: str) -> None:
                 "action": "execute_stage",
                 "stage": "translate",
             }).encode("utf-8"),
+            key=str(project_id).encode("utf-8"),
         )
 
     await publish_event(project_id, {"seq": 0, "event": "pipeline_stage_started", "data": {"stage": "translate"}})
@@ -201,6 +224,7 @@ async def retry_pipeline(project_id: UUID, username: str) -> PipelineTask:
             "action": "execute_stage",
             "stage": failed_task.stage,
         }).encode("utf-8"),
+            key=str(project_id).encode("utf-8"),
     )
 
     return failed_task

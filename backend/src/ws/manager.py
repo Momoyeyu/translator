@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import WebSocket
 from loguru import logger
 
-from conf.redis import get_redis
+from conf.redis import get_async_redis
 
 
 class WebSocketManager:
@@ -40,7 +40,7 @@ class WebSocketManager:
 
     async def listen_redis(self, project_id: UUID, ws: WebSocket):
         """Subscribe to Redis Pub/Sub and forward events to WebSocket."""
-        r = get_redis()
+        r = get_async_redis()
         pubsub = r.pubsub()
         channel = f"project:{project_id}"
         await pubsub.subscribe(channel)
@@ -59,14 +59,20 @@ ws_manager = WebSocketManager()
 
 
 async def publish_event(project_id: UUID, event: dict):
-    """Publish event to Redis Pub/Sub channel and store for replay."""
-    r = get_redis()
+    """Publish event to Redis Pub/Sub channel with auto-incrementing seq."""
+    r = get_async_redis()
+
+    # Auto-increment seq per project
+    seq_key = f"project_seq:{project_id}"
+    seq = await r.incr(seq_key)
+    await r.expire(seq_key, 14400)  # 4h TTL
+    event["seq"] = seq
+
     channel = f"project:{project_id}"
     payload = json.dumps(event)
     await r.publish(channel, payload)
 
     # Store in sorted set for reconnection replay
     events_key = f"project_events:{project_id}"
-    seq = event.get("seq", 0)
     await r.zadd(events_key, {payload: seq})
-    await r.expire(events_key, 14400)  # 4h TTL
+    await r.expire(events_key, 14400)

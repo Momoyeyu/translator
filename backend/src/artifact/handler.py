@@ -13,15 +13,15 @@ router = APIRouter(prefix="/projects/{project_id}/artifacts", tags=["artifacts"]
 
 @router.get("")
 async def list_artifacts(request: Request, project_id: UUID) -> Response:
-    auth.get_username(request)
-    artifacts = await service.get_project_artifacts(project_id)
+    username = auth.get_username(request)
+    artifacts = await service.get_project_artifacts(project_id, username)
     return ok(data=[ArtifactResponse.model_validate(a).model_dump(mode="json") for a in artifacts])
 
 
 @router.get("/{artifact_id}/download")
 async def download_artifact(request: Request, project_id: UUID, artifact_id: UUID) -> RawResponse:
-    auth.get_username(request)
-    data, content_type, filename = await service.download_artifact(project_id, artifact_id)
+    username = auth.get_username(request)
+    data, content_type, filename = await service.download_artifact(project_id, artifact_id, username)
     return RawResponse(
         content=data,
         media_type=content_type,

@@ -8,6 +8,12 @@ from conversation.model import Message, MessageRole, get_messages, get_or_create
 from project.model import ProjectStatus
 
 
+async def _verify_project_ownership(project_id: UUID, username: str) -> None:
+    from project.service import get_project_detail
+
+    await get_project_detail(project_id, username)
+
+
 async def send_chat_message(project_id: UUID, username: str, content: str) -> Message:
     """Send a user message and enqueue LLM response generation."""
     from project.service import get_project_detail
@@ -29,7 +35,6 @@ async def send_chat_message(project_id: UUID, username: str, content: str) -> Me
         await session.commit()
         await session.refresh(msg)
 
-    # Enqueue chat task for LLM response
     producer = await get_kafka_producer()
     await producer.send_and_wait(
         "translator.chat",
@@ -39,11 +44,13 @@ async def send_chat_message(project_id: UUID, username: str, content: str) -> Me
             "message_id": str(msg.id),
             "content": content,
         }).encode("utf-8"),
+        key=str(project_id).encode("utf-8"),
     )
 
     return msg
 
 
-async def get_chat_history(project_id: UUID, cursor: UUID | None = None, limit: int = 50) -> list[Message]:
+async def get_chat_history(project_id: UUID, username: str, cursor: UUID | None = None, limit: int = 50) -> list[Message]:
+    await _verify_project_ownership(project_id, username)
     conv = await get_or_create_conversation(project_id)
     return await get_messages(conv.id, cursor=cursor, limit=limit)

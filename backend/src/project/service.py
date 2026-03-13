@@ -34,8 +34,10 @@ async def create_project(
 ) -> TranslationProject:
     user_id, tenant_id = await _resolve_user(username)
 
+    import asyncio
+
     try:
-        extracted_text = extract_text(file_data, mime_type)
+        extracted_text = await asyncio.to_thread(extract_text, file_data, mime_type)
     except UnsupportedFormatError:
         raise erri.bad_request(f"Unsupported document format: {mime_type}")
 

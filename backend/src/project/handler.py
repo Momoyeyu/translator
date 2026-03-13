@@ -24,12 +24,12 @@ async def create_project(
 ) -> Response:
     username = auth.get_username(request)
 
-    if file.size and file.size > settings.max_upload_size_mb * 1024 * 1024:
+    file_data = await file.read()
+    max_bytes = settings.max_upload_size_mb * 1024 * 1024
+    if len(file_data) > max_bytes:
         from common import erri
 
         raise erri.bad_request(f"File too large. Max: {settings.max_upload_size_mb}MB")
-
-    file_data = await file.read()
     config = ProjectConfig(formality=formality, domain=domain, skip_clarify=skip_clarify)
 
     project = await service.create_project(

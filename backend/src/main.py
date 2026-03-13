@@ -35,7 +35,7 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
     yield
     logger.info("Application shutdown")
     await close_kafka_producer()
-    close_redis()
+    await close_redis()
     await close_db()
 
 

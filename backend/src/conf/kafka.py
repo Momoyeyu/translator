@@ -1,3 +1,5 @@
+import json
+
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 
 from conf.config import settings
@@ -20,6 +22,8 @@ async def create_kafka_consumer(*topics: str) -> AIOKafkaConsumer:
         *topics,
         bootstrap_servers=settings.kafka_bootstrap_servers,
         group_id=settings.kafka_consumer_group,
+        value_deserializer=lambda v: json.loads(v.decode("utf-8")),
+        enable_auto_commit=False,
     )
     await consumer.start()
     return consumer
