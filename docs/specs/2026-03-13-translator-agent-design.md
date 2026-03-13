@@ -1,6 +1,6 @@
 # ACPs Translator Agent — System Design
 
-> Version: 1.0 | Date: 2026-03-13 | Status: Draft
+> Version: 1.1 | Date: 2026-03-13 | Status: Reviewed
 
 ## 1. Overview
 
@@ -94,20 +94,22 @@ The top-level entity representing one translation job.
 | is_deleted | BOOLEAN | Soft delete |
 | deleted_at | TIMESTAMPTZ | |
 
+**Note**: v1 enforces one document per project (UNIQUE constraint on `document.project_id`). All child tables reference `project_id` for simplicity. Tenant isolation is enforced by always JOINing through `translation_project` — every query function MUST include this join for authorization.
+
 ### 3.2 document
 
-Source document uploaded by user.
+Source document uploaded by user. One document per project (v1).
 
 | Column | Type | Notes |
 |--------|------|-------|
 | id | UUID v7 | PK |
-| project_id | UUID | FK → translation_project.id |
+| project_id | UUID | FK → translation_project.id, UNIQUE |
 | file_name | VARCHAR(255) | Original file name |
 | mime_type | VARCHAR(127) | e.g. text/plain, application/pdf |
 | file_size | BIGINT | Bytes |
 | storage_key | VARCHAR(512) | Key in storage backend |
 | content_hash | VARCHAR(64) | SHA-256 for dedup |
-| extracted_text | TEXT | Full text extracted from document |
+| extracted_text | TEXT | Full text extracted from document (see Section 4.0) |
 | created_at | TIMESTAMPTZ | |
 
 ### 3.3 chunk
@@ -118,7 +120,8 @@ Translation unit produced by Plan stage.
 |--------|------|-------|
 | id | UUID v7 | PK |
 | project_id | UUID | FK |
-| index | INTEGER | Ordering within project |
+| document_id | UUID | FK → document.id |
+| chunk_index | INTEGER | Ordering within project |
 | source_text | TEXT | Original text segment |
 | translated_text | TEXT | Nullable until translated |
 | status | ENUM | pending → translating → completed / failed |
@@ -157,6 +160,7 @@ Tracks execution of each pipeline stage.
 | started_at | TIMESTAMPTZ | |
 | completed_at | TIMESTAMPTZ | |
 | created_at | TIMESTAMPTZ | |
+| updated_at | TIMESTAMPTZ | Updated on every status transition |
 
 ### 3.6 artifact
 
@@ -166,6 +170,7 @@ Generated translation output.
 |--------|------|-------|
 | id | UUID v7 | PK |
 | project_id | UUID | FK |
+| document_id | UUID | FK → document.id, nullable |
 | title | VARCHAR(255) | |
 | format | ENUM | markdown / pdf |
 | storage_key | VARCHAR(512) | Key in storage backend |
@@ -208,15 +213,46 @@ Chat messages within a conversation.
 
 ### Indexes
 
-- `idx_chunk_project` on (project_id, index) — ordered chunk retrieval
+- `idx_chunk_project` on (project_id, chunk_index) — ordered chunk retrieval
 - `idx_glossary_project` on (project_id) — all terms for a project
 - `idx_pipeline_task_project` on (project_id, stage) — stage lookup
 - `idx_message_conversation` on (conversation_id, created_at) — chat history
 - `idx_project_user` on (user_id, created_at DESC) — user's projects
+- `idx_artifact_project` on (project_id) — artifacts for a project
+
+### ENUM Migration Note
+
+PostgreSQL ENUM types are hard to ALTER after creation. Use VARCHAR columns with CHECK constraints in SQLAlchemy for easier evolution. Define enum values as Python `StrEnum` classes and validate at the application layer.
+
+### Project Config Schema
+
+The `translation_project.config` JSONB field has a defined schema:
+
+```json
+{
+  "formality": "formal" | "informal" | "neutral",
+  "domain": "legal" | "medical" | "technical" | "general" | null,
+  "skip_clarify": false,
+  "chunk_strategy": "auto" | "paragraph" | "section",
+  "max_chunk_tokens": 2000
+}
+```
 
 ---
 
 ## 4. Pipeline Design
+
+### 4.0 Document Text Extraction (Pre-Pipeline)
+
+Text extraction runs synchronously during document upload (before pipeline starts), since it is fast and required for the Plan stage.
+
+**Extraction by MIME type:**
+- `text/plain`, `text/markdown`: Read directly as UTF-8
+- `text/html`: Parse with BeautifulSoup, extract text
+- `application/pdf`: Extract with PyMuPDF (fitz)
+- `application/vnd.openxmlformats-officedocument.wordprocessingml.document`: Extract with python-docx
+
+The extracted text is stored in `document.extracted_text`. If extraction fails, the upload returns an error and no project is created.
 
 ### 4.1 Stage Flow
 
@@ -322,6 +358,8 @@ Partitioning by project_id ensures all stages of the same project are processed 
 - Consumes message → loads project state from DB → executes stage → publishes progress to Redis → updates DB → commits Kafka offset
 - On failure: update pipeline_task.status = failed, publish error event, do NOT retry automatically (user can retry via UI)
 - Concurrency: configurable max concurrent tasks per worker via asyncio.Semaphore
+- **Idempotency**: Before executing, worker checks `pipeline_task.status`. If already completed, skip. For Plan stage, use "delete existing chunks then re-insert" on re-execution. This guards against Kafka redelivery after crash-before-offset-commit.
+- **Concurrency limit**: Max 3 running projects per user (checked at enqueue time). Configurable via `MAX_CONCURRENT_PROJECTS_PER_USER`.
 
 ### Clarify Pause/Resume
 
@@ -352,6 +390,7 @@ User confirms terms via REST:
 **Event schema**:
 ```json
 {
+  "seq": 42,
   "event": "pipeline_progress",
   "data": {
     "stage": "translate",
@@ -381,7 +420,7 @@ User confirms terms via REST:
 4. WebSocket handler forwards events to connected clients
 5. Multiple frontend clients can watch same project (Redis fan-out)
 
-**Reconnection**: Frontend sends last received event timestamp on reconnect. Backend queries recent events from a short-lived Redis list (last 50 events, TTL 1h) and replays missed ones.
+**Reconnection**: Each event carries a monotonically increasing `seq` number per project. Frontend sends `last_seq` on reconnect. Backend stores recent events in a Redis sorted set `project_events:{project_id}` (score = seq, TTL 4h). On reconnect, backend replays all events with seq > last_seq. Buffer size: configurable, default `max(2 * max_chunks + 20, 200)`.
 
 ---
 
@@ -451,6 +490,7 @@ LLM_BASE_URL=https://openrouter.ai/api/v1
 LLM_MODEL_NAME=deepseek/deepseek-chat-v3
 
 # Fast profile (used for term extraction, light edits)
+# In production, use a lighter/cheaper model here
 LLM_FAST_MODEL_NAME=deepseek/deepseek-chat-v3
 
 # Pro profile (used for final unification pass)
@@ -516,6 +556,7 @@ This is a v2 enhancement; v1 focuses on Q&A only.
 ```json
 {
   "aic": "<assigned-aic>",
+  "active": true,
   "protocolVersion": "02.00",
   "name": "ACPs Translator Agent",
   "description": "Multi-language document translation agent supporting Plan-Clarify-Translate-Unify pipeline",
@@ -576,13 +617,18 @@ This is a v2 enhancement; v1 focuses on Q&A only.
 
 ### Task State Mapping
 
-| Pipeline Status | AIP TaskState |
-|-----------------|---------------|
-| created / planning / translating / unifying | Working |
-| clarifying (awaiting_input) | AwaitingInput |
-| completed | AwaitingCompletion |
-| User confirms complete | Completed |
-| failed | Failed |
+| Pipeline Status | pipeline_task.status | AIP TaskState |
+|-----------------|---------------------|---------------|
+| created | pending | Accepted |
+| planning | running | Working |
+| clarifying (LLM extracting terms) | running | Working |
+| clarifying (terms ready for user) | awaiting_input | AwaitingInput |
+| translating | running | Working |
+| unifying | running | Working |
+| completed | completed | AwaitingCompletion |
+| User confirms complete | — | Completed |
+| failed | failed | Failed |
+| cancelled | cancelled | Canceled |
 
 ### mTLS
 
@@ -614,14 +660,44 @@ Each pipeline stage writes its output to `pipeline_task.result` (JSONB). Downstr
 
 ## 12. REST API Design
 
+### Pagination
+
+List endpoints use cursor-based pagination for chat history (using UUID v7 ordering) and offset/limit for project listing:
+
+- **Project list**: `?page=1&page_size=20` (default 20, max 100)
+- **Chat history**: `?cursor={message_id}&limit=50` (default 50, max 100, newest first)
+
+### Error Response Schema
+
+All error responses follow:
+```json
+{
+  "code": 40000,
+  "message": "target_language is required",
+  "data": null
+}
+```
+
+Error codes follow the boilerplate convention: HTTP status × 100 (e.g., 40000 = Bad Request, 40400 = Not Found).
+
+### Operational
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/health` | Liveness probe |
+| GET | `/ready` | Readiness probe (checks DB, Redis, Kafka) |
+
 ### Projects
 
 | Method | Path | Description |
 |--------|------|-------------|
 | POST | `/api/v1/projects` | Create project (upload doc + config) |
-| GET | `/api/v1/projects` | List user's projects |
+| GET | `/api/v1/projects` | List user's projects (paginated) |
 | GET | `/api/v1/projects/{id}` | Get project detail + pipeline status |
+| PATCH | `/api/v1/projects/{id}` | Update title/config (only when status=created) |
 | DELETE | `/api/v1/projects/{id}` | Soft delete project |
+
+**Upload size limit**: 50MB max per document.
 
 ### Pipeline
 
@@ -630,6 +706,7 @@ Each pipeline stage writes its output to `pipeline_task.result` (JSONB). Downstr
 | POST | `/api/v1/projects/{id}/start` | Start pipeline execution |
 | POST | `/api/v1/projects/{id}/clarify/confirm` | Confirm glossary terms |
 | POST | `/api/v1/projects/{id}/retry` | Retry failed stage |
+| POST | `/api/v1/projects/{id}/cancel` | Cancel running pipeline |
 | GET | `/api/v1/projects/{id}/pipeline` | Get all pipeline stages status |
 
 ### Glossary
@@ -649,10 +726,12 @@ Each pipeline stage writes its output to `pipeline_task.result` (JSONB). Downstr
 
 ### Chat
 
+Conversation is 1:1 with project. The API intentionally hides the conversation ID — it is resolved internally from project_id.
+
 | Method | Path | Description |
 |--------|------|-------------|
 | POST | `/api/v1/projects/{id}/chat` | Send chat message |
-| GET | `/api/v1/projects/{id}/chat/history` | Get chat history (paginated) |
+| GET | `/api/v1/projects/{id}/chat/history` | Get chat history (cursor-paginated) |
 
 ### WebSocket
 
@@ -677,8 +756,7 @@ Each pipeline stage writes its output to `pipeline_task.result` (JSONB). Downstr
 |-------|-----------|-------------|
 | `/projects` | ProjectListPage | List all translation projects |
 | `/projects/new` | NewProjectPage | Upload doc + select target language |
-| `/projects/:id` | ProjectDetailPage | Pipeline view + glossary + artifacts |
-| `/projects/:id/chat` | ChatPage | Post-translation Q&A |
+| `/projects/:id` | ProjectDetailPage | Pipeline view + glossary + artifacts + chat (tabbed) |
 
 ### Key Components
 
