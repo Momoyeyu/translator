@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import APIRouter, FastAPI
 from loguru import logger
 
+from acps.handler import router as acps_router
 from artifact.handler import router as artifact_router
 from auth.handler import router as auth_router
 from common.resp import Response, ok
@@ -56,6 +57,7 @@ def init_routers(_app: FastAPI) -> None:
     api_router.include_router(chat_router)
     _app.include_router(api_router)
     _app.include_router(ws_router)
+    _app.include_router(acps_router)
 
 
 def init_middlewares(_app: FastAPI) -> None:
