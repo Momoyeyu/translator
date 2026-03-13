@@ -30,37 +30,50 @@ A full-stack translation application that:
 
 ## 2. Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Frontend (React + Arco Design)            │
-│  ProjectList │ PipelineView │ GlossaryEditor │ ChatAssistant │
-│                         WebSocket                           │
-└──────────────────────────────┬──────────────────────────────┘
-                               │
-┌──────────────────────────────┼──────────────────────────────┐
-│                      FastAPI Backend                         │
-│                              │                              │
-│  REST API ──── WebSocket Manager ──── ACPs Partner (RPC)    │
-│       │         (Redis Pub/Sub)              │              │
-│       └────────────┬─────────────────────────┘              │
-│              Service Layer (async)                           │
-│  ProjectService · PipelineService · ChatService              │
-│  GlossaryService · StorageService · LLMService               │
-│       │                                                     │
-│  Task Producer ──→ Kafka                                    │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-┌────────────────────┼────────────────────────────────────────┐
-│          Kafka Consumer Workers (async)                      │
-│  PipelineExecutor (Plan → Clarify → Translate → Unify)      │
-│  ChatExecutor (Q&A + term modification)                      │
-│       │ publish progress → Redis Pub/Sub                    │
-└───────┼─────────────────────────────────────────────────────┘
-        │
-   ┌────┴────┐  ┌───────┐  ┌─────────┐
-   │PostgreSQL│  │ Redis │  │ Storage │
-   │          │  │       │  │(Local/S3)│
-   └─────────┘  └───────┘  └─────────┘
+```mermaid
+graph TB
+    subgraph Frontend["Frontend (React + Arco Design)"]
+        FE_Projects[ProjectList]
+        FE_Pipeline[PipelineView]
+        FE_Glossary[GlossaryEditor]
+        FE_Chat[ChatAssistant]
+    end
+
+    subgraph Backend["FastAPI Backend"]
+        REST[REST API]
+        WS[WebSocket Manager]
+        ACPS[ACPs Partner RPC]
+        SVC[Service Layer<br/>ProjectService · PipelineService<br/>ChatService · GlossaryService<br/>StorageService · LLMService]
+        KAFKA_P[Task Producer]
+    end
+
+    subgraph Workers["Kafka Consumer Workers (async)"]
+        PE[PipelineExecutor<br/>Plan → Clarify → Translate → Unify]
+        CE[ChatExecutor<br/>Q&A + term modification]
+    end
+
+    subgraph Infra["Infrastructure"]
+        PG[(PostgreSQL)]
+        RD[(Redis<br/>Pub/Sub + Lock)]
+        ST[(Storage<br/>Local / S3)]
+        KF[(Kafka)]
+    end
+
+    Frontend -- "WebSocket" --> WS
+    Frontend -- "HTTP" --> REST
+    REST --> SVC
+    WS -- "subscribe" --> RD
+    ACPS --> SVC
+    SVC --> KAFKA_P
+    KAFKA_P --> KF
+    KF --> Workers
+    PE -- "publish progress" --> RD
+    CE -- "publish progress" --> RD
+    PE --> PG
+    PE --> ST
+    CE --> PG
+    SVC --> PG
+    SVC --> ST
 ```
 
 ### Core Principles
@@ -256,12 +269,20 @@ The extracted text is stored in `document.extracted_text`. If extraction fails, 
 
 ### 4.1 Stage Flow
 
-```
-[Created] → Plan → Clarify → Translate → Unify → [Completed]
-                      │
-                      ├── (skip_clarify=true) ──→ Translate
-                      │
-                      └── AwaitingInput ──→ User confirms ──→ Translate
+```mermaid
+flowchart LR
+    Created --> Plan
+    Plan --> Clarify
+    Clarify -->|terms found| AwaitingInput
+    Clarify -->|skip_clarify=true<br/>or no terms| Translate
+    AwaitingInput -->|user confirms| Translate
+    Translate --> Unify
+    Unify --> Completed
+
+    Plan -->|error| Failed
+    Clarify -->|error| Failed
+    Translate -->|error| Failed
+    Unify -->|error| Failed
 ```
 
 ### 4.2 Plan Stage
