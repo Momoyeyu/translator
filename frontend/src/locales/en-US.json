@@ -5,6 +5,7 @@
   },
   "nav": {
     "dashboard": "Dashboard",
+    "projects": "Projects",
     "tenants": "Tenants",
     "settings": "Settings",
     "logout": "Logout"
@@ -65,7 +66,8 @@
     "welcome": "Welcome back, {{name}}",
     "welcomeDefault": "Welcome back",
     "subtitle": "Here's an overview of your account.",
-    "editProfile": "Edit Profile"
+    "editProfile": "Edit Profile",
+    "goToProjects": "Go to Projects"
   },
   "tenant": {
     "title": "Tenants",

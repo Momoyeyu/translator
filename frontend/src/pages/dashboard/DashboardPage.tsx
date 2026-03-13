@@ -32,7 +32,7 @@ export default function DashboardPage() {
           </div>
           <div className="dashboard__stat-content">
             <span className="dashboard__stat-label">{t('settings.emailLabel')}</span>
-            <span className="dashboard__stat-value">{user?.email || '—'}</span>
+            <span className="dashboard__stat-value">{user?.email || '\u2014'}</span>
           </div>
         </div>
         <div className="dashboard__stat-card dashboard__stat-card--teal">
@@ -41,12 +41,15 @@ export default function DashboardPage() {
           </div>
           <div className="dashboard__stat-content">
             <span className="dashboard__stat-label">{t('settings.usernameLabel')}</span>
-            <span className="dashboard__stat-value">{user?.username || '—'}</span>
+            <span className="dashboard__stat-value">{user?.username || '\u2014'}</span>
           </div>
         </div>
       </div>
 
       <div className="dashboard__actions">
+        <Button type="primary" onClick={() => navigate('/projects')}>
+          {t('dashboard.goToProjects')}
+        </Button>
         <Button type="outline" onClick={() => navigate('/settings')}>
           {t('dashboard.editProfile')}
         </Button>

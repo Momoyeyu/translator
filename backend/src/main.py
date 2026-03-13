@@ -1,6 +1,7 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
+from acps.handler import router as acps_router
 from fastapi import APIRouter, FastAPI
 from loguru import logger
 
@@ -41,6 +42,14 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
 
 
 def init_routers(_app: FastAPI) -> None:
+    @_app.get("/health")
+    async def health():
+        return {"status": "ok"}
+
+    @_app.get("/ready")
+    async def ready():
+        return {"status": "ok"}
+
     api_router = APIRouter(prefix="/api/v1")
 
     @api_router.get("/")
