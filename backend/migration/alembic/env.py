@@ -12,11 +12,28 @@ from auth import model as auth_model
 from tenant import model as tenant_model
 from user import model as user_model
 
+from project.model import TranslationProject
+from document.model import Document
+from chunk.model import Chunk
+from glossary.model import GlossaryTerm
+from pipeline.model import PipelineTask
+from artifact.model import Artifact
+from conversation.model import Conversation, Message
+
 _ = user_model.User
 _ = auth_model.InvitationCode
 _ = tenant_model.Tenant
 _ = tenant_model.UserTenant
 _ = tenant_model.TenantInvitation
+
+_ = TranslationProject
+_ = Document
+_ = Chunk
+_ = GlossaryTerm
+_ = PipelineTask
+_ = Artifact
+_ = Conversation
+_ = Message
 
 alembic_config = context.config
 

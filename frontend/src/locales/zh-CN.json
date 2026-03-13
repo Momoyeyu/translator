@@ -5,6 +5,7 @@
   },
   "nav": {
     "dashboard": "仪表盘",
+    "projects": "项目",
     "tenants": "租户",
     "settings": "设置",
     "logout": "退出登录"
@@ -65,7 +66,8 @@
     "welcome": "欢迎回来，{{name}}",
     "welcomeDefault": "欢迎回来",
     "subtitle": "以下是您的账户概览。",
-    "editProfile": "编辑资料"
+    "editProfile": "编辑资料",
+    "goToProjects": "前往项目"
   },
   "tenant": {
     "title": "租户",

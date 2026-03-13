@@ -1,5 +1,5 @@
 import { Menu } from '@arco-design/web-react';
-import { IconDashboard, IconCommon, IconSettings } from '@arco-design/web-react/icon';
+import { IconDashboard, IconCommon, IconSettings, IconLanguage } from '@arco-design/web-react/icon';
 import { useTranslation } from 'react-i18next';
 import './SidebarNav.less';
 
@@ -27,6 +27,10 @@ export default function SidebarNav({ selectedKey, onNavigate }: SidebarNavProps)
           <MenuItem key="/dashboard">
             <IconDashboard />
             {t('nav.dashboard')}
+          </MenuItem>
+          <MenuItem key="/projects">
+            <IconLanguage />
+            {t('nav.projects')}
           </MenuItem>
           <MenuItem key="/tenants">
             <IconCommon />
