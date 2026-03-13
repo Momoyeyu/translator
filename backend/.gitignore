@@ -1,0 +1,25 @@
+# IDE
+/.idea/
+/.trae/
+/.vscode/
+
+# environment
+.env
+
+# binary
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+
+# venv
+/.venv/
+
+# output
+/output/
+
+# logs
+/logs/
+
+# uploads
+/uploads/

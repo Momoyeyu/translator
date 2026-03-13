@@ -1,0 +1,73 @@
+[project]
+name = "translator-backend"
+version = "0.1.0"
+description = "ACPs-compliant translation agent backend"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[standard]>=0.128.0",
+    "langchain-openai>=0.3.0",
+    "langgraph>=1.1.2",
+    "loguru>=0.7.0",
+    "PyJWT>=2.9.0",
+    "PyYAML>=6.0.0",
+    "pydantic>=2.12.5",
+    "pydantic-settings>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "psycopg[binary]>=3.2",
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "pytest-asyncio>=0.23.0",
+    "sqlalchemy[asyncio]>=2.0.0",
+    "asyncpg>=0.29.0",
+    "aiosqlite>=0.20.0",
+    "uvicorn[standard]>=0.40.0",
+    "alembic>=1.17.2",
+    "bcrypt>=4.0.0",
+    "redis>=5.0.0",
+    "resend>=2.0.0",
+    "uuid6>=2024.7.10",
+    "aiokafka>=0.12.0",
+    "aiobotocore>=2.15.0",
+    "aiofiles>=24.0.0",
+    "python-docx>=1.1.0",
+    "PyMuPDF>=1.25.0",
+    "beautifulsoup4>=4.12.0",
+    "markdown>=3.7",
+    "weasyprint>=63.0",
+    "python-multipart>=0.0.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.8.0",
+    "diff-cover>=9.0.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests/unit", "tests/integration"]
+pythonpath = ["src"]
+cache_dir = "output/.pytest_cache"
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I",      # isort
+]
+ignore = [
+    "E501",   # line length is handled by formatter
+    "E402",   # module level import not at top of file (needed for dotenv)
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
