@@ -1,0 +1,38 @@
+# IDE
+/.idea/
+/.trae/
+/.vscode/
+
+# Environment
+.env
+.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+backend/.venv/
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Output
+output/
+logs/
+*.log
+
+# Storage
+uploads/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Reference (not part of the project)
+.acps-reference/
+.boilerplate-ref/
+
+# Claude worktrees
+.claude/worktrees/
