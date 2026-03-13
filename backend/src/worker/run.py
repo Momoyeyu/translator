@@ -1,10 +1,13 @@
 """Entry point for Kafka consumer workers."""
 import asyncio
+
 from loguru import logger
+
 from conf.config import settings
 from llm.service import LLMService
-from worker.pipeline_executor import PipelineExecutor
 from worker.chat_executor import ChatExecutor
+from worker.pipeline_executor import PipelineExecutor
+
 
 async def main():
     llm = LLMService(

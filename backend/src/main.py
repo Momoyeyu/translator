@@ -1,7 +1,6 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-from acps.handler import router as acps_router
 from fastapi import APIRouter, FastAPI
 from loguru import logger
 

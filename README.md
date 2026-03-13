@@ -18,7 +18,53 @@ An ACPs-compliant multi-language document translation agent with intelligent chu
 - **Frontend**: React + Arco Design + TypeScript
 - **Protocol**: ACPs v2.0.0 (AIP Partner)
 
-## Getting Started
+## Quick Start
+
+### Prerequisites
+- Docker & Docker Compose
+- Node.js 20+ (for frontend development)
+- Python 3.12+ with [uv](https://docs.astral.sh/uv/) (for backend development)
+
+### Run with Docker (recommended)
+```bash
+docker-compose up
+```
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+- Swagger docs: http://localhost:8000/docs
+
+### Local Development
+```bash
+# Start infrastructure
+./scripts/start-dev.sh
+
+# Backend (in another terminal)
+cd backend
+cp .env.example .env  # Edit .env with your LLM API key
+uv sync
+PYTHONPATH=src uv run alembic -c migration/alembic.ini upgrade head
+PYTHONPATH=src uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+# Frontend (in another terminal)
+cd frontend
+npm install
+npm run dev
+
+# Workers (in another terminal)
+cd backend
+PYTHONPATH=src uv run python -m worker.run
+```
+
+### Run Tests
+```bash
+# Backend
+cd backend && uv run pytest tests/ -v
+
+# Frontend
+cd frontend && npm run build
+```
+
+## Architecture
 
 See [Design Document](docs/specs/2026-03-13-translator-agent-design.md) for full architecture details.
 
