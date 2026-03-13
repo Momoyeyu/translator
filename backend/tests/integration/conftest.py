@@ -5,6 +5,7 @@ Uses a temporary SQLite database to isolate tests from the real database.
 Patches bcrypt with fast SHA-256 hashing for speed.
 """
 
+import chunk.model as _chunk_model  # noqa: F401
 import hashlib
 import tempfile
 from collections.abc import AsyncGenerator
@@ -13,9 +14,25 @@ from pathlib import Path
 import pytest
 import pytest_asyncio
 from fastapi.testclient import TestClient
+from sqlalchemy import JSON
 from sqlalchemy import create_engine as create_sync_engine
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+# ---------------------------------------------------------------------------
+# SQLite compatibility: compile PostgreSQL JSONB as JSON for SQLite DDL
+# ---------------------------------------------------------------------------
+from sqlalchemy.ext.compiler import compiles  # noqa: E402
+
+# Import all models that use Base so their tables are created in SQLite.
+# These are otherwise only imported when create_app() runs, which is after
+# Base.metadata.create_all() in the test_engine fixture.
+import artifact.model as _artifact_model  # noqa: F401
+import conversation.model as _conversation_model  # noqa: F401
+import document.model as _document_model  # noqa: F401
+import glossary.model as _glossary_model  # noqa: F401
+import pipeline.model as _pipeline_model  # noqa: F401
+import project.model as _project_model  # noqa: F401
 from auth import model as auth_model
 from auth import service as service_module
 from common import utils as utils_module
@@ -24,6 +41,12 @@ from conf import redis as redis_module
 from conf.db import Base
 from tenant import model as tenant_model
 from user import model as user_model
+
+
+@compiles(JSONB, "sqlite")
+def _compile_jsonb_sqlite(type_, compiler, **kw):  # noqa: ARG001
+    return compiler.visit_JSON(JSON(), **kw)
+
 
 # ---------------------------------------------------------------------------
 # Fast password hashing (replaces bcrypt ~200ms/call with SHA256 <1ms/call)
@@ -206,9 +229,9 @@ class FakeRedis:
 def redis_test_db(monkeypatch):
     """Provide a FakeRedis instance so integration tests don't need a real Redis."""
     fake = FakeRedis()
-    monkeypatch.setattr(redis_module, "_client", fake)
+    monkeypatch.setattr(redis_module, "_sync_client", fake)
     yield fake
-    monkeypatch.setattr(redis_module, "_client", None)
+    monkeypatch.setattr(redis_module, "_sync_client", None)
 
 
 # ---------------------------------------------------------------------------
