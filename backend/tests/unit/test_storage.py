@@ -26,3 +26,9 @@ async def test_delete(tmp_storage):
 async def test_get_url(tmp_storage):
     url = await tmp_storage.get_url("test/file.txt")
     assert "/files/test/file.txt" in url
+
+
+@pytest.mark.asyncio
+async def test_path_traversal_blocked(tmp_storage):
+    with pytest.raises(ValueError, match="Path traversal"):
+        await tmp_storage.upload("../../etc/passwd", b"data", "text/plain")
