@@ -66,5 +66,32 @@ class Settings(BaseSettings):
     server_host: str = "localhost"
     server_port: int = 8000
 
+    # Kafka
+    kafka_bootstrap_servers: str = "localhost:9092"
+    kafka_consumer_group: str = "translator-workers"
+
+    # Storage
+    storage_backend: str = "local"
+    storage_local_path: str = "./uploads"
+    storage_s3_bucket: str = ""
+    storage_s3_endpoint: str = ""
+    storage_s3_access_key: str = ""
+    storage_s3_secret_key: str = ""
+    storage_s3_region: str = ""
+
+    # LLM Profiles
+    llm_fast_model_name: str = ""
+    llm_pro_model_name: str = ""
+
+    # ACPs
+    acps_enabled: bool = False
+    acps_aic: str = "1.2.156.3088.0001.00001.000001.0.1.0000"
+    acps_cert_dir: str = "./certs"
+    acps_mock_auth: bool = True
+
+    # Pipeline
+    max_concurrent_projects_per_user: int = 3
+    max_upload_size_mb: int = 50
+
 
 settings = Settings()
