@@ -1,0 +1,328 @@
+@import '../styles/variables.less';
+
+.auth-layout {
+  display: flex;
+  min-height: 100vh;
+
+  // ─── Left Decorative Panel ──────────────────────────────
+  &__decor {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: @color-bg-secondary;
+  }
+
+  &__decor-grid {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, @dot-pattern-color 1px, transparent 1px);
+    background-size: @dot-pattern-size @dot-pattern-size;
+    -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+  }
+
+  &__decor-shapes {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  &__decor-circle {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.5;
+    will-change: transform;
+    animation: auth-float 20s ease-in-out infinite;
+
+    &--1 {
+      width: 300px;
+      height: 300px;
+      background: rgba(35, 131, 226, 0.15);
+      top: 20%;
+      left: 10%;
+    }
+
+    &--2 {
+      width: 250px;
+      height: 250px;
+      background: rgba(124, 92, 252, 0.12);
+      bottom: 20%;
+      right: 10%;
+      animation-delay: -7s;
+    }
+
+    &--3 {
+      width: 200px;
+      height: 200px;
+      background: rgba(20, 201, 201, 0.1);
+      top: calc(50% - 100px);
+      left: calc(50% - 100px);
+      animation-delay: -13s;
+    }
+  }
+
+  &__decor-brand {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    padding: @spacing-xl;
+
+    img {
+      width: 48px;
+      height: 48px;
+      margin-bottom: @spacing-md;
+    }
+
+    h2 {
+      font-size: @font-size-display;
+      font-weight: @font-weight-bold;
+      letter-spacing: @letter-spacing-tight;
+      color: @color-primary;
+      background: @gradient-primary;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0;
+    }
+
+    p {
+      color: @color-text-secondary;
+      font-size: @font-size-md;
+      margin-top: @spacing-sm;
+    }
+  }
+
+  // ─── Right Form Panel ───────────────────────────────────
+  &__panel {
+    width: 480px;
+    flex-shrink: 0;
+    background: @color-bg-page;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  &__actions {
+    position: absolute;
+    top: @spacing-md;
+    right: @spacing-md;
+    display: flex;
+    gap: @spacing-xs;
+    z-index: 10;
+  }
+
+  &__form-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: @spacing-xxl;
+  }
+
+  &__card {
+    width: 100%;
+    max-width: @auth-card-width;
+    animation: fade-up @transition-entrance both;
+
+    // ── Arco Form alignment fixes within auth card ──
+    .arco-form {
+      .arco-form-layout-horizontal .arco-form-item-label-col {
+        display: none;
+      }
+
+      .arco-form-layout-horizontal .arco-form-item-wrapper-col {
+        flex: 1;
+      }
+
+      .arco-form-item {
+        margin-bottom: @spacing-md;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      .arco-form-item-wrapper,
+      .arco-form-item-control-wrapper,
+      .arco-form-item-wrapper-col {
+        width: 100%;
+        max-width: 100%;
+        flex: none;
+      }
+
+      .arco-input-wrapper,
+      .arco-input-password {
+        width: 100%;
+      }
+
+      .arco-btn-long {
+        width: 100%;
+      }
+    }
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: @spacing-sm;
+    margin-bottom: @spacing-xl;
+
+    img {
+      width: 28px;
+      height: 28px;
+    }
+
+    h1 {
+      font-size: @font-size-heading;
+      font-weight: @font-weight-bold;
+      letter-spacing: @letter-spacing-tight;
+      color: @color-text-primary;
+      margin: 0;
+    }
+  }
+
+  &__footer {
+    margin-top: @spacing-lg;
+    text-align: center;
+    font-size: @font-size-sm;
+    color: @color-text-secondary;
+
+    a {
+      color: @color-primary;
+      font-weight: @font-weight-medium;
+
+      &:hover {
+        color: @color-primary-hover;
+      }
+    }
+  }
+
+  &__hint {
+    text-align: center;
+    margin-bottom: @spacing-lg;
+    color: @color-text-secondary;
+    font-size: @font-size-sm;
+    line-height: @line-height-body;
+  }
+
+  &__extra {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -@spacing-sm;
+    margin-bottom: @spacing-sm;
+
+    a {
+      color: @color-text-tertiary;
+      font-size: @font-size-sm;
+
+      &:hover {
+        color: @color-primary;
+      }
+    }
+  }
+}
+
+// ─── Responsive: collapse to centered card ──────────────
+@media (max-width: 960px) {
+  .auth-layout {
+    flex-direction: column;
+
+    &__decor {
+      display: none;
+    }
+
+    &__panel {
+      width: 100%;
+      min-height: 100vh;
+      background: @color-bg-secondary;
+    }
+
+    &__form-area {
+      padding: @spacing-xl @spacing-lg;
+    }
+
+    &__card {
+      background: @color-bg-page;
+      border-radius: @border-radius-xl;
+      box-shadow: @shadow-auth-card;
+      padding: @spacing-xxl @spacing-xl;
+    }
+  }
+}
+
+// ─── Dark Mode ──────────────────────────────────────────
+body[arco-theme='dark'] {
+  .auth-layout {
+    &__decor {
+      background: var(--color-bg-2);
+    }
+
+    &__decor-grid {
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    }
+
+    &__decor-circle {
+      &--1 { background: rgba(35, 131, 226, 0.1); }
+      &--2 { background: rgba(124, 92, 252, 0.08); }
+      &--3 { background: rgba(20, 201, 201, 0.06); }
+    }
+
+    &__decor-brand {
+      h2 {
+        background: @gradient-primary-dark;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      p {
+        color: var(--color-text-2);
+      }
+    }
+
+    &__panel {
+      background: var(--color-bg-1);
+    }
+
+    &__logo h1 {
+      color: var(--color-text-1);
+    }
+
+    &__footer {
+      color: var(--color-text-2);
+    }
+
+    &__extra a {
+      color: var(--color-text-3);
+
+      &:hover {
+        color: @color-primary;
+      }
+    }
+
+    &__hint {
+      color: var(--color-text-2);
+    }
+  }
+
+  // Responsive dark mode
+  @media (max-width: 960px) {
+    .auth-layout {
+      &__panel {
+        background: var(--color-bg-1);
+      }
+
+      &__card {
+        background: var(--color-bg-2);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+      }
+    }
+  }
+}

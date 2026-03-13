@@ -1,0 +1,47 @@
+@import '../styles/variables.less';
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: @header-height;
+  padding: 0 @spacing-lg;
+  border-bottom: 1px solid @color-border-light;
+  background: @color-bg-page;
+  gap: @spacing-sm;
+
+  &__user-info {
+    display: flex;
+    align-items: center;
+    gap: @spacing-sm;
+    margin-left: @spacing-xs;
+    padding-left: @spacing-md;
+    border-left: 1px solid @color-border-light;
+  }
+
+  &__username {
+    font-size: @font-size-sm;
+    color: @color-text-secondary;
+    font-weight: @font-weight-medium;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// Dark mode
+body[arco-theme='dark'] {
+  .app-header {
+    background: var(--color-bg-1);
+    border-color: var(--color-border);
+
+    &__user-info {
+      border-color: var(--color-border);
+    }
+
+    &__username {
+      color: var(--color-text-2);
+    }
+  }
+}

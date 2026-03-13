@@ -1,0 +1,54 @@
+@import './variables.less';
+
+.transition-all {
+  transition: all @transition-normal;
+}
+
+.transition-colors {
+  transition: background-color @transition-normal, color @transition-normal, border-color @transition-normal;
+}
+
+.transition-opacity {
+  transition: opacity @transition-normal;
+}
+
+.transition-transform {
+  transition: transform @transition-normal;
+}
+
+.hover-lift {
+  transition: transform @transition-normal, box-shadow @transition-normal;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: @shadow-md;
+  }
+}
+
+// ─── Entrance Animations ────────────────────────────────
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes auth-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(30px, -20px) scale(1.05); }
+  66%      { transform: translate(-20px, 15px) scale(0.95); }
+}
+
+@keyframes stat-card-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ─── Reduced Motion ─────────────────────────────────────
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

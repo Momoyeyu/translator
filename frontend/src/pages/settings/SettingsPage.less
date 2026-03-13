@@ -1,0 +1,20 @@
+@import '../../styles/variables.less';
+
+.settings-page__tab-content {
+  padding-top: @spacing-lg;
+}
+
+.security-tab {
+  max-width: 480px;
+  padding: @spacing-lg;
+  background: @color-bg-page;
+  border-radius: @border-radius-xl;
+  border: 1px solid @color-border-light;
+}
+
+body[arco-theme='dark'] {
+  .security-tab {
+    background: var(--color-bg-2);
+    border-color: var(--color-border);
+  }
+}
