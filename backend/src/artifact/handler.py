@@ -18,11 +18,16 @@ async def list_artifacts(request: Request, project_id: UUID) -> Response:
     return ok(data=[ArtifactResponse.model_validate(a).model_dump(mode="json") for a in artifacts])
 
 
-@router.post("/{artifact_id}/export-pdf")
-async def export_pdf(request: Request, project_id: UUID, artifact_id: UUID) -> Response:
+@router.get("/{artifact_id}/export-pdf")
+async def export_pdf(request: Request, project_id: UUID, artifact_id: UUID) -> RawResponse:
+    """Generate PDF from markdown artifact on-the-fly (no storage)."""
     username = auth.get_username(request)
-    artifact = await service.export_artifact_as_pdf(project_id, artifact_id, username)
-    return ok(data=ArtifactResponse.model_validate(artifact).model_dump(mode="json"))
+    data, filename = await service.generate_pdf_on_the_fly(project_id, artifact_id, username)
+    return RawResponse(
+        content=data,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 @router.get("/{artifact_id}/download")

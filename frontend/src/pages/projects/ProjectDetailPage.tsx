@@ -203,7 +203,6 @@ export default function ProjectDetailPage() {
           <ArtifactList
             projectId={id!}
             artifacts={artifacts}
-            onArtifactCreated={(artifact) => setArtifacts([...artifacts, artifact])}
           />
         )}
         {activeTab === 'chat' && (

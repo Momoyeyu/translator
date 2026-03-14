@@ -7,10 +7,9 @@ import './ArtifactList.less';
 interface Props {
   projectId: string;
   artifacts: Artifact[];
-  onArtifactCreated?: (artifact: Artifact) => void;
 }
 
-export default function ArtifactList({ projectId, artifacts, onArtifactCreated }: Props) {
+export default function ArtifactList({ projectId, artifacts }: Props) {
   const { t } = useTranslation();
   const [exportingId, setExportingId] = useState<string | null>(null);
 
@@ -29,8 +28,14 @@ export default function ArtifactList({ projectId, artifacts, onArtifactCreated }
   const handleExportPdf = async (artifact: Artifact) => {
     setExportingId(artifact.id);
     try {
-      const newArtifact = await exportPdf(projectId, artifact.id);
-      onArtifactCreated?.(newArtifact);
+      const res = await exportPdf(projectId, artifact.id);
+      const blob = new Blob([res], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${artifact.title}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
     } catch {
       Message.error(t('artifact.exportFailed'));
     } finally {
