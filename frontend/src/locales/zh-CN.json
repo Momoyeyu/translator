@@ -117,5 +117,12 @@
     "light": "浅色",
     "dark": "深色",
     "system": "跟随系统"
+  },
+  "artifact": {
+    "empty": "暂无产物。完成翻译流程后将生成输出文件。",
+    "download": "下载",
+    "exportPdf": "导出 PDF",
+    "exporting": "导出中...",
+    "exportFailed": "导出 PDF 失败"
   }
 }

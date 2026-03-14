@@ -18,6 +18,13 @@ async def list_artifacts(request: Request, project_id: UUID) -> Response:
     return ok(data=[ArtifactResponse.model_validate(a).model_dump(mode="json") for a in artifacts])
 
 
+@router.post("/{artifact_id}/export-pdf")
+async def export_pdf(request: Request, project_id: UUID, artifact_id: UUID) -> Response:
+    username = auth.get_username(request)
+    artifact = await service.export_artifact_as_pdf(project_id, artifact_id, username)
+    return ok(data=ArtifactResponse.model_validate(artifact).model_dump(mode="json"))
+
+
 @router.get("/{artifact_id}/download")
 async def download_artifact(request: Request, project_id: UUID, artifact_id: UUID) -> RawResponse:
     username = auth.get_username(request)

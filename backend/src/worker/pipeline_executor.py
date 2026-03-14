@@ -1,3 +1,4 @@
+import asyncio
 import json
 import re
 from chunk.model import Chunk, ChunkStatus
@@ -8,6 +9,7 @@ from loguru import logger
 from sqlalchemy import select
 
 from artifact.model import Artifact
+from artifact.pdf_service import markdown_to_pdf
 from conf.db import AsyncSessionLocal
 from conf.kafka import get_kafka_producer
 from document.model import Document
@@ -268,6 +270,32 @@ class PipelineExecutor(BaseWorker):
             p = proj_result.scalars().one()
             p.status = ProjectStatus.COMPLETED
             await session.commit()
+
+        # Also generate PDF artifact
+        try:
+            loop = asyncio.get_running_loop()
+            pdf_bytes = await loop.run_in_executor(None, markdown_to_pdf, final_md, f"{proj.title} - Translation")
+            pdf_key, _ = await storage.upload_file(
+                tenant_id=proj.tenant_id,
+                project_id=project_id,
+                category="artifact",
+                data=pdf_bytes,
+                content_type="application/pdf",
+                ext="pdf",
+            )
+            async with AsyncSessionLocal() as session:
+                pdf_artifact = Artifact(
+                    project_id=project_id,
+                    document_id=doc.id,
+                    title=f"{proj.title} - Translation (PDF)",
+                    format="pdf",
+                    storage_key=pdf_key,
+                    file_size=len(pdf_bytes),
+                )
+                session.add(pdf_artifact)
+                await session.commit()
+        except Exception as e:
+            logger.warning(f"PDF generation failed for project {project_id}, skipping: {e}")
 
         await self._complete_task(task_id, {"artifact_format": "markdown", "file_size": len(md_bytes)})
         await publish_event(project_id, {"seq": 0, "event": "pipeline_completed", "data": {}})

@@ -63,6 +63,46 @@
     margin-top: 4px;
   }
 
+  &__card-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  &__export-btn {
+    height: 36px;
+    padding: 0 16px;
+    background: transparent;
+    color: var(--color-text-primary, @color-text-primary);
+    border: 1px solid var(--color-border, @color-border);
+    border-radius: @border-radius-lg;
+    font-size: 0.8125rem;
+    font-weight: @font-weight-medium;
+    font-family: @font-family;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: border-color 0.15s, background 0.15s;
+    flex-shrink: 0;
+
+    &:hover {
+      border-color: var(--color-border-dark, @color-border-dark);
+      background: var(--color-bg-hover, @color-bg-hover);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
   &__download-btn {
     height: 36px;
     padding: 0 16px;

@@ -117,5 +117,12 @@
     "light": "Light",
     "dark": "Dark",
     "system": "System"
+  },
+  "artifact": {
+    "empty": "No artifacts yet. Complete the translation pipeline to generate output.",
+    "download": "Download",
+    "exportPdf": "Export PDF",
+    "exporting": "Exporting...",
+    "exportFailed": "Failed to export PDF"
   }
 }
