@@ -31,10 +31,28 @@ const client = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Request interceptor: attach Bearer token (skip auth endpoints)
+// Public auth paths that should never send tokens or trigger refresh
+const PUBLIC_AUTH_PATHS = [
+  '/auth/login',
+  '/auth/register',
+  '/auth/token/refresh',
+  '/auth/logout',
+  '/auth/password/',
+  '/auth/invite/accept',
+];
+
+function isPublicAuthRequest(url: string): boolean {
+  if (PUBLIC_AUTH_PATHS.some((p) => url.startsWith(p))) return true;
+  // SSO authorize & callback are also public
+  if (/^\/auth\/\w+\/authorize$/.test(url)) return true;
+  if (/^\/auth\/\w+\/callback$/.test(url)) return true;
+  return false;
+}
+
+// Request interceptor: attach Bearer token (skip public auth endpoints)
 client.interceptors.request.use((config) => {
   const url = config.url || '';
-  if (!url.startsWith('/auth/')) {
+  if (!isPublicAuthRequest(url)) {
     const token = getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -58,10 +76,10 @@ function processQueue(error: unknown, token: string | null) {
   refreshQueue = [];
 }
 
-// Auth endpoints should not trigger token refresh
+// Public auth endpoints should not trigger token refresh
 function isAuthRequest(config: InternalAxiosRequestConfig): boolean {
   const url = config.url || '';
-  return url.startsWith('/auth/');
+  return isPublicAuthRequest(url);
 }
 
 // Handle 401 by attempting token refresh

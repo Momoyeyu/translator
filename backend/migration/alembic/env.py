@@ -9,6 +9,7 @@ from conf.config import settings
 from conf.db import Base
 
 from auth import model as auth_model
+from auth.oauth_model import OAuthAccount
 from tenant import model as tenant_model
 from user import model as user_model
 
@@ -25,6 +26,7 @@ _ = auth_model.InvitationCode
 _ = tenant_model.Tenant
 _ = tenant_model.UserTenant
 _ = tenant_model.TenantInvitation
+_ = OAuthAccount
 
 _ = TranslationProject
 _ = Document

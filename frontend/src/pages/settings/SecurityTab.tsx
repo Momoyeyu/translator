@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { userApi } from '@/api/user';
 import { toast } from '@/utils/message';
 import type { BizError } from '@/api/client';
+import LinkedAccounts from '@/components/LinkedAccounts';
 
 const FormItem = Form.Item;
 
@@ -72,6 +73,7 @@ export default function SecurityTab() {
           </Button>
         </FormItem>
       </Form>
+      <LinkedAccounts />
     </div>
   );
 }

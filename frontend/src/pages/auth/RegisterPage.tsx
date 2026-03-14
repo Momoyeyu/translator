@@ -9,6 +9,7 @@ import { setTokens } from '@/utils/token';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { toast } from '@/utils/message';
 import type { BizError } from '@/api/client';
+import SSOButtons from '@/components/SSOButtons';
 
 const FormItem = Form.Item;
 
@@ -173,6 +174,7 @@ export default function RegisterPage() {
           </Button>
         </FormItem>
       </Form>
+      <SSOButtons />
       <div className="auth-layout__footer">
         {t('auth.hasAccount')} <Link to="/login">{t('auth.goLogin')}</Link>
       </div>
