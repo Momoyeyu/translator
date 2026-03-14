@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Button, Spin, Modal } from '@arco-design/web-react';
 import { useTranslation } from 'react-i18next';
 import { authApi, type LinkedProvider } from '@/api/auth';
 import { oauthProviders } from '@/config/oauthProviders';
@@ -34,29 +33,28 @@ export default function LinkedAccounts() {
 
   if (oauthProviders.length === 0) return null;
 
-  const handleUnlink = (provider: string) => {
+  const handleUnlink = async (provider: string) => {
     const linkedCount = providers.length;
     if (!hasPassword && linkedCount <= 1) {
       toast.error(t('settings.unlinkLastMethodError'));
       return;
     }
 
-    Modal.confirm({
-      title: t('settings.unlinkConfirm', { provider }),
-      onOk: async () => {
-        setUnlinking(provider);
-        try {
-          await authApi.ssoUnlink(provider);
-          toast.success(t('settings.unlinkSuccess', { provider }));
-          await fetchProviders();
-        } catch (err) {
-          const bizErr = err as BizError;
-          toast.error(bizErr.message || t('common.error'));
-        } finally {
-          setUnlinking(null);
-        }
-      },
-    });
+    if (!window.confirm(t('settings.unlinkConfirm', { provider }))) {
+      return;
+    }
+
+    setUnlinking(provider);
+    try {
+      await authApi.ssoUnlink(provider);
+      toast.success(t('settings.unlinkSuccess', { provider }));
+      await fetchProviders();
+    } catch (err) {
+      const bizErr = err as BizError;
+      toast.error(bizErr.message || t('common.error'));
+    } finally {
+      setUnlinking(null);
+    }
   };
 
   const linkedMap = new Map(providers.map((p) => [p.provider, p]));
@@ -64,7 +62,7 @@ export default function LinkedAccounts() {
   if (loading) {
     return (
       <div className="linked-accounts__loading">
-        <Spin />
+        <span className="settings-form__spinner settings-form__spinner--dark" />
       </div>
     );
   }
@@ -97,23 +95,25 @@ export default function LinkedAccounts() {
                 </div>
               </div>
               {linked ? (
-                <Button
-                  size="small"
-                  status="danger"
-                  loading={unlinking === config.id}
+                <button
+                  type="button"
+                  className="settings-form__btn-danger settings-form__btn--small"
+                  disabled={unlinking === config.id}
                   onClick={() => handleUnlink(config.id)}
                 >
+                  {unlinking === config.id && <span className="settings-form__spinner settings-form__spinner--danger" />}
                   {t('settings.unlink')}
-                </Button>
+                </button>
               ) : (
-                <Button
-                  size="small"
-                  type="outline"
-                  loading={loadingProvider === config.id}
+                <button
+                  type="button"
+                  className="settings-form__btn-secondary settings-form__btn--small"
+                  disabled={loadingProvider === config.id}
                   onClick={() => startLink(config.id)}
                 >
+                  {loadingProvider === config.id && <span className="settings-form__spinner settings-form__spinner--dark" />}
                   {t('settings.link')}
-                </Button>
+                </button>
               )}
             </div>
           );

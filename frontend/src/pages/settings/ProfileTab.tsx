@@ -1,14 +1,11 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, Input, Button } from '@arco-design/web-react';
 import UserAvatar from '@/components/UserAvatar';
 import { useAuthStore } from '@/stores/authStore';
 import { userApi } from '@/api/user';
 import { toast } from '@/utils/message';
 import { setTokens } from '@/utils/token';
 import './ProfileTab.less';
-
-const FormItem = Form.Item;
 
 export default function ProfileTab() {
   const { t } = useTranslation();
@@ -20,7 +17,8 @@ export default function ProfileTab() {
 
   if (!user) return null;
 
-  const handleSave = async () => {
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
     setLoading(true);
     try {
       const res = await userApi.updateProfile({ username });
@@ -50,26 +48,35 @@ export default function ProfileTab() {
           <div className="profile-tab__user-email">{user.email}</div>
         </div>
       </div>
-      <Form
-        labelCol={{ span: 6 }}
-        wrapperCol={{ span: 18 }}
-      >
-        <FormItem label={t('settings.emailLabel')}>
-          <Input value={user.email} disabled />
-        </FormItem>
-        <FormItem label={t('settings.usernameLabel')}>
-          <Input
-            value={username}
-            placeholder={t('settings.usernamePlaceholder')}
-            onChange={setUsername}
+      <form className="settings-form" onSubmit={handleSave}>
+        <div className="settings-form__group">
+          <label className="settings-form__label">{t('settings.emailLabel')}</label>
+          <input
+            className="settings-form__input"
+            type="email"
+            value={user.email}
+            disabled
           />
-        </FormItem>
-        <FormItem wrapperCol={{ offset: 6, span: 18 }}>
-          <Button type="primary" loading={loading} onClick={handleSave}>
-            {t('settings.save')}
-          </Button>
-        </FormItem>
-      </Form>
+        </div>
+        <div className="settings-form__group">
+          <label className="settings-form__label">{t('settings.usernameLabel')}</label>
+          <input
+            className="settings-form__input"
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder={t('settings.usernamePlaceholder')}
+          />
+        </div>
+        <button
+          type="submit"
+          className="settings-form__btn-primary"
+          disabled={loading}
+        >
+          {loading && <span className="settings-form__spinner" />}
+          {t('settings.save')}
+        </button>
+      </form>
     </div>
   );
 }
