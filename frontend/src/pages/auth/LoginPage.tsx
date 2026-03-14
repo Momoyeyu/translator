@@ -61,11 +61,11 @@ export default function LoginPage() {
         <div className="login-page__form-group">
           <label className="login-page__form-label" htmlFor="email">Email</label>
           <input
-            type="email"
-            id="email"
+            type="text"
+            id="identifier"
             className="login-page__form-input"
             placeholder={t('auth.username')}
-            autoComplete="email"
+            autoComplete="username"
             value={identifier}
             onChange={(e) => setIdentifier(e.target.value)}
           />
