@@ -24,7 +24,7 @@ export default function ProjectListPage() {
     setLoading(true);
     try {
       const res = await listProjects();
-      setProjects(res.data.data || []);
+      setProjects(res || []);
     } finally {
       setLoading(false);
     }

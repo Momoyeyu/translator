@@ -41,9 +41,9 @@ export default function NewProjectPage() {
 
       const res = await createProject(formData);
       Message.success('Project created');
-      navigate(`/projects/${res.data.data.id}`);
+      navigate(`/projects/${res.id}`);
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to create project';
+      const msg = err instanceof Error ? err.message : 'Failed to create project';
       Message.error(msg);
     } finally {
       setLoading(false);

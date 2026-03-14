@@ -10,7 +10,7 @@ interface Props {
 export default function ArtifactList({ projectId, artifacts }: Props) {
   const handleDownload = async (artifact: Artifact) => {
     const res = await downloadArtifact(projectId, artifact.id);
-    const blob = new Blob([res.data]);
+    const blob = new Blob([res]);
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
