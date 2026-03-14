@@ -18,7 +18,7 @@ export default function ChatPanel({ projectId }: Props) {
     const fetchHistory = async () => {
       try {
         const res = await getChatHistory(projectId);
-        const messages = (res.data.data || []) as ChatMessage[];
+        const messages = res || [];
         setChatMessages(messages.reverse());
       } catch {
         // ignore

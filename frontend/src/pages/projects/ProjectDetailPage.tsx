@@ -46,10 +46,10 @@ export default function ProjectDetailPage() {
         getGlossary(id),
         getArtifacts(id),
       ]);
-      setCurrentProject(projRes.data.data);
-      setPipelineTasks(pipeRes.data.data || []);
-      setGlossaryTerms(glossRes.data.data || []);
-      setArtifacts(artifactRes.data.data || []);
+      setCurrentProject(projRes);
+      setPipelineTasks(pipeRes || []);
+      setGlossaryTerms(glossRes || []);
+      setArtifacts(artifactRes || []);
     } catch {
       Message.error('Failed to load project');
     } finally {
@@ -68,7 +68,7 @@ export default function ProjectDetailPage() {
       Message.success('Pipeline started');
       fetchAll();
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to start';
+      const msg = err instanceof Error ? err.message : 'Failed to start';
       Message.error(msg);
     }
   };

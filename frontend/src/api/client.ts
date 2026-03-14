@@ -127,6 +127,11 @@ async function handleUnauthorized(
 // Response interceptor: unwrap envelope + handle 401
 client.interceptors.response.use(
   async (response) => {
+    // Blob responses (e.g. file downloads) bypass envelope unwrapping
+    if (response.config.responseType === 'blob') {
+      return response.data;
+    }
+
     const body = response.data as ApiResponse;
 
     if (body.code === BizCode.OK) {

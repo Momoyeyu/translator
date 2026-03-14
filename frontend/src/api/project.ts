@@ -50,53 +50,53 @@ export interface ChatMessage {
 export const createProject = (formData: FormData) =>
   client.post('/projects', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
-  });
+  }) as Promise<Project>;
 
 export const listProjects = (page = 1, pageSize = 20) =>
-  client.get('/projects', { params: { page, page_size: pageSize } });
+  client.get('/projects', { params: { page, page_size: pageSize } }) as Promise<Project[]>;
 
 export const getProject = (id: string) =>
-  client.get(`/projects/${id}`);
+  client.get(`/projects/${id}`) as Promise<Project>;
 
 export const updateProject = (id: string, data: { title?: string; config?: Record<string, unknown> }) =>
-  client.patch(`/projects/${id}`, data);
+  client.patch(`/projects/${id}`, data) as Promise<Project>;
 
 export const deleteProject = (id: string) =>
-  client.delete(`/projects/${id}`);
+  client.delete(`/projects/${id}`) as Promise<void>;
 
 // Pipeline
 export const startPipeline = (projectId: string) =>
-  client.post(`/projects/${projectId}/start`);
+  client.post(`/projects/${projectId}/start`) as Promise<void>;
 
 export const getPipeline = (projectId: string) =>
-  client.get(`/projects/${projectId}/pipeline`);
+  client.get(`/projects/${projectId}/pipeline`) as Promise<PipelineTask[]>;
 
 export const confirmGlossary = (projectId: string) =>
-  client.post(`/projects/${projectId}/clarify/confirm`);
+  client.post(`/projects/${projectId}/clarify/confirm`) as Promise<void>;
 
 export const cancelPipeline = (projectId: string) =>
-  client.post(`/projects/${projectId}/cancel`);
+  client.post(`/projects/${projectId}/cancel`) as Promise<void>;
 
 export const retryPipeline = (projectId: string) =>
-  client.post(`/projects/${projectId}/retry`);
+  client.post(`/projects/${projectId}/retry`) as Promise<void>;
 
 // Glossary
 export const getGlossary = (projectId: string) =>
-  client.get(`/projects/${projectId}/glossary`);
+  client.get(`/projects/${projectId}/glossary`) as Promise<GlossaryTerm[]>;
 
 export const updateTerm = (projectId: string, termId: string, translatedTerm: string) =>
-  client.put(`/projects/${projectId}/glossary/${termId}`, { translated_term: translatedTerm });
+  client.put(`/projects/${projectId}/glossary/${termId}`, { translated_term: translatedTerm }) as Promise<GlossaryTerm>;
 
 // Artifacts
 export const getArtifacts = (projectId: string) =>
-  client.get(`/projects/${projectId}/artifacts`);
+  client.get(`/projects/${projectId}/artifacts`) as Promise<Artifact[]>;
 
 export const downloadArtifact = (projectId: string, artifactId: string) =>
-  client.get(`/projects/${projectId}/artifacts/${artifactId}/download`, { responseType: 'blob' });
+  client.get(`/projects/${projectId}/artifacts/${artifactId}/download`, { responseType: 'blob' }) as Promise<Blob>;
 
 // Chat
 export const sendChatMessage = (projectId: string, content: string) =>
-  client.post(`/projects/${projectId}/chat`, { content });
+  client.post(`/projects/${projectId}/chat`, { content }) as Promise<ChatMessage>;
 
 export const getChatHistory = (projectId: string, cursor?: string, limit = 50) =>
-  client.get(`/projects/${projectId}/chat/history`, { params: { cursor, limit } });
+  client.get(`/projects/${projectId}/chat/history`, { params: { cursor, limit } }) as Promise<ChatMessage[]>;
