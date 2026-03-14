@@ -59,7 +59,10 @@
     "passwordChanged": "密码已修改",
     "save": "保存",
     "saveSuccess": "资料已更新",
-    "usernamePlaceholder": "请输入用户名"
+    "usernamePlaceholder": "请输入用户名",
+    "preferences": "偏好设置",
+    "language": "语言",
+    "languageDesc": "选择您偏好的显示语言"
   },
   "dashboard": {
     "title": "仪表盘",

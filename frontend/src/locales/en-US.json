@@ -59,7 +59,10 @@
     "passwordChanged": "Password changed",
     "save": "Save",
     "saveSuccess": "Profile updated",
-    "usernamePlaceholder": "Enter username"
+    "usernamePlaceholder": "Enter username",
+    "preferences": "Preferences",
+    "language": "Language",
+    "languageDesc": "Choose your preferred display language"
   },
   "dashboard": {
     "title": "Dashboard",

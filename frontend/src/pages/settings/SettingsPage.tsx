@@ -4,6 +4,7 @@ import PageHeader from '@/components/PageHeader';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import ProfileTab from './ProfileTab';
 import SecurityTab from './SecurityTab';
+import PreferencesTab from './PreferencesTab';
 import './SettingsPage.less';
 
 const TabPane = Tabs.TabPane;
@@ -25,6 +26,11 @@ export default function SettingsPage() {
         <TabPane key="security" title={t('settings.security')}>
           <div className="settings-page__tab-content">
             <SecurityTab />
+          </div>
+        </TabPane>
+        <TabPane key="preferences" title={t('settings.preferences')}>
+          <div className="settings-page__tab-content">
+            <PreferencesTab />
           </div>
         </TabPane>
       </Tabs>
