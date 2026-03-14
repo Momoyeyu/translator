@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useParams, useSearchParams, useLocation } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { Spin, Result } from '@arco-design/web-react';
 import { useTranslation } from 'react-i18next';
 import { useOAuth } from '@/hooks/useOAuth';
@@ -7,19 +7,17 @@ import { getProviderConfig } from '@/config/oauthProviders';
 
 /**
  * OAuth callback page.
- * Handles both login callbacks (/auth/callback/:provider)
- * and link callbacks (/auth/callback/:provider/link).
+ * Handles both login and account-linking callbacks on the same URL
+ * (/auth/callback/:provider). The flow type (login vs link) is
+ * determined from sessionStorage rather than the URL path.
  */
 export default function OAuthCallbackPage() {
   const { t } = useTranslation();
   const { provider } = useParams<{ provider: string }>();
   const [searchParams] = useSearchParams();
-  const location = useLocation();
-  const { handleCallback, handleLinkCallback } = useOAuth();
+  const { handleCallback } = useOAuth();
   const [error, setError] = useState<string | null>(null);
   const processed = useRef(false);
-
-  const isLinkFlow = location.pathname.includes('/link');
 
   useEffect(() => {
     if (processed.current) return;
@@ -41,11 +39,7 @@ export default function OAuthCallbackPage() {
 
     const process = async () => {
       try {
-        if (isLinkFlow) {
-          await handleLinkCallback(provider, code, state);
-        } else {
-          await handleCallback(provider, code, state);
-        }
+        await handleCallback(provider, code, state);
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : t('auth.ssoCallbackError');
         setError(message);
@@ -53,7 +47,7 @@ export default function OAuthCallbackPage() {
     };
 
     process();
-  }, [provider, searchParams, isLinkFlow, handleCallback, handleLinkCallback, t]);
+  }, [provider, searchParams, handleCallback, t]);
 
   if (error) {
     return (
