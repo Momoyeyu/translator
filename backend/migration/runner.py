@@ -12,7 +12,7 @@ def _alembic_config() -> Config:
     migration_dir = Path(__file__).resolve().parent
     alembic_cfg = Config(str(migration_dir / "alembic.ini"))
     alembic_cfg.set_main_option("script_location", str(migration_dir / "alembic"))
-    alembic_cfg.set_main_option("sqlalchemy.url", settings.database_url)
+    alembic_cfg.set_main_option("sqlalchemy.url", settings.sync_database_url)
     return alembic_cfg
 
 
