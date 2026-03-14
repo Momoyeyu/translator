@@ -68,9 +68,18 @@
     "title": "Dashboard",
     "welcome": "Welcome back, {{name}}",
     "welcomeDefault": "Welcome back",
-    "subtitle": "Here's an overview of your account.",
+    "subtitle": "Here's an overview of your translation projects.",
     "editProfile": "Edit Profile",
-    "goToProjects": "Go to Projects"
+    "goToProjects": "Go to Projects",
+    "totalProjects": "Total Projects",
+    "completed": "Completed",
+    "inProgress": "In Progress",
+    "termsManaged": "Terms Managed",
+    "recentProjects": "Recent Projects",
+    "noProjects": "No projects yet. Start your first translation!",
+    "newTranslation": "New Translation",
+    "viewAllProjects": "View All Projects",
+    "quickActions": "Quick Actions"
   },
   "tenant": {
     "title": "Tenants",
