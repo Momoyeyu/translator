@@ -61,6 +61,8 @@
     "saveSuccess": "Profile updated",
     "usernamePlaceholder": "Enter username",
     "preferences": "Preferences",
+    "theme": "Appearance",
+    "themeDesc": "Choose light, dark, or system theme",
     "language": "Language",
     "languageDesc": "Choose your preferred display language"
   },
