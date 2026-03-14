@@ -1,20 +1,20 @@
 from __future__ import annotations
 
-from chunk.model import Chunk
 from logging.config import fileConfig
 
 from alembic import context
-from pipeline.event_store import PipelineEvent
 from sqlalchemy import engine_from_config, pool
 
 from artifact.model import Artifact
 from auth import model as auth_model
 from auth.oauth_model import OAuthAccount
+from chunk.model import Chunk
 from conf.config import settings
 from conf.db import Base
 from conversation.model import Conversation, Message
 from document.model import Document
 from glossary.model import GlossaryTerm
+from pipeline.event_store import PipelineEvent
 from pipeline.model import PipelineTask
 from project.model import TranslationProject
 from tenant import model as tenant_model
