@@ -10,8 +10,6 @@ const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage'));
 const ForgotPasswordPage = lazy(() => import('@/pages/auth/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('@/pages/auth/ResetPasswordPage'));
 const DashboardPage = lazy(() => import('@/pages/dashboard/DashboardPage'));
-const TenantPage = lazy(() => import('@/pages/tenant/TenantPage'));
-const TenantDetailPage = lazy(() => import('@/pages/tenant/TenantDetailPage'));
 const SettingsPage = lazy(() => import('@/pages/settings/SettingsPage'));
 const InviteAcceptPage = lazy(() => import('@/pages/auth/InviteAcceptPage'));
 const OAuthCallbackPage = lazy(() => import('@/pages/auth/OAuthCallbackPage'));
@@ -70,14 +68,6 @@ export const router = createBrowserRouter([
           {
             path: '/dashboard',
             element: <SuspenseWrapper><DashboardPage /></SuspenseWrapper>,
-          },
-          {
-            path: '/tenants',
-            element: <SuspenseWrapper><TenantPage /></SuspenseWrapper>,
-          },
-          {
-            path: '/tenants/:tenantId',
-            element: <SuspenseWrapper><TenantDetailPage /></SuspenseWrapper>,
           },
           {
             path: '/settings',

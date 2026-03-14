@@ -1,12 +1,11 @@
 {
   "app": {
-    "name": "Arco Boilerplate",
-    "tagline": "Build modern web apps with confidence"
+    "name": "Translator",
+    "tagline": "Intelligent document translation agent"
   },
   "nav": {
     "dashboard": "Dashboard",
     "projects": "Projects",
-    "tenants": "Tenants",
     "settings": "Settings",
     "logout": "Logout"
   },
@@ -99,41 +98,12 @@
     "viewAllProjects": "View All Projects",
     "quickActions": "Quick Actions"
   },
-  "tenant": {
-    "title": "Tenants",
-    "name": "Name",
-    "role": "Role",
-    "create": "Create Tenant",
-    "createTitle": "Create New Tenant",
-    "namePlaceholder": "Enter tenant name",
-    "nameRequired": "Tenant name is required",
-    "createSuccess": "Tenant created",
-    "updateSuccess": "Tenant updated",
-    "noTenantsDesc": "Create your first tenant to get started.",
-    "detail": "Tenant Details",
-    "members": "Members",
-    "invitations": "Invitations",
-    "invite": "Invite Member",
-    "inviteTitle": "Invite New Member",
-    "inviteEmail": "Email",
-    "inviteEmailPlaceholder": "Enter email address",
-    "inviteEmailRequired": "Email is required",
-    "inviteRole": "Role",
-    "inviteSuccess": "Invitation sent",
-    "invitePending": "Pending",
-    "inviteAccepted": "Accepted",
-    "inviteExpired": "Expired",
-    "noInvitations": "No pending invitations",
-    "back": "Back",
-    "inviteAcceptTitle": "Accept Invitation",
-    "inviteAcceptDesc": "Set your password to join the team",
-    "inviteAcceptButton": "Accept & Join",
-    "inviteAcceptSuccess": "Successfully joined the team",
-    "inviteTokenMissing": "Invalid invitation link",
-    "sentAt": "Sent At",
-    "cancel": "Cancel",
-    "cancelConfirm": "Are you sure you want to cancel this invitation?",
-    "cancelSuccess": "Invitation cancelled"
+  "invite": {
+    "acceptTitle": "Accept Invitation",
+    "acceptDesc": "Set your password to join the team",
+    "acceptButton": "Accept & Join",
+    "acceptSuccess": "Successfully joined the team",
+    "tokenMissing": "Invalid invitation link"
   },
   "common": {
     "loading": "Loading...",

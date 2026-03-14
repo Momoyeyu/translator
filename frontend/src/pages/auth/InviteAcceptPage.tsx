@@ -18,12 +18,12 @@ export default function InviteAcceptPage() {
   const token = searchParams.get('token') || '';
   const [loading, setLoading] = useState(false);
 
-  useDocumentTitle(t('tenant.inviteAcceptTitle'));
+  useDocumentTitle(t('invite.acceptTitle'));
 
   if (!token) {
     return (
       <>
-        <p className="auth-layout__hint">{t('tenant.inviteTokenMissing')}</p>
+        <p className="auth-layout__hint">{t('invite.tokenMissing')}</p>
         <div className="auth-layout__footer">
           <Button type="text" onClick={() => navigate('/login')}>
             {t('auth.goLogin')}
@@ -42,7 +42,7 @@ export default function InviteAcceptPage() {
     try {
       const response = await authApi.acceptInvite({ token, password: values.password });
       setTokens(response.access_token, response.refresh_token);
-      toast.success(t('tenant.inviteAcceptSuccess'));
+      toast.success(t('invite.acceptSuccess'));
       navigate('/dashboard', { replace: true });
     } catch (err) {
       const bizErr = err as BizError;
@@ -54,7 +54,7 @@ export default function InviteAcceptPage() {
 
   return (
     <>
-      <p className="auth-layout__hint">{t('tenant.inviteAcceptDesc')}</p>
+      <p className="auth-layout__hint">{t('invite.acceptDesc')}</p>
       <Form size="large" onSubmit={handleSubmit} autoComplete="off">
         <FormItem
           field="password"
@@ -70,7 +70,7 @@ export default function InviteAcceptPage() {
         </FormItem>
         <FormItem>
           <Button type="primary" htmlType="submit" long loading={loading}>
-            {t('tenant.inviteAcceptButton')}
+            {t('invite.acceptButton')}
           </Button>
         </FormItem>
       </Form>

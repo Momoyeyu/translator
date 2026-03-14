@@ -1,12 +1,11 @@
 {
   "app": {
-    "name": "Arco Boilerplate",
-    "tagline": "自信构建现代化 Web 应用"
+    "name": "Translator",
+    "tagline": "智能文档翻译代理"
   },
   "nav": {
     "dashboard": "仪表盘",
     "projects": "项目",
-    "tenants": "租户",
     "settings": "设置",
     "logout": "退出登录"
   },
@@ -99,41 +98,12 @@
     "viewAllProjects": "查看所有项目",
     "quickActions": "快捷操作"
   },
-  "tenant": {
-    "title": "租户",
-    "name": "名称",
-    "role": "角色",
-    "create": "创建租户",
-    "createTitle": "创建新租户",
-    "namePlaceholder": "请输入租户名称",
-    "nameRequired": "请输入租户名称",
-    "createSuccess": "租户创建成功",
-    "updateSuccess": "租户更新成功",
-    "noTenantsDesc": "创建您的第一个租户以开始使用。",
-    "detail": "租户详情",
-    "members": "成员",
-    "invitations": "邀请",
-    "invite": "邀请成员",
-    "inviteTitle": "邀请新成员",
-    "inviteEmail": "邮箱",
-    "inviteEmailPlaceholder": "请输入邮箱地址",
-    "inviteEmailRequired": "请输入邮箱",
-    "inviteRole": "角色",
-    "inviteSuccess": "邀请已发送",
-    "invitePending": "待接受",
-    "inviteAccepted": "已接受",
-    "inviteExpired": "已过期",
-    "noInvitations": "暂无待处理的邀请",
-    "back": "返回",
-    "inviteAcceptTitle": "接受邀请",
-    "inviteAcceptDesc": "设置密码以加入团队",
-    "inviteAcceptButton": "接受并加入",
-    "inviteAcceptSuccess": "成功加入团队",
-    "inviteTokenMissing": "邀请链接无效",
-    "sentAt": "发送时间",
-    "cancel": "取消",
-    "cancelConfirm": "确定要取消此邀请吗？",
-    "cancelSuccess": "邀请已取消"
+  "invite": {
+    "acceptTitle": "接受邀请",
+    "acceptDesc": "设置密码以加入团队",
+    "acceptButton": "接受并加入",
+    "acceptSuccess": "成功加入团队",
+    "tokenMissing": "邀请链接无效"
   },
   "common": {
     "loading": "加载中...",
