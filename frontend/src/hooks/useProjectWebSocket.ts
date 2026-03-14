@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useProjectStore } from '../stores/projectStore';
+import type { PipelineEvent } from '../api/events';
 
 interface WSEvent {
   seq: number;
@@ -7,19 +8,39 @@ interface WSEvent {
   data: Record<string, unknown>;
 }
 
+/** Convert a raw WebSocket event into a PipelineEvent for the store */
+function toStoreEvent(ws: WSEvent): PipelineEvent {
+  return {
+    id: `ws-${ws.seq}`,
+    stage: (ws.data.stage as string) || '',
+    event_type: ws.event,
+    sequence: ws.seq,
+    data: ws.data,
+    created_at: new Date().toISOString(),
+  };
+}
+
 export function useProjectWebSocket(projectId: string | undefined, token: string | undefined) {
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const lastSeqRef = useRef(0);
 
-  const { updateProjectStatus, updatePipelineTask, addChatMessage, setArtifacts } =
-    useProjectStore();
+  const {
+    updateProjectStatus,
+    updatePipelineTask,
+    addChatMessage,
+    setArtifacts,
+    addPipelineEvent,
+  } = useProjectStore();
 
   const handleEvent = useCallback(
     (event: WSEvent) => {
       if (event.seq > lastSeqRef.current) {
         lastSeqRef.current = event.seq;
       }
+
+      // Always push the event into the pipeline events store for the scroll view
+      addPipelineEvent(toStoreEvent(event));
 
       switch (event.event) {
         case 'pipeline_stage_started':
@@ -55,7 +76,7 @@ export function useProjectWebSocket(projectId: string | undefined, token: string
           break;
       }
     },
-    [updateProjectStatus, updatePipelineTask, addChatMessage, setArtifacts]
+    [updateProjectStatus, updatePipelineTask, addChatMessage, setArtifacts, addPipelineEvent]
   );
 
   const connect = useCallback(() => {
