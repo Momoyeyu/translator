@@ -61,6 +61,8 @@
     "saveSuccess": "资料已更新",
     "usernamePlaceholder": "请输入用户名",
     "preferences": "偏好设置",
+    "theme": "外观",
+    "themeDesc": "选择浅色、深色或跟随系统主题",
     "language": "语言",
     "languageDesc": "选择您偏好的显示语言"
   },
