@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Translator — Annual Report 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --color-bg-page: #F5F0E8;
+      --color-bg-elevated: #FFFFFF;
+      --color-bg-sidebar: #2C2820;
+      --color-bg-sidebar-hover: #3A352C;
+      --color-bg-sidebar-active: #443E34;
+      --color-bg-secondary: #EDE8DF;
+      --color-bg-tertiary: #E6E0D5;
+      --color-bg-upload: #FAF8F4;
+      --color-text-primary: #1A1A1A;
+      --color-text-secondary: #6B6258;
+      --color-text-tertiary: #9C9488;
+      --color-text-inverse: #FFFFFF;
+      --color-text-sidebar: #D4CFC7;
+      --color-text-sidebar-muted: #8C8579;
+      --color-accent-primary: #1A1A1A;
+      --color-accent-primary-hover: #333333;
+      --color-accent-link: #8B6834;
+      --color-accent-link-hover: #6B4E24;
+      --color-border: #DDD8CF;
+      --color-border-light: #E8E3DA;
+      --color-border-dark: #C4BEB5;
+      --color-success: #2E7D32;
+      --color-warning: #C67A00;
+      --color-info: #5A7A9B;
+      --color-error: #C62828;
+      --font-heading: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
+      --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: var(--color-text-primary);
+      background: var(--color-bg-page);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .app-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: var(--color-bg-sidebar);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
+    }
+
+    .sidebar-logo {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-logo-icon {
+      width: 28px;
+      height: 28px;
+      background: rgba(212, 207, 199, 0.15);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar-logo-icon svg {
+      width: 16px;
+      height: 16px;
+      color: var(--color-text-sidebar);
+    }
+
+    .sidebar-logo-text {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--color-text-sidebar);
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 8px 0;
+      overflow-y: auto;
+    }
+
+    .sidebar-section-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--color-text-sidebar-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 16px 16px 8px;
+    }
+
+    .nav-item {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 12px;
+      margin: 2px 8px;
+      border-radius: 8px;
+      color: var(--color-text-sidebar-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 400;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .nav-item:hover {
+      background: var(--color-bg-sidebar-hover);
+      color: var(--color-text-sidebar);
+    }
+
+    .nav-item.active {
+      background: var(--color-bg-sidebar-active);
+      color: var(--color-text-sidebar);
+      font-weight: 500;
+    }
+
+    .nav-item svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-divider {
+      height: 1px;
+      background: rgba(255,255,255,0.08);
+      margin: 12px 16px;
+    }
+
+    .sidebar-user {
+      padding: 12px 16px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--color-bg-sidebar-active);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--color-text-sidebar);
+      flex-shrink: 0;
+    }
+
+    .user-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .user-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--color-text-sidebar);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-email {
+      font-size: 0.75rem;
+      color: var(--color-text-sidebar-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-user-logout {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-sidebar-muted);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .sidebar-user-logout:hover {
+      background: var(--color-bg-sidebar-hover);
+      color: var(--color-text-sidebar);
+    }
+
+    .sidebar-user-logout svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: 240px;
+      overflow-y: auto;
+      min-height: 100vh;
+    }
+
+    .content-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 40px 32px;
+    }
+
+    /* Back Link */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      margin-bottom: 24px;
+      transition: color 0.15s;
+    }
+
+    .back-link:hover {
+      color: var(--color-text-primary);
+    }
+
+    .back-link svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Hero Section */
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 32px;
+    }
+
+    .hero-left h1 {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      line-height: 1.3;
+    }
+
+    .hero-lang-pair {
+      font-size: 0.9375rem;
+      color: var(--color-text-secondary);
+      margin-top: 8px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn-primary {
+      height: 40px;
+      padding: 0 20px;
+      background: var(--color-accent-primary);
+      color: var(--color-text-inverse);
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: var(--color-accent-primary-hover);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-outline-danger {
+      height: 40px;
+      padding: 0 20px;
+      background: transparent;
+      color: var(--color-error);
+      border: 1px solid rgba(198, 40, 40, 0.3);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .btn-outline-danger:hover {
+      border-color: var(--color-error);
+      background: rgba(198, 40, 40, 0.04);
+    }
+
+    /* Tabs */
+    .tab-bar {
+      display: flex;
+      border-bottom: 1px solid var(--color-border-light);
+      gap: 0;
+    }
+
+    .tab-item {
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      padding: 12px 4px;
+      margin-right: 32px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      position: relative;
+      font-family: var(--font-body);
+      transition: color 0.15s;
+    }
+
+    .tab-item:hover {
+      color: var(--color-text-primary);
+    }
+
+    .tab-item.active {
+      color: var(--color-text-primary);
+      font-weight: 600;
+    }
+
+    .tab-item.active::after {
+      content: "";
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--color-accent-primary);
+      border-radius: 1px;
+    }
+
+    .tab-item.disabled {
+      color: var(--color-text-tertiary);
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .tab-count {
+      font-size: 0.8125rem;
+      color: var(--color-text-tertiary);
+      font-weight: 400;
+    }
+
+    .tab-content {
+      padding-top: 32px;
+    }
+
+    /* Pipeline Stepper */
+    .pipeline-stepper {
+      position: relative;
+      padding-left: 0;
+    }
+
+    .pipeline-step {
+      display: flex;
+      position: relative;
+      padding-bottom: 32px;
+    }
+
+    .pipeline-step:last-child {
+      padding-bottom: 0;
+    }
+
+    /* Vertical line */
+    .pipeline-step:not(:last-child)::before {
+      content: "";
+      position: absolute;
+      left: 11px;
+      top: 28px;
+      bottom: 0;
+      width: 2px;
+      background: var(--color-border-light);
+    }
+
+    .pipeline-step.completed:not(:last-child)::before {
+      background: var(--color-success);
+    }
+
+    .step-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid var(--color-border);
+      background: transparent;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-circle.completed {
+      border-color: var(--color-success);
+      background: var(--color-success);
+    }
+
+    .step-circle.completed svg {
+      width: 14px;
+      height: 14px;
+      color: white;
+    }
+
+    .step-circle.awaiting {
+      border-color: var(--color-warning);
+      background: var(--color-warning);
+      animation: pulse-step 2s ease-in-out infinite;
+    }
+
+    .step-circle.awaiting .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: white;
+    }
+
+    .step-circle.pending {
+      border-color: var(--color-border);
+      background: transparent;
+    }
+
+    @keyframes pulse-step {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .step-content {
+      margin-left: 16px;
+      flex: 1;
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .step-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+
+    .step-status {
+      font-size: 0.875rem;
+      font-weight: 400;
+    }
+
+    .step-status.completed { color: var(--color-success); }
+    .step-status.awaiting { color: var(--color-warning); }
+    .step-status.pending { color: var(--color-text-tertiary); }
+
+    .step-description {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      margin-top: 4px;
+      line-height: 1.6;
+    }
+
+    .step-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 8px;
+      font-size: 0.875rem;
+      color: var(--color-accent-link);
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+
+    .step-action:hover {
+      color: var(--color-accent-link-hover);
+    }
+
+    .step-action svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Confirm Button */
+    .confirm-section {
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid var(--color-border-light);
+    }
+
+    .btn-confirm {
+      height: 48px;
+      padding: 0 32px;
+      background: var(--color-accent-primary);
+      color: var(--color-text-inverse);
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-confirm:hover {
+      background: var(--color-accent-primary-hover);
+    }
+
+    .btn-confirm:active {
+      transform: scale(0.98);
+    }
+
+    /* Terms Table */
+    .terms-section {
+      margin-top: 40px;
+    }
+
+    .terms-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .terms-section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+
+    .terms-count {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+    }
+
+    .terms-table-container {
+      background: var(--color-bg-elevated);
+      border-radius: 12px;
+      border: 1px solid var(--color-border-light);
+      overflow: hidden;
+    }
+
+    .terms-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .terms-table th {
+      background: var(--color-bg-secondary);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 12px 16px;
+      text-align: left;
+    }
+
+    .terms-table td {
+      padding: 16px;
+      border-bottom: 1px solid var(--color-border-light);
+      font-size: 0.9375rem;
+    }
+
+    .terms-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .terms-table tbody tr {
+      transition: background 0.1s;
+    }
+
+    .terms-table tbody tr:hover {
+      background: var(--color-bg-upload);
+    }
+
+    .term-source {
+      font-weight: 500;
+      color: var(--color-text-primary);
+    }
+
+    .term-translation {
+      color: var(--color-text-primary);
+      border-bottom: 1px dashed var(--color-border);
+      cursor: pointer;
+      padding-bottom: 2px;
+    }
+
+    .term-context {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      max-width: 300px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .term-status-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .term-status-icon.confirmed {
+      color: var(--color-success);
+    }
+
+    .term-status-icon.pending {
+      color: var(--color-text-tertiary);
+    }
+
+    .term-status-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Scrollbar */
+    .main-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .main-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .main-content::-webkit-scrollbar-thumb {
+      background: var(--color-border);
+      border-radius: 4px;
+    }
+
+    .main-content::-webkit-scrollbar-thumb:hover {
+      background: var(--color-border-dark);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 8l6 6"/>
+            <path d="M4 14l6-6 2-3"/>
+            <path d="M2 5h12"/>
+            <path d="M7 2h1"/>
+            <path d="M14 18l4-4 4 4"/>
+            <path d="M14 22h8"/>
+          </svg>
+        </div>
+        <span class="sidebar-logo-text">Translator</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Main</div>
+
+        <a class="nav-item" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+          </svg>
+          Dashboard
+        </a>
+
+        <a class="nav-item active" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+          Projects
+        </a>
+
+        <a class="nav-item" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+          Glossary
+        </a>
+
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section-label">Account</div>
+
+        <a class="nav-item" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          Settings
+        </a>
+      </nav>
+
+      <div class="sidebar-user">
+        <div class="user-avatar">JD</div>
+        <div class="user-info">
+          <div class="user-name">Jane Doe</div>
+          <div class="user-email">jane@example.com</div>
+        </div>
+        <div class="sidebar-user-logout" title="Log out">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="content-inner">
+        <!-- Back Link -->
+        <a class="back-link" href="projects.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"/>
+            <polyline points="12 19 5 12 12 5"/>
+          </svg>
+          Projects
+        </a>
+
+        <!-- Hero Section -->
+        <div class="hero">
+          <div class="hero-left">
+            <h1>Annual Report 2026 Translation</h1>
+            <div class="hero-lang-pair">English &rarr; Chinese (&#20013;&#25991;)</div>
+          </div>
+          <div class="hero-actions">
+            <button class="btn-primary">Confirm Terms &amp; Continue</button>
+            <button class="btn-outline-danger">Cancel</button>
+          </div>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="tab-bar">
+          <button class="tab-item active">Pipeline</button>
+          <button class="tab-item">Terms <span class="tab-count">(12)</span></button>
+          <button class="tab-item">Output</button>
+          <button class="tab-item disabled">Chat</button>
+        </div>
+
+        <!-- Tab Content: Pipeline -->
+        <div class="tab-content">
+          <div class="pipeline-stepper">
+            <!-- Step 1: Plan - Completed -->
+            <div class="pipeline-step completed">
+              <div class="step-circle completed">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+              <div class="step-content">
+                <div class="step-header">
+                  <span class="step-title">Plan</span>
+                  <span class="step-status completed">Completed</span>
+                </div>
+                <div class="step-description">Analyzed document structure, identified 8 translation chunks across 24 pages.</div>
+              </div>
+            </div>
+
+            <!-- Step 2: Clarify - Awaiting Input -->
+            <div class="pipeline-step awaiting">
+              <div class="step-circle awaiting">
+                <span class="step-dot"></span>
+              </div>
+              <div class="step-content">
+                <div class="step-header">
+                  <span class="step-title">Clarify</span>
+                  <span class="step-status awaiting">Awaiting confirmation</span>
+                </div>
+                <div class="step-description">Extracted 12 specialized terms requiring confirmation before translation.</div>
+                <a class="step-action">
+                  Review Terms
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+
+            <!-- Step 3: Translate - Pending -->
+            <div class="pipeline-step pending">
+              <div class="step-circle pending"></div>
+              <div class="step-content">
+                <div class="step-header">
+                  <span class="step-title">Translate</span>
+                  <span class="step-status pending">Pending</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 4: Unify - Pending -->
+            <div class="pipeline-step pending">
+              <div class="step-circle pending"></div>
+              <div class="step-content">
+                <div class="step-header">
+                  <span class="step-title">Unify</span>
+                  <span class="step-status pending">Pending</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Confirm Section -->
+          <div class="confirm-section">
+            <button class="btn-confirm">Confirm Terms &amp; Continue</button>
+          </div>
+
+          <!-- Sample Terms Table -->
+          <div class="terms-section">
+            <div class="terms-section-header">
+              <span class="terms-section-title">Extracted Terms</span>
+              <span class="terms-count">12 terms, 3 confirmed</span>
+            </div>
+            <div class="terms-table-container">
+              <table class="terms-table">
+                <thead>
+                  <tr>
+                    <th>Source Term</th>
+                    <th>Translation</th>
+                    <th>Context</th>
+                    <th style="width: 60px; text-align: center;">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="term-source">machine learning</td>
+                    <td><span class="term-translation">&#26426;&#22120;&#23398;&#20064;</span></td>
+                    <td class="term-context">Our machine learning models have improved accuracy by 40%</td>
+                    <td>
+                      <div class="term-status-icon confirmed">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="term-source">stakeholder</td>
+                    <td><span class="term-translation">&#21033;&#30410;&#30456;&#20851;&#32773;</span></td>
+                    <td class="term-context">Key stakeholders reviewed the quarterly projections</td>
+                    <td>
+                      <div class="term-status-icon confirmed">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="term-source">revenue growth</td>
+                    <td><span class="term-translation">&#33829;&#25910;&#22686;&#38271;</span></td>
+                    <td class="term-context">Revenue growth exceeded expectations for Q3</td>
+                    <td>
+                      <div class="term-status-icon confirmed">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="term-source">sustainable development</td>
+                    <td><span class="term-translation">&#21487;&#25345;&#32493;&#21457;&#23637;</span></td>
+                    <td class="term-context">Committed to sustainable development goals outlined in the UN framework</td>
+                    <td>
+                      <div class="term-status-icon pending">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="10"/>
+                        </svg>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="term-source">fiscal year</td>
+                    <td><span class="term-translation">&#36130;&#24180;</span></td>
+                    <td class="term-context">The fiscal year ending December 2026</td>
+                    <td>
+                      <div class="term-status-icon pending">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="10"/>
+                        </svg>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="term-source">carbon neutrality</td>
+                    <td><span class="term-translation">&#30899;&#20013;&#21644;</span></td>
+                    <td class="term-context">Achieving carbon neutrality by 2030 remains our target</td>
+                    <td>
+                      <div class="term-status-icon pending">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="10"/>
+                        </svg>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

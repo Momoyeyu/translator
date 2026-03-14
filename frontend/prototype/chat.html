@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Translator — Chat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --color-bg-page: #F5F0E8;
+      --color-bg-elevated: #FFFFFF;
+      --color-bg-sidebar: #2C2820;
+      --color-bg-sidebar-hover: #3A352C;
+      --color-bg-sidebar-active: #443E34;
+      --color-bg-secondary: #EDE8DF;
+      --color-bg-tertiary: #E6E0D5;
+      --color-bg-chat-user: #E8E3DA;
+      --color-text-primary: #1A1A1A;
+      --color-text-secondary: #6B6258;
+      --color-text-tertiary: #9C9488;
+      --color-text-inverse: #FFFFFF;
+      --color-text-sidebar: #D4CFC7;
+      --color-text-sidebar-muted: #8C8579;
+      --color-accent-primary: #1A1A1A;
+      --color-accent-primary-hover: #333333;
+      --color-accent-link: #8B6834;
+      --color-accent-link-hover: #6B4E24;
+      --color-accent-focus: rgba(139, 104, 52, 0.3);
+      --color-border: #DDD8CF;
+      --color-border-light: #E8E3DA;
+      --color-border-dark: #C4BEB5;
+      --color-border-input-focus: #1A1A1A;
+      --color-success: #2E7D32;
+      --color-warning: #C67A00;
+      --font-heading: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
+      --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "JetBrains Mono", "SF Mono", SFMono-Regular, Consolas, monospace;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: var(--color-text-primary);
+      background: var(--color-bg-page);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .app-layout {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: var(--color-bg-sidebar);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .sidebar-logo {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-logo-icon {
+      width: 28px;
+      height: 28px;
+      background: rgba(212, 207, 199, 0.15);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar-logo-icon svg {
+      width: 16px;
+      height: 16px;
+      color: var(--color-text-sidebar);
+    }
+
+    .sidebar-logo-text {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--color-text-sidebar);
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 8px 0;
+      overflow-y: auto;
+    }
+
+    .sidebar-section-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--color-text-sidebar-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 16px 16px 8px;
+    }
+
+    .nav-item {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 12px;
+      margin: 2px 8px;
+      border-radius: 8px;
+      color: var(--color-text-sidebar-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 400;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .nav-item:hover {
+      background: var(--color-bg-sidebar-hover);
+      color: var(--color-text-sidebar);
+    }
+
+    .nav-item.active {
+      background: var(--color-bg-sidebar-active);
+      color: var(--color-text-sidebar);
+      font-weight: 500;
+    }
+
+    .nav-item svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-divider {
+      height: 1px;
+      background: rgba(255,255,255,0.08);
+      margin: 12px 16px;
+    }
+
+    .sidebar-user {
+      padding: 12px 16px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--color-bg-sidebar-active);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--color-text-sidebar);
+      flex-shrink: 0;
+    }
+
+    .user-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .user-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--color-text-sidebar);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-email {
+      font-size: 0.75rem;
+      color: var(--color-text-sidebar-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-user-logout {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-sidebar-muted);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .sidebar-user-logout:hover {
+      background: var(--color-bg-sidebar-hover);
+      color: var(--color-text-sidebar);
+    }
+
+    .sidebar-user-logout svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top bar inside main for context */
+    .project-context-bar {
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--color-border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      background: var(--color-bg-page);
+    }
+
+    .context-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .context-back {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .context-back:hover {
+      color: var(--color-text-primary);
+    }
+
+    .context-back svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .context-sep {
+      width: 1px;
+      height: 20px;
+      background: var(--color-border);
+    }
+
+    .context-project {
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--color-text-primary);
+    }
+
+    .context-lang {
+      font-size: 0.8125rem;
+      color: var(--color-text-tertiary);
+      margin-left: 8px;
+    }
+
+    /* Tab bar */
+    .tab-bar {
+      display: flex;
+      padding: 0 32px;
+      border-bottom: 1px solid var(--color-border-light);
+      gap: 0;
+      flex-shrink: 0;
+      background: var(--color-bg-page);
+    }
+
+    .tab-item {
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      padding: 12px 4px;
+      margin-right: 32px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      position: relative;
+      font-family: var(--font-body);
+      transition: color 0.15s;
+    }
+
+    .tab-item:hover {
+      color: var(--color-text-primary);
+    }
+
+    .tab-item.active {
+      color: var(--color-text-primary);
+      font-weight: 600;
+    }
+
+    .tab-item.active::after {
+      content: "";
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--color-accent-primary);
+      border-radius: 1px;
+    }
+
+    /* Chat Container */
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      background: var(--color-bg-page);
+    }
+
+    /* Message Area */
+    .message-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 32px;
+      scroll-behavior: smooth;
+    }
+
+    .message-area::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .message-area::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .message-area::-webkit-scrollbar-thumb {
+      background: var(--color-border);
+      border-radius: 3px;
+    }
+
+    .message-area::-webkit-scrollbar-thumb:hover {
+      background: var(--color-border-dark);
+    }
+
+    .messages-wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* Messages */
+    .message {
+      margin-bottom: 20px;
+    }
+
+    .message-sender-line {
+      font-size: 0.75rem;
+      color: var(--color-text-tertiary);
+      margin-bottom: 6px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .message-sender {
+      font-weight: 600;
+    }
+
+    /* User Message */
+    .message-user {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .message-user .message-sender-line {
+      flex-direction: row-reverse;
+    }
+
+    .message-user .message-bubble {
+      background: var(--color-bg-chat-user);
+      color: var(--color-text-primary);
+      border-radius: 16px 16px 4px 16px;
+      padding: 12px 16px;
+      max-width: 75%;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* Assistant Message */
+    .message-assistant {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .message-assistant .message-body {
+      padding: 12px 0;
+      max-width: 85%;
+      font-size: 0.9375rem;
+      line-height: 1.8;
+      color: var(--color-text-primary);
+    }
+
+    .message-assistant .message-body p {
+      margin-bottom: 12px;
+    }
+
+    .message-assistant .message-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .message-assistant .message-body strong {
+      font-weight: 600;
+    }
+
+    .message-assistant .message-body em {
+      font-style: italic;
+    }
+
+    .message-assistant .message-body code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      background: var(--color-bg-secondary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--color-text-primary);
+    }
+
+    .message-assistant .message-body .code-block {
+      background: var(--color-bg-secondary);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      line-height: 1.6;
+      margin: 12px 0;
+      overflow-x: auto;
+      color: var(--color-text-primary);
+    }
+
+    .message-assistant .message-body ul,
+    .message-assistant .message-body ol {
+      margin: 8px 0;
+      padding-left: 24px;
+    }
+
+    .message-assistant .message-body li {
+      margin-bottom: 4px;
+      line-height: 1.6;
+    }
+
+    .message-assistant .message-body a {
+      color: var(--color-accent-link);
+      text-decoration: none;
+    }
+
+    .message-assistant .message-body a:hover {
+      text-decoration: underline;
+    }
+
+    /* Typing indicator */
+    .message-typing {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .typing-indicator {
+      display: flex;
+      gap: 4px;
+      padding: 16px 0;
+    }
+
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-text-tertiary);
+      animation: typing-bounce 1.4s ease-in-out infinite;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing-bounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    /* Input Area */
+    .chat-input-area {
+      border-top: 1px solid var(--color-border-light);
+      padding: 16px 24px;
+      background: var(--color-bg-page);
+      flex-shrink: 0;
+    }
+
+    .chat-input-wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chat-input {
+      flex: 1;
+      height: 44px;
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      padding: 0 16px;
+      font-size: 0.9375rem;
+      font-family: var(--font-body);
+      color: var(--color-text-primary);
+      background: var(--color-bg-elevated);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .chat-input::placeholder {
+      color: var(--color-text-tertiary);
+    }
+
+    .chat-input:focus {
+      border-color: var(--color-border-input-focus);
+      box-shadow: 0 0 0 3px var(--color-accent-focus);
+    }
+
+    .send-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--color-accent-primary);
+      color: var(--color-text-inverse);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+
+    .send-btn:hover {
+      background: var(--color-accent-primary-hover);
+    }
+
+    .send-btn:active {
+      transform: scale(0.95);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .send-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Scrollbar for main content */
+    .main-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .main-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .main-content::-webkit-scrollbar-thumb {
+      background: var(--color-border);
+      border-radius: 4px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 8l6 6"/>
+            <path d="M4 14l6-6 2-3"/>
+            <path d="M2 5h12"/>
+            <path d="M7 2h1"/>
+            <path d="M14 18l4-4 4 4"/>
+            <path d="M14 22h8"/>
+          </svg>
+        </div>
+        <span class="sidebar-logo-text">Translator</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Main</div>
+
+        <a class="nav-item" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+          </svg>
+          Dashboard
+        </a>
+
+        <a class="nav-item active" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+          Projects
+        </a>
+
+        <a class="nav-item" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+          Glossary
+        </a>
+
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section-label">Account</div>
+
+        <a class="nav-item" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          Settings
+        </a>
+      </nav>
+
+      <div class="sidebar-user">
+        <div class="user-avatar">JD</div>
+        <div class="user-info">
+          <div class="user-name">Jane Doe</div>
+          <div class="user-email">jane@example.com</div>
+        </div>
+        <div class="sidebar-user-logout" title="Log out">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Project Context Bar -->
+      <div class="project-context-bar">
+        <div class="context-left">
+          <a class="context-back" href="project-detail.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"/>
+              <polyline points="12 19 5 12 12 5"/>
+            </svg>
+            Back
+          </a>
+          <div class="context-sep"></div>
+          <span class="context-project">Annual Report 2026 Translation</span>
+          <span class="context-lang">EN &rarr; ZH</span>
+        </div>
+      </div>
+
+      <!-- Tab Bar -->
+      <div class="tab-bar">
+        <button class="tab-item">Pipeline</button>
+        <button class="tab-item">Terms <span style="font-size:0.8125rem;color:var(--color-text-tertiary);font-weight:400;">(12)</span></button>
+        <button class="tab-item">Output</button>
+        <button class="tab-item active">Chat</button>
+      </div>
+
+      <!-- Chat Area -->
+      <div class="chat-container">
+        <div class="message-area">
+          <div class="messages-wrapper">
+            <!-- Assistant Message 1 -->
+            <div class="message message-assistant">
+              <div class="message-sender-line">
+                <span class="message-sender">Assistant</span>
+                <span>Mar 14, 14:30</span>
+              </div>
+              <div class="message-body">
+                <p>Hello! I can help you with questions about your translation of the Annual Report 2026. Feel free to ask about specific terms, phrasing choices, or request modifications to the output.</p>
+              </div>
+            </div>
+
+            <!-- User Message 1 -->
+            <div class="message message-user">
+              <div class="message-sender-line">
+                <span class="message-sender">You</span>
+                <span>Mar 14, 14:32</span>
+              </div>
+              <div class="message-bubble">
+                Why was "machine learning" translated as "&#26426;&#22120;&#23398;&#20064;" instead of "&#26426;&#22120;&#20064;&#24471;"?
+              </div>
+            </div>
+
+            <!-- Assistant Message 2 -->
+            <div class="message message-assistant">
+              <div class="message-sender-line">
+                <span class="message-sender">Assistant</span>
+                <span>Mar 14, 14:32</span>
+              </div>
+              <div class="message-body">
+                <p>Great question. The term <strong>"&#26426;&#22120;&#23398;&#20064;"</strong> (j&#299;q&#236; xu&#233;x&#237;) was chosen for several reasons:</p>
+                <ul>
+                  <li><strong>Industry standard</strong> &mdash; "&#26426;&#22120;&#23398;&#20064;" is the universally accepted translation in Chinese technical literature, academic papers, and industry publications.</li>
+                  <li><strong>Corpus frequency</strong> &mdash; In our reference corpus of 50,000+ Chinese tech documents, "&#26426;&#22120;&#23398;&#20064;" appears 15,000+ times while "&#26426;&#22120;&#20064;&#24471;" appears fewer than 200 times.</li>
+                  <li><strong>Semantic precision</strong> &mdash; "&#23398;&#20064;" (learning) directly corresponds to the concept of algorithmic learning, while "&#20064;&#24471;" (acquisition) carries a connotation of passive absorption more commonly used in linguistics.</li>
+                </ul>
+                <p>If your organization has an internal preference for "&#26426;&#22120;&#20064;&#24471;", I can update this term across all instances. Would you like me to make that change?</p>
+              </div>
+            </div>
+
+            <!-- User Message 2 -->
+            <div class="message message-user">
+              <div class="message-sender-line">
+                <span class="message-sender">You</span>
+                <span>Mar 14, 14:35</span>
+              </div>
+              <div class="message-bubble">
+                No, "&#26426;&#22120;&#23398;&#20064;" is correct. Can you also check how "sustainable development" was translated? I want to make sure it's consistent with UN terminology.
+              </div>
+            </div>
+
+            <!-- Assistant Message 3 -->
+            <div class="message message-assistant">
+              <div class="message-sender-line">
+                <span class="message-sender">Assistant</span>
+                <span>Mar 14, 14:35</span>
+              </div>
+              <div class="message-body">
+                <p>I translated "sustainable development" as <strong>"&#21487;&#25345;&#32493;&#21457;&#23637;"</strong> (k&#283; ch&#237;x&#249; f&#257;zh&#462;n), which is indeed the official UN Chinese translation. It appears in:</p>
+                <ul>
+                  <li>The UN Sustainable Development Goals (&#32852;&#21512;&#22269;&#21487;&#25345;&#32493;&#21457;&#23637;&#30446;&#26631;)</li>
+                  <li>All official Chinese-language UN documents</li>
+                  <li>The PRC government's own sustainability reports</li>
+                </ul>
+                <p>This term appears <strong>7 times</strong> across your document, all translated consistently. Here are the specific locations:</p>
+                <div class="code-block">Chunk 2, paragraph 3: "...committed to sustainable development..."
+Chunk 4, heading:     "Sustainable Development Goals"
+Chunk 4, paragraph 1: "...our sustainable development strategy..."
+Chunk 4, paragraph 5: "...align with sustainable development..."
+Chunk 6, paragraph 2: "...sustainable development indicators..."
+Chunk 7, paragraph 1: "...global sustainable development..."
+Chunk 8, paragraph 4: "...sustainable development report..."</div>
+                <p>All 7 instances use "&#21487;&#25345;&#32493;&#21457;&#23637;" consistently. No variations were introduced.</p>
+              </div>
+            </div>
+
+            <!-- User Message 3 -->
+            <div class="message message-user">
+              <div class="message-sender-line">
+                <span class="message-sender">You</span>
+                <span>Mar 14, 14:37</span>
+              </div>
+              <div class="message-bubble">
+                Perfect, that looks correct. Thank you!
+              </div>
+            </div>
+
+            <!-- Assistant typing indicator -->
+            <div class="message message-typing">
+              <div class="message-sender-line">
+                <span class="message-sender">Assistant</span>
+              </div>
+              <div class="typing-indicator">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="chat-input-area">
+          <div class="chat-input-wrapper">
+            <input type="text" class="chat-input" placeholder="Type your message...">
+            <button class="send-btn" title="Send message">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="19" x2="12" y2="5"/>
+                <polyline points="5 12 12 5 19 12"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
