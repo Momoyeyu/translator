@@ -11,6 +11,7 @@
   left: 0;
   bottom: 0;
   z-index: 100;
+  transition: width 0.2s ease;
 
   // ── Logo ──
   &__logo {
@@ -20,6 +21,7 @@
     padding: 0 16px;
     gap: 10px;
     flex-shrink: 0;
+    overflow: hidden;
   }
 
   &__logo-icon {
@@ -43,6 +45,9 @@
     font-size: 0.9375rem;
     font-weight: @font-weight-semibold;
     color: @color-text-sidebar;
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.2s ease;
   }
 
   // ── Navigation ──
@@ -50,6 +55,7 @@
     flex: 1;
     padding: 8px 0;
     overflow-y: auto;
+    overflow-x: hidden;
   }
 
   &__section-label {
@@ -59,6 +65,9 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     padding: 16px 16px 8px;
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.2s ease;
   }
 
   &__item {
@@ -80,6 +89,7 @@
     cursor: pointer;
     transition: background @transition-normal, color @transition-normal;
     text-align: left;
+    overflow: hidden;
 
     svg {
       width: 18px;
@@ -99,6 +109,12 @@
     }
   }
 
+  &__item-label {
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+  }
+
   &__divider {
     height: 1px;
     background: rgba(255, 255, 255, 0.08);
@@ -112,6 +128,7 @@
     gap: 6px;
     padding: 8px 16px;
     flex-shrink: 0;
+    transition: flex-direction 0.2s ease, padding 0.2s ease;
   }
 
   &__quick-toggle-btn {
@@ -128,6 +145,7 @@
     transition: border-color 0.2s, color 0.2s, background 0.2s;
     padding: 0;
     font-family: @font-family;
+    flex-shrink: 0;
 
     svg {
       width: 16px;
@@ -156,6 +174,8 @@
     align-items: center;
     gap: 12px;
     flex-shrink: 0;
+    overflow: hidden;
+    transition: padding 0.2s ease;
   }
 
   &__user-avatar {
@@ -175,6 +195,8 @@
   &__user-info {
     flex: 1;
     min-width: 0;
+    opacity: 1;
+    transition: opacity 0.2s ease;
   }
 
   &__user-name {
@@ -206,7 +228,7 @@
     border: none;
     background: none;
     flex-shrink: 0;
-    transition: background @transition-normal, color @transition-normal;
+    transition: opacity 0.2s ease, background @transition-normal, color @transition-normal;
 
     &:hover {
       background: @color-bg-sidebar-hover;
@@ -216,6 +238,97 @@
     svg {
       width: 16px;
       height: 16px;
+    }
+  }
+
+  // ── Toggle Button ──
+  &__toggle {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: @color-text-sidebar-muted;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s ease, color 0.2s ease;
+    padding: 0;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    &:hover {
+      background: @color-bg-sidebar-hover;
+      color: @color-text-sidebar;
+    }
+  }
+
+  // ── Collapsed State ──
+  &--collapsed {
+    width: @sidebar-width-collapsed;
+
+    .sidebar-nav__logo {
+      justify-content: center;
+      padding: 0;
+    }
+
+    .sidebar-nav__logo-text {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+    }
+
+    .sidebar-nav__section-label {
+      opacity: 0;
+      height: 0;
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .sidebar-nav__item {
+      justify-content: center;
+      padding: 0;
+      width: calc(100% - 16px);
+      gap: 0;
+    }
+
+    .sidebar-nav__item-label {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+    }
+
+    .sidebar-nav__divider {
+      margin: 12px 8px;
+    }
+
+    .sidebar-nav__quick-toggles {
+      flex-direction: column;
+      padding: 8px 0;
+      align-items: center;
+    }
+
+    .sidebar-nav__user {
+      justify-content: center;
+      padding: 12px 0;
+    }
+
+    .sidebar-nav__user-info {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+    }
+
+    .sidebar-nav__user-logout {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+      padding: 0;
     }
   }
 }

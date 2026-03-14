@@ -10,6 +10,7 @@
     overflow-y: auto;
     min-height: 100vh;
     background: var(--color-bg-page, @color-bg-page);
+    transition: margin-left 0.2s ease;
 
     // Scrollbar
     &::-webkit-scrollbar {
@@ -34,5 +35,10 @@
     max-width: @content-max-width;
     margin: 0 auto;
     padding: 40px 32px;
+  }
+
+  // Sidebar collapsed modifier
+  &--sidebar-collapsed &__content {
+    margin-left: @sidebar-width-collapsed;
   }
 }

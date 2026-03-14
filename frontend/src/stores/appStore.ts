@@ -11,6 +11,7 @@ interface AppState {
   setTheme: (theme: ThemeMode) => void;
   setLocale: (locale: Locale) => void;
   toggleSidebar: () => void;
+  setSidebarCollapsed: (collapsed: boolean) => void;
   initTheme: () => void;
 }
 
@@ -29,7 +30,7 @@ function applyTheme(resolved: 'light' | 'dark') {
 export const useAppStore = create<AppState>()((set, get) => ({
   theme: (storage.get<ThemeMode>('theme') ?? 'system'),
   locale: (storage.get<Locale>('locale') ?? 'zh-CN'),
-  sidebarCollapsed: false,
+  sidebarCollapsed: storage.get<boolean>('sidebarCollapsed') ?? false,
 
   setTheme: (theme) => {
     storage.set('theme', theme);
@@ -45,7 +46,14 @@ export const useAppStore = create<AppState>()((set, get) => ({
   },
 
   toggleSidebar: () => {
-    set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed }));
+    const next = !get().sidebarCollapsed;
+    storage.set('sidebarCollapsed', next);
+    set({ sidebarCollapsed: next });
+  },
+
+  setSidebarCollapsed: (collapsed) => {
+    storage.set('sidebarCollapsed', collapsed);
+    set({ sidebarCollapsed: collapsed });
   },
 
   initTheme: () => {

@@ -19,6 +19,8 @@ export default function SidebarNav({ selectedKey, onNavigate, onLogout }: Sideba
   const setTheme = useAppStore((s) => s.setTheme);
   const locale = useAppStore((s) => s.locale);
   const setLocale = useAppStore((s) => s.setLocale);
+  const collapsed = useAppStore((s) => s.sidebarCollapsed);
+  const toggleSidebar = useAppStore((s) => s.toggleSidebar);
 
   const cycleTheme = () => {
     const idx = themeOrder.indexOf(theme);
@@ -82,7 +84,7 @@ export default function SidebarNav({ selectedKey, onNavigate, onLogout }: Sideba
   };
 
   return (
-    <aside className="sidebar-nav">
+    <aside className={`sidebar-nav${collapsed ? ' sidebar-nav--collapsed' : ''}`}>
       <div className="sidebar-nav__logo">
         <div className="sidebar-nav__logo-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -104,9 +106,10 @@ export default function SidebarNav({ selectedKey, onNavigate, onLogout }: Sideba
             key={item.key}
             className={`sidebar-nav__item${selectedKey === item.key || (item.key === '/projects' && selectedKey.startsWith('/projects')) ? ' sidebar-nav__item--active' : ''}`}
             onClick={() => onNavigate(item.key)}
+            title={collapsed ? item.label : undefined}
           >
             {item.icon}
-            {item.label}
+            <span className="sidebar-nav__item-label">{item.label}</span>
           </button>
         ))}
 
@@ -117,9 +120,10 @@ export default function SidebarNav({ selectedKey, onNavigate, onLogout }: Sideba
             key={item.key}
             className={`sidebar-nav__item${selectedKey === item.key ? ' sidebar-nav__item--active' : ''}`}
             onClick={() => onNavigate(item.key)}
+            title={collapsed ? item.label : undefined}
           >
             {item.icon}
-            {item.label}
+            <span className="sidebar-nav__item-label">{item.label}</span>
           </button>
         ))}
 
@@ -194,6 +198,21 @@ export default function SidebarNav({ selectedKey, onNavigate, onLogout }: Sideba
           )}
         </div>
       )}
+
+      <button
+        className="sidebar-nav__toggle"
+        onClick={toggleSidebar}
+        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          {collapsed ? (
+            <polyline points="9 18 15 12 9 6" />
+          ) : (
+            <polyline points="15 18 9 12 15 6" />
+          )}
+        </svg>
+      </button>
     </aside>
   );
 }
