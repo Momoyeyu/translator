@@ -10,8 +10,13 @@ MAX_RETRIES=30
 RETRY=0
 until python -c "
 import psycopg
-from conf.config import settings
-conn = psycopg.connect(settings.sync_database_url)
+import os
+host = os.environ.get('DB_HOST', 'localhost')
+port = os.environ.get('DB_PORT', '5432')
+user = os.environ.get('DB_USER', 'postgres')
+password = os.environ.get('DB_PASSWORD', 'postgres')
+dbname = os.environ.get('DB_NAME', 'translator')
+conn = psycopg.connect(host=host, port=port, user=user, password=password, dbname=dbname)
 conn.close()
 print('DB ready')
 " 2>/dev/null; do
