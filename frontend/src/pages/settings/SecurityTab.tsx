@@ -1,35 +1,37 @@
 import { useState } from 'react';
-import { Form, Input, Button } from '@arco-design/web-react';
 import { useTranslation } from 'react-i18next';
 import { userApi } from '@/api/user';
 import { toast } from '@/utils/message';
 import type { BizError } from '@/api/client';
 import LinkedAccounts from '@/components/LinkedAccounts';
 
-const FormItem = Form.Item;
-
 export default function SecurityTab() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
-  const [form] = Form.useForm();
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleChange = async (values: {
-    old_password: string;
-    new_password: string;
-    confirm_password: string;
-  }) => {
-    if (values.new_password !== values.confirm_password) {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      toast.error(t('auth.passwordRequired'));
+      return;
+    }
+    if (newPassword !== confirmPassword) {
       toast.error(t('auth.passwordMismatch'));
       return;
     }
     setLoading(true);
     try {
       await userApi.changePassword({
-        old_password: values.old_password,
-        new_password: values.new_password,
+        old_password: oldPassword,
+        new_password: newPassword,
       });
       toast.success(t('settings.passwordChanged'));
-      form.resetFields();
+      setOldPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
     } catch (err) {
       const bizErr = err as BizError;
       toast.error(bizErr.message || t('common.error'));
@@ -40,39 +42,52 @@ export default function SecurityTab() {
 
   return (
     <div className="security-tab">
-      <Form
-        form={form}
-        onSubmit={handleChange}
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
-      >
-        <FormItem
-          label={t('auth.oldPassword')}
-          field="old_password"
-          rules={[{ required: true, message: t('auth.passwordRequired') }]}
+      <form className="settings-form" onSubmit={handleSubmit}>
+        <div className="settings-form__group">
+          <label className="settings-form__label" htmlFor="sec-old-password">{t('auth.oldPassword')}</label>
+          <input
+            id="sec-old-password"
+            className="settings-form__input"
+            type="password"
+            value={oldPassword}
+            onChange={(e) => setOldPassword(e.target.value)}
+            placeholder={t('auth.oldPassword')}
+            autoComplete="current-password"
+          />
+        </div>
+        <div className="settings-form__group">
+          <label className="settings-form__label" htmlFor="sec-new-password">{t('auth.newPassword')}</label>
+          <input
+            id="sec-new-password"
+            className="settings-form__input"
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            placeholder={t('auth.newPassword')}
+            autoComplete="new-password"
+          />
+        </div>
+        <div className="settings-form__group">
+          <label className="settings-form__label" htmlFor="sec-confirm-password">{t('auth.confirmNewPassword')}</label>
+          <input
+            id="sec-confirm-password"
+            className="settings-form__input"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder={t('auth.confirmNewPassword')}
+            autoComplete="new-password"
+          />
+        </div>
+        <button
+          type="submit"
+          className="settings-form__btn-primary"
+          disabled={loading}
         >
-          <Input.Password placeholder={t('auth.oldPassword')} />
-        </FormItem>
-        <FormItem
-          label={t('auth.newPassword')}
-          field="new_password"
-          rules={[{ required: true, message: t('auth.passwordRequired') }]}
-        >
-          <Input.Password placeholder={t('auth.newPassword')} />
-        </FormItem>
-        <FormItem
-          label={t('auth.confirmNewPassword')}
-          field="confirm_password"
-          rules={[{ required: true, message: t('auth.passwordRequired') }]}
-        >
-          <Input.Password placeholder={t('auth.confirmNewPassword')} />
-        </FormItem>
-        <FormItem wrapperCol={{ offset: 8, span: 16 }}>
-          <Button type="primary" htmlType="submit" loading={loading}>
-            {t('settings.changePassword')}
-          </Button>
-        </FormItem>
-      </Form>
+          {loading && <span className="settings-form__spinner" />}
+          {t('settings.changePassword')}
+        </button>
+      </form>
       <LinkedAccounts />
     </div>
   );

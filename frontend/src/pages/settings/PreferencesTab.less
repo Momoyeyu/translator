@@ -11,12 +11,6 @@
     margin-bottom: @spacing-lg;
   }
 
-  &__theme-option {
-    display: inline-flex;
-    align-items: center;
-    gap: @spacing-xs;
-  }
-
   &__section-title {
     font-weight: @font-weight-medium;
     font-size: @font-size-lg;
@@ -28,5 +22,70 @@
     font-size: @font-size-sm;
     color: var(--color-text-secondary, @color-text-secondary);
     margin-bottom: @spacing-md;
+  }
+
+  // ─── Card-style radio group ──────────────────────────
+  &__radio-group {
+    display: flex;
+    gap: @spacing-sm;
+    flex-wrap: wrap;
+  }
+
+  &__radio-card {
+    display: flex;
+    align-items: center;
+    gap: @spacing-sm;
+    padding: @spacing-sm @spacing-md;
+    border: 1px solid var(--color-border, @color-border);
+    border-radius: @border-radius-lg;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    background: var(--color-bg-elevated, @color-bg-elevated);
+    user-select: none;
+
+    &:hover {
+      border-color: var(--color-border-dark, @color-border-dark);
+      background: var(--color-bg-upload, @color-bg-upload);
+    }
+
+    &--active {
+      border-color: var(--color-accent-primary, @color-primary);
+      box-shadow: 0 0 0 3px var(--color-accent-focus, @color-accent-focus);
+      background: var(--color-bg-upload, @color-bg-upload);
+
+      &:hover {
+        border-color: var(--color-accent-primary, @color-primary);
+      }
+    }
+  }
+
+  // Visually hide the native radio input
+  &__radio-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  &__radio-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-secondary, @color-text-secondary);
+
+    .preferences-tab__radio-card--active & {
+      color: var(--color-text-primary, @color-text-primary);
+    }
+  }
+
+  &__radio-text {
+    font-size: @font-size-body;
+    font-weight: @font-weight-medium;
+    color: var(--color-text-secondary, @color-text-secondary);
+
+    .preferences-tab__radio-card--active & {
+      color: var(--color-text-primary, @color-text-primary);
+    }
   }
 }
