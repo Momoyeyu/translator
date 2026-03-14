@@ -14,28 +14,34 @@
     position: relative;
   }
 
-  &__lang-toggle {
+  &__toggle-bar {
     position: absolute;
     top: 16px;
     right: 16px;
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
-    background: none;
-    border: 1px solid var(--color-border, @color-border);
+    z-index: 10;
+  }
+
+  &__toggle-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid transparent;
     border-radius: @border-radius-lg;
-    font-size: 0.8125rem;
-    font-weight: @font-weight-medium;
-    font-family: @font-family;
     color: var(--color-text-secondary, @color-text-secondary);
     cursor: pointer;
     transition: border-color 0.2s, color 0.2s, background 0.2s;
-    z-index: 10;
+    padding: 0;
+    font-family: @font-family;
 
     svg {
-      width: 14px;
-      height: 14px;
+      width: 16px;
+      height: 16px;
       flex-shrink: 0;
     }
 
@@ -46,51 +52,25 @@
     }
   }
 
+  &__toggle-label {
+    font-size: 0.8125rem;
+    font-weight: @font-weight-semibold;
+    line-height: 1;
+  }
+
   &__left-inner {
     max-width: @auth-card-width;
     width: 100%;
     padding: 64px 48px;
     animation: fade-up @transition-entrance both;
+  }
 
-    // Arco Form alignment fixes within auth area
-    .arco-form {
-      .arco-form-layout-horizontal .arco-form-item-label-col {
-        display: none;
-      }
-
-      .arco-form-layout-horizontal .arco-form-item-wrapper-col {
-        flex: 1;
-      }
-
-      .arco-form-item {
-        margin-bottom: @spacing-md + 4px;
-
-        &:last-child {
-          margin-bottom: 0;
-        }
-      }
-
-      .arco-form-item-wrapper,
-      .arco-form-item-control-wrapper,
-      .arco-form-item-wrapper-col {
-        width: 100%;
-        max-width: 100%;
-        flex: none;
-      }
-
-      .arco-input-wrapper,
-      .arco-input-password {
-        width: 100%;
-        height: 48px;
-        border-radius: @border-radius-lg;
-      }
-
-      .arco-btn-long {
-        width: 100%;
-        height: 48px;
-        border-radius: @border-radius-lg;
-      }
-    }
+  // ─── Hint text (e.g. "Code sent to …") ───────────────
+  &__hint {
+    font-size: 0.9375rem;
+    color: var(--color-text-secondary, @color-text-secondary);
+    line-height: 1.6;
+    margin-bottom: 24px;
   }
 
   // ─── Right Column: Decorative ───────────────────────────
