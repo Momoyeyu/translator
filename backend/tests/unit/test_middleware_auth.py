@@ -178,6 +178,41 @@ def test_user_me_uses_get_username_to_fetch_profile(monkeypatch: pytest.MonkeyPa
     assert resp.json()["data"]["username"] == "alice"
 
 
+def test_jwt_middleware_allows_sso_parameterized_exempt_routes():
+    """SSO authorize/callback endpoints use path parameters ({provider}) and must
+    be exempt from JWT authentication regardless of whether the SSO router is registered."""
+    auth.EXEMPT_PATHS.clear()
+    app = FastAPI()
+
+    api_router = APIRouter(prefix="/api/v1")
+    sso_router = APIRouter(prefix="/auth", tags=["auth-sso"])
+
+    @auth.exempt
+    @sso_router.get("/{provider}/authorize")
+    async def sso_authorize(provider: str):
+        return {"url": f"https://example.com/{provider}"}
+
+    @auth.exempt
+    @sso_router.get("/{provider}/callback")
+    async def sso_callback(provider: str, code: str = "", state: str = ""):
+        return {"ok": True}
+
+    api_router.include_router(sso_router)
+    app.include_router(api_router)
+    auth.setup_auth_middleware(app)
+
+    client = TestClient(app)
+    # Both providers should pass through without a token
+    resp_gh = client.get("/api/v1/auth/github/authorize")
+    assert resp_gh.status_code == 200
+
+    resp_gg = client.get("/api/v1/auth/google/authorize")
+    assert resp_gg.status_code == 200
+
+    resp_cb = client.get("/api/v1/auth/github/callback?code=abc&state=xyz")
+    assert resp_cb.status_code == 200
+
+
 def test_user_me_post_updates_profile(monkeypatch: pytest.MonkeyPatch):
     auth.EXEMPT_PATHS.clear()
     app = FastAPI()
