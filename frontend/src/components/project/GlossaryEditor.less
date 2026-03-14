@@ -4,7 +4,7 @@
   &__empty {
     padding: 48px 24px;
     text-align: center;
-    color: @color-text-tertiary;
+    color: var(--color-text-tertiary, @color-text-tertiary);
     font-size: 0.9375rem;
   }
 
@@ -18,18 +18,18 @@
   &__title {
     font-size: 1rem;
     font-weight: @font-weight-semibold;
-    color: @color-text-primary;
+    color: var(--color-text-primary, @color-text-primary);
   }
 
   &__count {
     font-size: 0.875rem;
-    color: @color-text-secondary;
+    color: var(--color-text-secondary, @color-text-secondary);
   }
 
   &__table-container {
-    background: @color-bg-elevated;
+    background: var(--color-bg-elevated, @color-bg-elevated);
     border-radius: @border-radius-xl;
-    border: 1px solid @color-border-light;
+    border: 1px solid var(--color-border-light, @color-border-light);
     overflow: hidden;
   }
 
@@ -39,10 +39,10 @@
   }
 
   &__table th {
-    background: @color-bg-secondary;
+    background: var(--color-bg-secondary, @color-bg-secondary);
     font-size: 0.75rem;
     font-weight: @font-weight-semibold;
-    color: @color-text-secondary;
+    color: var(--color-text-secondary, @color-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     padding: 12px 16px;
@@ -51,8 +51,9 @@
 
   &__table td {
     padding: 16px;
-    border-bottom: 1px solid @color-border-light;
+    border-bottom: 1px solid var(--color-border-light, @color-border-light);
     font-size: 0.9375rem;
+    color: var(--color-text-primary, @color-text-primary);
   }
 
   &__table tr:last-child td {
@@ -64,17 +65,17 @@
   }
 
   &__table tbody tr:hover {
-    background: @color-bg-upload;
+    background: var(--color-bg-upload, @color-bg-upload);
   }
 
   &__term-source {
     font-weight: @font-weight-medium;
-    color: @color-text-primary;
+    color: var(--color-text-primary, @color-text-primary);
   }
 
   &__term-translation {
-    color: @color-text-primary;
-    border-bottom: 1px dashed @color-border;
+    color: var(--color-text-primary, @color-text-primary);
+    border-bottom: 1px dashed var(--color-border, @color-border);
     cursor: pointer;
     padding-bottom: 2px;
     transition: border-color 0.15s;
@@ -95,7 +96,7 @@
 
   &__term-context {
     font-size: 0.875rem;
-    color: @color-text-secondary;
+    color: var(--color-text-secondary, @color-text-secondary);
     max-width: 300px;
     white-space: nowrap;
     overflow: hidden;
@@ -125,18 +126,19 @@
   &__edit-input {
     width: 100%;
     height: 36px;
-    border: 1px solid @color-border;
+    border: 1px solid var(--color-border, @color-border);
     border-radius: @border-radius-md;
     padding: 0 12px;
     font-size: 0.9375rem;
     font-family: @font-family;
-    color: @color-text-primary;
+    color: var(--color-text-primary, @color-text-primary);
+    background: var(--color-bg-input, @color-bg-input);
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
 
     &:focus {
-      border-color: @color-primary;
-      box-shadow: 0 0 0 3px @color-accent-focus;
+      border-color: var(--color-accent-primary, @color-primary);
+      box-shadow: 0 0 0 3px var(--color-accent-focus, @color-accent-focus);
     }
   }
 
@@ -158,20 +160,20 @@
     transition: background 0.15s;
 
     &--save {
-      background: @color-primary;
-      color: @color-text-inverse;
+      background: var(--color-accent-primary, @color-primary);
+      color: var(--color-text-inverse, @color-text-inverse);
 
       &:hover {
-        background: @color-primary-hover;
+        background: var(--color-accent-primary-hover, @color-primary-hover);
       }
     }
 
     &--cancel {
-      background: @color-bg-secondary;
-      color: @color-text-secondary;
+      background: var(--color-bg-secondary, @color-bg-secondary);
+      color: var(--color-text-secondary, @color-text-secondary);
 
       &:hover {
-        background: @color-bg-tertiary;
+        background: var(--color-bg-tertiary, @color-bg-tertiary);
       }
     }
   }

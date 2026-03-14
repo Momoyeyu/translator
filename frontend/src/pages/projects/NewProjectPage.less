@@ -9,7 +9,7 @@
     align-items: center;
     gap: 6px;
     font-size: 0.875rem;
-    color: @color-text-secondary;
+    color: var(--color-text-secondary, @color-text-secondary);
     text-decoration: none;
     margin-bottom: 24px;
     cursor: pointer;
@@ -19,7 +19,7 @@
     transition: color 0.15s;
 
     &:hover {
-      color: @color-text-primary;
+      color: var(--color-text-primary, @color-text-primary);
     }
 
     svg {
@@ -32,14 +32,14 @@
     font-family: @font-family-heading;
     font-size: 1.75rem;
     font-weight: @font-weight-semibold;
-    color: @color-text-primary;
+    color: var(--color-text-primary, @color-text-primary);
     line-height: 1.3;
     margin-bottom: 32px;
   }
 
   &__form-card {
-    background: @color-bg-elevated;
-    border: 1px solid @color-border-light;
+    background: var(--color-bg-elevated, @color-bg-elevated);
+    border: 1px solid var(--color-border-light, @color-border-light);
     border-radius: @border-radius-xl;
     padding: 32px;
   }
@@ -52,49 +52,49 @@
     display: block;
     font-size: 0.875rem;
     font-weight: @font-weight-medium;
-    color: @color-text-secondary;
+    color: var(--color-text-secondary, @color-text-secondary);
     margin-bottom: 8px;
   }
 
   &__form-input {
     width: 100%;
     height: 44px;
-    border: 1px solid @color-border;
+    border: 1px solid var(--color-border, @color-border);
     border-radius: @border-radius-lg;
     padding: 0 16px;
     font-size: 0.9375rem;
     font-family: @font-family;
-    color: @color-text-primary;
-    background: @color-bg-elevated;
+    color: var(--color-text-primary, @color-text-primary);
+    background: var(--color-bg-input, @color-bg-elevated);
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
 
     &::placeholder {
-      color: @color-text-tertiary;
+      color: var(--color-text-tertiary, @color-text-tertiary);
     }
 
     &:focus {
-      border-color: @color-primary;
-      box-shadow: 0 0 0 3px @color-accent-focus;
+      border-color: var(--color-accent-primary, @color-primary);
+      box-shadow: 0 0 0 3px var(--color-accent-focus, @color-accent-focus);
     }
 
     &:hover:not(:focus) {
-      background: @color-bg-upload;
+      background: var(--color-bg-upload, @color-bg-upload);
     }
   }
 
   &__upload-zone {
-    border: 2px dashed @color-border;
+    border: 2px dashed var(--color-border, @color-border);
     border-radius: @border-radius-xl;
     padding: 40px 24px;
     text-align: center;
-    background: @color-bg-upload;
+    background: var(--color-bg-upload, @color-bg-upload);
     transition: border-color 0.2s, background 0.2s;
     cursor: pointer;
 
     &:hover {
-      border-color: @color-border-dark;
-      background: @color-bg-secondary;
+      border-color: var(--color-border-dark, @color-border-dark);
+      background: var(--color-bg-secondary, @color-bg-secondary);
     }
 
     &--has-file {
@@ -108,7 +108,7 @@
     width: 48px;
     height: 48px;
     margin: 0 auto 12px;
-    color: @color-text-tertiary;
+    color: var(--color-text-tertiary, @color-text-tertiary);
 
     svg {
       width: 48px;
@@ -118,13 +118,13 @@
 
   &__upload-text {
     font-size: 0.9375rem;
-    color: @color-text-secondary;
+    color: var(--color-text-secondary, @color-text-secondary);
     margin-bottom: 4px;
   }
 
   &__upload-hint {
     font-size: 0.8125rem;
-    color: @color-text-tertiary;
+    color: var(--color-text-tertiary, @color-text-tertiary);
   }
 
   &__upload-filename {
@@ -136,8 +136,8 @@
   &__btn-submit {
     width: 100%;
     height: 48px;
-    background: @color-primary;
-    color: @color-text-inverse;
+    background: var(--color-accent-primary, @color-primary);
+    color: var(--color-text-inverse, @color-text-inverse);
     border: none;
     border-radius: @border-radius-lg;
     font-size: 0.9375rem;
@@ -152,7 +152,7 @@
     margin-top: 8px;
 
     &:hover {
-      background: @color-primary-hover;
+      background: var(--color-accent-primary-hover, @color-primary-hover);
     }
 
     &:active {

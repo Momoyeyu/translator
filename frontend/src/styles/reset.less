@@ -12,7 +12,7 @@ html, body, #root {
   height: 100%;
   font-family: @font-family;
   font-size: @font-size-lg;
-  color: @color-text-primary;
+  color: var(--color-text-primary, @color-text-primary);
   background: var(--color-bg-page, @color-bg-page);
   line-height: @line-height-body;
   letter-spacing: @letter-spacing-normal;
@@ -23,7 +23,7 @@ html, body, #root {
 
 ::selection {
   background: rgba(139, 104, 52, 0.15);
-  color: @color-text-primary;
+  color: var(--color-text-primary, @color-text-primary);
 }
 
 // Scrollbar
@@ -37,28 +37,28 @@ html, body, #root {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: @color-border;
+  background: var(--color-border, @color-border);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: @color-border-dark;
+  background: var(--color-border-dark, @color-border-dark);
 }
 
 // Links
 a {
-  color: @color-accent-link;
+  color: var(--color-accent-link, @color-accent-link);
   text-decoration: none;
   transition: color @transition-fast;
 
   &:hover {
-    color: @color-accent-link-hover;
+    color: var(--color-accent-link-hover, @color-accent-link-hover);
   }
 }
 
 // Keyboard focus
 :focus-visible {
-  outline: 2px solid @color-accent-link;
+  outline: 2px solid var(--color-accent-link, @color-accent-link);
   outline-offset: 2px;
   border-radius: @border-radius-sm;
 }
