@@ -24,7 +24,10 @@ DEBUG_EXEMPT_PATHS = {
 }
 
 EXEMPT_PATHS: set[str] = {"/api/v1", "/api/v1/", "/health", "/ready", "/acps/rpc", "/.well-known/acs.json"}
-EXEMPT_PATTERNS: list[re.Pattern[str]] = []  # Regex patterns for parameterized exempt paths
+EXEMPT_PATTERNS: list[re.Pattern[str]] = [
+    re.compile(r"^/api/v1/auth/[^/]+/authorize$"),
+    re.compile(r"^/api/v1/auth/[^/]+/callback$"),
+]
 _EXEMPT_ENDPOINT_ATTR = "__jwt_exempt__"
 _ROUTES_FROZEN_ATTR = "__jwt_routes_frozen__"
 _SETUP_ATTR = "__jwt_middleware_installed__"
