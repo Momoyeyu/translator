@@ -1,7 +1,5 @@
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
-import { useAppStore } from '@/stores/appStore';
-import type { Locale } from '@/stores/appStore';
 import './SidebarNav.less';
 
 interface SidebarNavProps {
@@ -11,16 +9,8 @@ interface SidebarNavProps {
 }
 
 export default function SidebarNav({ selectedKey, onNavigate, onLogout }: SidebarNavProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
-  const locale = useAppStore((s) => s.locale);
-  const setLocale = useAppStore((s) => s.setLocale);
-
-  const toggleLang = () => {
-    const next: Locale = locale === 'zh-CN' ? 'en-US' : 'zh-CN';
-    setLocale(next);
-    i18n.changeLanguage(next);
-  };
 
   const navItems = [
     {
@@ -123,14 +113,6 @@ export default function SidebarNav({ selectedKey, onNavigate, onLogout }: Sideba
           </button>
         ))}
 
-        <button className="sidebar-nav__item" onClick={toggleLang}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <line x1="2" y1="12" x2="22" y2="12" />
-            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-          </svg>
-          {locale === 'zh-CN' ? 'English' : '中文'}
-        </button>
       </nav>
 
       {user && (
