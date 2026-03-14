@@ -11,7 +11,7 @@
 html, body, #root {
   height: 100%;
   font-family: @font-family;
-  font-size: @font-size-body;
+  font-size: @font-size-lg;
   color: @color-text-primary;
   background: @color-bg-page;
   line-height: @line-height-body;
@@ -22,29 +22,8 @@ html, body, #root {
 }
 
 ::selection {
-  background: rgba(35, 131, 226, 0.15);
+  background: rgba(139, 104, 52, 0.15);
   color: @color-text-primary;
-}
-
-// Dark mode global overrides
-body[arco-theme='dark'] {
-  &, html, #root {
-    background: var(--color-bg-1);
-    color: var(--color-text-1);
-  }
-
-  ::selection {
-    background: rgba(35, 131, 226, 0.3);
-    color: var(--color-text-1);
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.12);
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
 }
 
 // Scrollbar
@@ -58,28 +37,28 @@ body[arco-theme='dark'] {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.12);
+  background: @color-border;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.2);
+  background: @color-border-dark;
 }
 
 // Links
 a {
-  color: @color-primary;
+  color: @color-accent-link;
   text-decoration: none;
   transition: color @transition-fast;
 
   &:hover {
-    color: @color-primary-hover;
+    color: @color-accent-link-hover;
   }
 }
 
 // Keyboard focus
 :focus-visible {
-  outline: 2px solid @color-primary;
+  outline: 2px solid @color-accent-link;
   outline-offset: 2px;
   border-radius: @border-radius-sm;
 }

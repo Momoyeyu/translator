@@ -1,0 +1,93 @@
+@import '../../styles/variables.less';
+
+.artifact-list {
+  &__empty {
+    padding: 48px 24px;
+    text-align: center;
+    color: @color-text-tertiary;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+
+  &__grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__card {
+    background: @color-bg-elevated;
+    border: 1px solid @color-border-light;
+    border-radius: @border-radius-xl;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: box-shadow 0.2s;
+
+    &:hover {
+      box-shadow: @shadow-md;
+    }
+  }
+
+  &__card-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__card-title {
+    font-size: 0.9375rem;
+    font-weight: @font-weight-medium;
+    color: @color-text-primary;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__card-format {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 8px;
+    border-radius: @border-radius-sm;
+    font-size: 0.6875rem;
+    font-weight: @font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: @color-text-secondary;
+    background: @color-bg-secondary;
+  }
+
+  &__card-meta {
+    font-size: 0.8125rem;
+    color: @color-text-tertiary;
+    margin-top: 4px;
+  }
+
+  &__download-btn {
+    height: 36px;
+    padding: 0 16px;
+    background: transparent;
+    color: @color-text-primary;
+    border: 1px solid @color-border;
+    border-radius: @border-radius-lg;
+    font-size: 0.8125rem;
+    font-weight: @font-weight-medium;
+    font-family: @font-family;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: border-color 0.15s, background 0.15s;
+    flex-shrink: 0;
+
+    &:hover {
+      border-color: @color-border-dark;
+      background: @color-bg-hover;
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+}

@@ -1,6 +1,7 @@
-import { Button, Input, Message, Table } from '@arco-design/web-react';
+import { Message } from '@arco-design/web-react';
 import { useState } from 'react';
 import { updateTerm, type GlossaryTerm } from '../../api/project';
+import './GlossaryEditor.less';
 
 interface Props {
   projectId: string;
@@ -24,57 +25,88 @@ export default function GlossaryEditor({ projectId, terms, editable, onRefresh }
     }
   };
 
-  const columns = [
-    { title: 'Source Term', dataIndex: 'source_term' },
-    {
-      title: 'Translation',
-      dataIndex: 'translated_term',
-      render: (value: string, record: GlossaryTerm) => {
-        if (editingId === record.id) {
-          return (
-            <Input
-              size="small"
-              value={editValue}
-              onChange={setEditValue}
-              onPressEnter={() => handleSave(record.id)}
-              suffix={
-                <Button size="mini" type="primary" onClick={() => handleSave(record.id)}>
-                  Save
-                </Button>
-              }
-            />
-          );
-        }
-        return (
-          <span
-            style={{ cursor: editable ? 'pointer' : 'default' }}
-            onClick={() => {
-              if (editable) {
-                setEditingId(record.id);
-                setEditValue(value);
-              }
-            }}
-          >
-            {value}
-          </span>
-        );
-      },
-    },
-    { title: 'Context', dataIndex: 'context', ellipsis: true },
-    {
-      title: 'Status',
-      dataIndex: 'confirmed',
-      render: (confirmed: boolean) => (confirmed ? '✓ Confirmed' : 'Pending'),
-    },
-  ];
+  if (terms.length === 0) {
+    return <div className="glossary__empty">No terms extracted</div>;
+  }
+
+  const confirmedCount = terms.filter((t) => t.confirmed).length;
 
   return (
-    <Table
-      columns={columns}
-      data={terms}
-      rowKey="id"
-      pagination={false}
-      noDataElement={<div style={{ padding: 24, textAlign: 'center' }}>No terms extracted</div>}
-    />
+    <div>
+      <div className="glossary__header">
+        <span className="glossary__title">Extracted Terms</span>
+        <span className="glossary__count">{terms.length} terms, {confirmedCount} confirmed</span>
+      </div>
+
+      <div className="glossary__table-container">
+        <table className="glossary__table">
+          <thead>
+            <tr>
+              <th>Source Term</th>
+              <th>Translation</th>
+              <th>Context</th>
+              <th style={{ width: 60, textAlign: 'center' }}>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {terms.map((term) => (
+              <tr key={term.id}>
+                <td className="glossary__term-source">{term.source_term}</td>
+                <td>
+                  {editingId === term.id ? (
+                    <div>
+                      <input
+                        className="glossary__edit-input"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleSave(term.id);
+                          if (e.key === 'Escape') setEditingId(null);
+                        }}
+                        autoFocus
+                      />
+                      <div className="glossary__edit-actions">
+                        <button className="glossary__edit-btn glossary__edit-btn--save" onClick={() => handleSave(term.id)}>
+                          Save
+                        </button>
+                        <button className="glossary__edit-btn glossary__edit-btn--cancel" onClick={() => setEditingId(null)}>
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <span
+                      className={`glossary__term-translation${!editable ? ' glossary__term-translation--readonly' : ''}`}
+                      onClick={() => {
+                        if (editable) {
+                          setEditingId(term.id);
+                          setEditValue(term.translated_term);
+                        }
+                      }}
+                    >
+                      {term.translated_term}
+                    </span>
+                  )}
+                </td>
+                <td className="glossary__term-context">{term.context || '—'}</td>
+                <td>
+                  <div className={`glossary__term-status ${term.confirmed ? 'glossary__term-status--confirmed' : 'glossary__term-status--pending'}`}>
+                    {term.confirmed ? (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    ) : (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                      </svg>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }

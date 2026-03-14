@@ -5,23 +5,10 @@
   align-items: flex-start;
   justify-content: space-between;
   margin-bottom: @spacing-xl;
-  padding-bottom: @spacing-lg;
-  border-bottom: 1px solid @color-border-light;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    width: 60px;
-    height: 2px;
-    background: @gradient-primary;
-    border-radius: 1px;
-  }
 
   &__title {
-    font-size: @font-size-title;
+    font-family: @font-family-heading;
+    font-size: 2.25rem;
     font-weight: @font-weight-bold;
     color: @color-text-primary;
     letter-spacing: @letter-spacing-tight;
@@ -32,22 +19,7 @@
   &__subtitle {
     font-size: @font-size-body;
     color: @color-text-secondary;
-    margin-top: @spacing-xs;
+    margin-top: @spacing-sm;
     line-height: @line-height-body;
-  }
-}
-
-// Dark mode
-body[arco-theme='dark'] {
-  .page-header {
-    border-color: var(--color-border);
-  }
-
-  .page-header__title {
-    color: var(--color-text-1);
-  }
-
-  .page-header__subtitle {
-    color: var(--color-text-2);
   }
 }

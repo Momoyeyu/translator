@@ -1,5 +1,5 @@
-import { Steps, Tag } from '@arco-design/web-react';
 import type { PipelineTask } from '../../api/project';
+import './PipelineProgress.less';
 
 const STAGE_ORDER = ['plan', 'clarify', 'translate', 'unify'];
 const STAGE_LABELS: Record<string, string> = {
@@ -9,17 +9,28 @@ const STAGE_LABELS: Record<string, string> = {
   unify: 'Unify',
 };
 
-function getStepStatus(status: string): 'wait' | 'process' | 'finish' | 'error' {
+function getStepState(status: string): 'completed' | 'awaiting' | 'running' | 'failed' | 'pending' {
   switch (status) {
     case 'completed':
-      return 'finish';
-    case 'running':
+      return 'completed';
     case 'awaiting_input':
-      return 'process';
+      return 'awaiting';
+    case 'running':
+      return 'running';
     case 'failed':
-      return 'error';
+      return 'failed';
     default:
-      return 'wait';
+      return 'pending';
+  }
+}
+
+function getStatusLabel(status: string): string {
+  switch (status) {
+    case 'completed': return 'Completed';
+    case 'awaiting_input': return 'Awaiting confirmation';
+    case 'running': return 'Running';
+    case 'failed': return 'Failed';
+    default: return 'Pending';
   }
 }
 
@@ -33,36 +44,68 @@ export default function PipelineProgress({ tasks, projectStatus }: Props) {
 
   if (tasks.length === 0) {
     return (
-      <div style={{ padding: 24, textAlign: 'center' }}>
-        <Tag color="gray">{projectStatus === 'created' ? 'Not started' : projectStatus}</Tag>
+      <div className="pipeline__empty">
+        <span className="pipeline__empty-badge">
+          {projectStatus === 'created' ? 'Not started' : projectStatus}
+        </span>
       </div>
     );
   }
 
-  const currentIndex = STAGE_ORDER.findIndex(
-    (stage) => taskMap[stage]?.status === 'running' || taskMap[stage]?.status === 'awaiting_input'
-  );
-
   return (
-    <div style={{ padding: 24 }}>
-      <Steps current={currentIndex >= 0 ? currentIndex + 1 : tasks.filter((t) => t.status === 'completed').length + 1}>
-        {STAGE_ORDER.map((stage) => {
-          const task = taskMap[stage];
-          const status = task ? getStepStatus(task.status) : 'wait';
-          let description = task?.status || 'pending';
-          if (task?.status === 'awaiting_input') description = 'Waiting for confirmation';
-          if (task?.error_message) description = task.error_message;
+    <div className="pipeline__stepper">
+      {STAGE_ORDER.map((stage) => {
+        const task = taskMap[stage];
+        const state = task ? getStepState(task.status) : 'pending';
+        const statusLabel = task ? getStatusLabel(task.status) : 'Pending';
+        let description = '';
+        if (task?.error_message) {
+          description = task.error_message;
+        } else if (state === 'completed' && task?.result) {
+          // Show summary if available
+          const result = task.result as Record<string, unknown>;
+          if (result.summary && typeof result.summary === 'string') {
+            description = result.summary;
+          }
+        } else if (state === 'awaiting') {
+          description = 'Awaiting your confirmation before proceeding.';
+        }
 
-          return (
-            <Steps.Step
-              key={stage}
-              title={STAGE_LABELS[stage]}
-              description={description}
-              status={status}
-            />
-          );
-        })}
-      </Steps>
+        return (
+          <div
+            key={stage}
+            className={`pipeline__step pipeline__step--${state}`}
+          >
+            <div className={`pipeline__step-circle pipeline__step-circle--${state}`}>
+              {state === 'completed' && (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              )}
+              {state === 'failed' && (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              )}
+              {(state === 'awaiting' || state === 'running') && (
+                <span className="pipeline__step-dot" />
+              )}
+            </div>
+            <div className="pipeline__step-content">
+              <div className="pipeline__step-header">
+                <span className="pipeline__step-title">{STAGE_LABELS[stage]}</span>
+                <span className={`pipeline__step-status pipeline__step-status--${state}`}>
+                  {statusLabel}
+                </span>
+              </div>
+              {description && (
+                <div className="pipeline__step-description">{description}</div>
+              )}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

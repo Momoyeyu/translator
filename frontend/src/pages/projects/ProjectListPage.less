@@ -1,0 +1,281 @@
+@import '../../styles/variables.less';
+
+.project-list {
+  // ── Page Header ──
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  &__title {
+    font-family: @font-family-heading;
+    font-size: 2.25rem;
+    font-weight: @font-weight-bold;
+    color: @color-text-primary;
+    line-height: @line-height-heading;
+    margin: 0;
+  }
+
+  &__subtitle {
+    font-size: 0.875rem;
+    color: @color-text-secondary;
+    margin-top: 8px;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
+  }
+
+  &__search {
+    width: 280px;
+    height: 40px;
+    border: 1px solid @color-border;
+    border-radius: @border-radius-lg;
+    padding: 0 16px 0 38px;
+    font-size: 0.875rem;
+    font-family: @font-family;
+    color: @color-text-primary;
+    background: @color-bg-elevated;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239C9488' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 12px center;
+
+    &::placeholder {
+      color: @color-text-tertiary;
+    }
+
+    &:focus {
+      border-color: @color-primary;
+      box-shadow: 0 0 0 3px @color-accent-focus;
+    }
+  }
+
+  // ── Card Grid ──
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    margin-top: 32px;
+  }
+
+  &__empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 64px 24px;
+    color: @color-text-tertiary;
+    font-size: 0.9375rem;
+  }
+
+  // ── Project Card ──
+  &__card {
+    background: @color-bg-elevated;
+    border: 1px solid @color-border-light;
+    border-radius: @border-radius-xl;
+    padding: 24px;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    box-shadow: @shadow-card;
+
+    &:hover {
+      box-shadow: @shadow-card-hover;
+      transform: translateY(-2px);
+    }
+  }
+
+  &__card-lang {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: @color-text-tertiary;
+    font-weight: @font-weight-semibold;
+  }
+
+  &__card-title {
+    font-size: 1.125rem;
+    font-weight: @font-weight-semibold;
+    color: @color-text-primary;
+    margin-top: 8px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__card-progress {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__progress-bar {
+    flex: 1;
+    height: 4px;
+    background: @color-bg-tertiary;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  &__progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  &__progress-text {
+    font-size: 0.8125rem;
+    font-weight: @font-weight-medium;
+    color: @color-text-secondary;
+    white-space: nowrap;
+  }
+
+  &__card-status-row {
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: @font-weight-medium;
+
+    &--created {
+      color: @color-text-secondary;
+      background: @color-bg-secondary;
+    }
+
+    &--planning,
+    &--translating,
+    &--unifying {
+      color: @color-info;
+      background: rgba(90, 122, 155, 0.08);
+    }
+
+    &--clarifying {
+      color: @color-warning;
+      background: rgba(198, 122, 0, 0.08);
+    }
+
+    &--completed {
+      color: @color-success;
+      background: rgba(46, 125, 50, 0.08);
+    }
+
+    &--failed {
+      color: @color-danger;
+      background: rgba(198, 40, 40, 0.08);
+    }
+
+    &--cancelled {
+      color: @color-text-tertiary;
+      background: @color-bg-secondary;
+    }
+  }
+
+  &__card-date {
+    font-size: 0.8125rem;
+    color: @color-text-tertiary;
+  }
+
+  // ── Skeleton Card ──
+  &__skeleton {
+    background: @color-bg-elevated;
+    border: 1px solid @color-border-light;
+    border-radius: @border-radius-xl;
+    padding: 24px;
+  }
+
+  &__skeleton-line {
+    border-radius: @border-radius-sm;
+    background: linear-gradient(
+      90deg,
+      @color-bg-secondary 25%,
+      @color-bg-page 50%,
+      @color-bg-secondary 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  &__skeleton-lang {
+    width: 80px;
+    height: 12px;
+  }
+
+  &__skeleton-title {
+    width: 180px;
+    height: 18px;
+    margin-top: 12px;
+  }
+
+  &__skeleton-progress {
+    width: 100%;
+    height: 4px;
+    margin-top: 24px;
+  }
+
+  &__skeleton-status {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+  }
+
+  &__skeleton-badge {
+    width: 72px;
+    height: 20px;
+    border-radius: 999px;
+  }
+
+  &__skeleton-date {
+    width: 100px;
+    height: 13px;
+  }
+
+  // ── Floating Action Button ──
+  &__fab {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: @color-primary;
+    color: @color-text-inverse;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s, box-shadow 0.2s;
+    z-index: 50;
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}

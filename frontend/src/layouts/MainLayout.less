@@ -2,27 +2,37 @@
 
 .main-layout {
   display: flex;
-  height: 100vh;
-
-  &__body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
+  min-height: 100vh;
 
   &__content {
     flex: 1;
+    margin-left: @sidebar-width;
     overflow-y: auto;
-    background-color: @color-bg-page;
-    background-image: radial-gradient(circle, @dot-pattern-color 1px, transparent 1px);
-    background-size: @dot-pattern-size @dot-pattern-size;
-  }
-}
+    min-height: 100vh;
+    background: @color-bg-page;
 
-body[arco-theme='dark'] {
-  .main-layout__content {
-    background-color: var(--color-bg-1);
-    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    // Scrollbar
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: @color-border;
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: @color-border-dark;
+    }
+  }
+
+  &__inner {
+    max-width: @content-max-width;
+    margin: 0 auto;
+    padding: 40px 32px;
   }
 }

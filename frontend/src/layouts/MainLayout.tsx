@@ -1,14 +1,11 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import SidebarNav from '@/components/SidebarNav';
-import AppHeader from '@/components/AppHeader';
-import ContentContainer from '@/components/ContentContainer';
 import './MainLayout.less';
 
 export default function MainLayout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
 
   const handleLogout = async () => {
@@ -16,22 +13,25 @@ export default function MainLayout() {
     navigate('/login', { replace: true });
   };
 
-  const selectedKey = location.pathname.startsWith('/settings') ? '/settings' : '/dashboard';
+  const getSelectedKey = () => {
+    if (location.pathname.startsWith('/settings')) return '/settings';
+    if (location.pathname.startsWith('/projects')) return '/projects';
+    if (location.pathname.startsWith('/tenants')) return '/tenants';
+    return '/dashboard';
+  };
 
   return (
     <div className="main-layout">
       <SidebarNav
-        selectedKey={selectedKey}
+        selectedKey={getSelectedKey()}
         onNavigate={(key) => navigate(key)}
+        onLogout={handleLogout}
       />
-      <div className="main-layout__body">
-        <AppHeader user={user} onLogout={handleLogout} />
-        <main className="main-layout__content">
-          <ContentContainer>
-            <Outlet />
-          </ContentContainer>
-        </main>
-      </div>
+      <main className="main-layout__content">
+        <div className="main-layout__inner">
+          <Outlet />
+        </div>
+      </main>
     </div>
   );
 }

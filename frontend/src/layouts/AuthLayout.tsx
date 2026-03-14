@@ -1,40 +1,59 @@
 import { Outlet } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import ThemeToggle from '@/components/ThemeToggle';
-import LangSwitch from '@/components/LangSwitch';
 import './AuthLayout.less';
 
 export default function AuthLayout() {
-  const { t } = useTranslation();
-
   return (
     <div className="auth-layout">
-      <div className="auth-layout__decor" aria-hidden="true">
-        <div className="auth-layout__decor-grid" />
-        <div className="auth-layout__decor-shapes">
-          <div className="auth-layout__decor-circle auth-layout__decor-circle--1" />
-          <div className="auth-layout__decor-circle auth-layout__decor-circle--2" />
-          <div className="auth-layout__decor-circle auth-layout__decor-circle--3" />
-        </div>
-        <div className="auth-layout__decor-brand">
-          <img src="/favicon.svg" alt="Logo" />
-          <h2>{t('app.name')}</h2>
-          <p>{t('app.tagline')}</p>
+      {/* Left Column: Form */}
+      <div className="auth-layout__left">
+        <div className="auth-layout__left-inner">
+          <Outlet />
         </div>
       </div>
 
-      <div className="auth-layout__panel">
-        <div className="auth-layout__actions">
-          <ThemeToggle />
-          <LangSwitch />
-        </div>
-        <div className="auth-layout__form-area">
-          <div className="auth-layout__card">
-            <div className="auth-layout__logo">
-              <img src="/favicon.svg" alt="Logo" />
-              <h1>{t('app.name')}</h1>
+      {/* Right Column: Decorative */}
+      <div className="auth-layout__right">
+        <div className="auth-layout__deco-circle auth-layout__deco-circle--1" />
+        <div className="auth-layout__deco-circle auth-layout__deco-circle--2" />
+        <div className="auth-layout__deco-circle auth-layout__deco-circle--3" />
+
+        {/* Product Preview Mockup */}
+        <div className="auth-layout__preview">
+          <div className="auth-layout__preview-header">
+            <span className="auth-layout__preview-dot auth-layout__preview-dot--1" />
+            <span className="auth-layout__preview-dot auth-layout__preview-dot--2" />
+            <span className="auth-layout__preview-dot auth-layout__preview-dot--3" />
+            <div className="auth-layout__preview-title-bar" />
+          </div>
+
+          <div className="auth-layout__preview-content">
+            <div className="auth-layout__preview-source">
+              <div className="auth-layout__preview-label">English</div>
+              <div className="auth-layout__preview-line" style={{ width: '100%' }} />
+              <div className="auth-layout__preview-line" style={{ width: '85%' }} />
+              <div className="auth-layout__preview-line" style={{ width: '92%' }} />
+              <div className="auth-layout__preview-line" style={{ width: '70%' }} />
             </div>
-            <Outlet />
+
+            <div className="auth-layout__preview-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </div>
+
+            <div className="auth-layout__preview-target">
+              <div className="auth-layout__preview-label">Chinese</div>
+              <div className="auth-layout__preview-line" style={{ width: '90%' }} />
+              <div className="auth-layout__preview-line" style={{ width: '100%' }} />
+              <div className="auth-layout__preview-line" style={{ width: '78%' }} />
+              <div className="auth-layout__preview-line" style={{ width: '88%' }} />
+            </div>
+          </div>
+
+          <div className="auth-layout__preview-badge">
+            <span className="auth-layout__preview-badge-dot" />
+            Translating... 80%
           </div>
         </div>
       </div>
