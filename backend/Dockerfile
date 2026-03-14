@@ -19,7 +19,9 @@ RUN set -eux; \
       sed -i 's|http://security.debian.org/debian-security|http://mirrors.aliyun.com/debian-security|g' /etc/apt/sources.list; \
     fi; \
     apt-get update; \
-    apt-get install -y --no-install-recommends bash ca-certificates curl; \
+    apt-get install -y --no-install-recommends bash ca-certificates curl \
+        libpango-1.0-0 libpangoft2-1.0-0 libpangocairo-1.0-0 \
+        libgdk-pixbuf2.0-0 libffi-dev libcairo2 libglib2.0-0; \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
