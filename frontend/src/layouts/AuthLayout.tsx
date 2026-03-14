@@ -1,11 +1,32 @@
 import { Outlet } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAppStore } from '@/stores/appStore';
+import type { Locale } from '@/stores/appStore';
 import './AuthLayout.less';
 
 export default function AuthLayout() {
+  const { i18n } = useTranslation();
+  const locale = useAppStore((s) => s.locale);
+  const setLocale = useAppStore((s) => s.setLocale);
+
+  const toggleLang = () => {
+    const next: Locale = locale === 'zh-CN' ? 'en-US' : 'zh-CN';
+    setLocale(next);
+    i18n.changeLanguage(next);
+  };
+
   return (
     <div className="auth-layout">
       {/* Left Column: Form */}
       <div className="auth-layout__left">
+        <button className="auth-layout__lang-toggle" onClick={toggleLang}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="2" y1="12" x2="22" y2="12" />
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+          </svg>
+          {locale === 'zh-CN' ? 'EN' : '中文'}
+        </button>
         <div className="auth-layout__left-inner">
           <Outlet />
         </div>
