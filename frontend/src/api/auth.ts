@@ -68,9 +68,9 @@ export const authApi = {
     return client.get<unknown, OAuthAuthorizeResponse>(`/auth/${provider}/link`);
   },
 
-  /** Authenticated: complete account linking */
+  /** Authenticated: complete account linking (same endpoint as login, backend differentiates via state) */
   ssoLinkCallback(provider: string, code: string, state: string) {
-    return client.get<unknown, null>(`/auth/${provider}/link/callback`, {
+    return client.get<unknown, null>(`/auth/${provider}/callback`, {
       params: { code, state },
     });
   },
