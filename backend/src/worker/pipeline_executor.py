@@ -1,4 +1,5 @@
 import json
+import re
 from chunk.model import Chunk, ChunkStatus
 from datetime import UTC, datetime
 from uuid import UUID
@@ -21,6 +22,13 @@ from project.model import ProjectStatus, TranslationProject
 from storage.service import StorageService
 from worker.base import BaseWorker
 from ws.manager import publish_event
+
+
+def _parse_llm_json(text: str) -> list | dict:
+    """Parse JSON from LLM response, stripping markdown code blocks if present."""
+    cleaned = re.sub(r'^```(?:json)?\s*\n?', '', text.strip())
+    cleaned = re.sub(r'\n?```\s*$', '', cleaned)
+    return json.loads(cleaned)
 
 
 class PipelineExecutor(BaseWorker):
@@ -75,7 +83,11 @@ class PipelineExecutor(BaseWorker):
         response = await self.llm.chat(messages, LLMProfile.FAST)
 
         # Parse LLM response as JSON array of chunks
-        chunks_data = json.loads(response)
+        try:
+            chunks_data = _parse_llm_json(response)
+        except (json.JSONDecodeError, ValueError):
+            logger.warning("Failed to parse plan response as JSON, wrapping entire text as single chunk")
+            chunks_data = [{"chunk_index": 0, "source_text": doc.extracted_text, "metadata": {}}]
         if not isinstance(chunks_data, list):
             chunks_data = [{"chunk_index": 0, "source_text": doc.extracted_text, "metadata": {}}]
 
@@ -124,8 +136,8 @@ class PipelineExecutor(BaseWorker):
         response = await self.llm.chat(messages, LLMProfile.FAST)
 
         try:
-            terms_data = json.loads(response)
-        except json.JSONDecodeError:
+            terms_data = _parse_llm_json(response)
+        except (json.JSONDecodeError, ValueError):
             terms_data = []
 
         if not isinstance(terms_data, list):

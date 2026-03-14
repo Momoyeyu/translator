@@ -4,12 +4,13 @@ Tests focus on constructor logic and attributes that can be verified
 without running a full Kafka + DB stack.
 """
 
+import json
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
 from llm.service import LLMService
-from worker.pipeline_executor import PipelineExecutor
+from worker.pipeline_executor import PipelineExecutor, _parse_llm_json
 
 
 @pytest.fixture
@@ -73,3 +74,36 @@ def test_pipeline_executor_consumer_none_initially(mock_llm):
     """Consumer should be None before start() is called."""
     executor = PipelineExecutor(mock_llm)
     assert executor._consumer is None
+
+
+# --- _parse_llm_json tests ---
+
+
+def test_parse_llm_json_strips_json_code_block():
+    """Should strip ```json ... ``` wrappers before parsing."""
+    result = _parse_llm_json('```json\n[{"key": "value"}]\n```')
+    assert result == [{"key": "value"}]
+
+
+def test_parse_llm_json_strips_plain_code_block():
+    """Should strip ``` ... ``` wrappers (no language tag) before parsing."""
+    result = _parse_llm_json('```\n{"key": "value"}\n```')
+    assert result == {"key": "value"}
+
+
+def test_parse_llm_json_plain_json():
+    """Should parse plain JSON without any wrapper."""
+    result = _parse_llm_json('[{"key": "value"}]')
+    assert result == [{"key": "value"}]
+
+
+def test_parse_llm_json_with_surrounding_whitespace():
+    """Should handle leading/trailing whitespace around code blocks."""
+    result = _parse_llm_json('  \n```json\n[1, 2, 3]\n```\n  ')
+    assert result == [1, 2, 3]
+
+
+def test_parse_llm_json_raises_on_invalid_json():
+    """Should raise on content that is not valid JSON even after stripping."""
+    with pytest.raises((json.JSONDecodeError, ValueError)):
+        _parse_llm_json('```json\nnot valid json\n```')
