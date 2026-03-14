@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { getChatHistory, sendChatMessage, type ChatMessage } from '../../api/project';
 import { useProjectStore } from '../../stores/projectStore';
 import './ChatPanel.less';
@@ -105,8 +107,8 @@ export default function ChatPanel({ projectId }: Props) {
                   {msg.content}
                 </div>
               ) : (
-                <div className="chat-panel__message-body">
-                  {msg.content}
+                <div className="chat-panel__message-body chat-message__markdown">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
                 </div>
               )}
             </div>
