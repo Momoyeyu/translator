@@ -21,7 +21,6 @@ from middleware.auth import setup_auth_middleware
 from middleware.logging import setup_logging_middleware
 from pipeline.handler import router as pipeline_router
 from project.handler import router as project_router
-from tenant.handler import router as tenant_router
 from user.handler import router as user_router
 from ws.handler import router as ws_router
 
@@ -62,7 +61,6 @@ def init_routers(_app: FastAPI) -> None:
 
         api_router.include_router(sso_router)
     api_router.include_router(user_router)
-    api_router.include_router(tenant_router)
     api_router.include_router(project_router)
     api_router.include_router(pipeline_router)
     api_router.include_router(glossary_router)

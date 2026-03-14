@@ -10,7 +10,10 @@ import type {
   LinkedProvidersResponse,
 } from '@/types/auth';
 export type { LinkedProvider } from '@/types/auth';
-import type { TenantInviteAcceptRequest } from '@/types/tenant';
+interface InviteAcceptRequest {
+  token: string;
+  password: string;
+}
 
 export const authApi = {
   login(data: LoginRequest) {
@@ -45,7 +48,7 @@ export const authApi = {
     return client.post<unknown, null>('/auth/password/reset', data);
   },
 
-  acceptInvite(data: TenantInviteAcceptRequest) {
+  acceptInvite(data: InviteAcceptRequest) {
     return client.post<unknown, LoginResponse>('/auth/invite/accept', data);
   },
 

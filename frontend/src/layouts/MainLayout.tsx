@@ -16,7 +16,6 @@ export default function MainLayout() {
   const getSelectedKey = () => {
     if (location.pathname.startsWith('/settings')) return '/settings';
     if (location.pathname.startsWith('/projects')) return '/projects';
-    if (location.pathname.startsWith('/tenants')) return '/tenants';
     return '/dashboard';
   };
 
