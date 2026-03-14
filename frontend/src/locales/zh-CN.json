@@ -68,9 +68,18 @@
     "title": "仪表盘",
     "welcome": "欢迎回来，{{name}}",
     "welcomeDefault": "欢迎回来",
-    "subtitle": "以下是您的账户概览。",
+    "subtitle": "以下是您的翻译项目概览。",
     "editProfile": "编辑资料",
-    "goToProjects": "前往项目"
+    "goToProjects": "前往项目",
+    "totalProjects": "项目总数",
+    "completed": "已完成",
+    "inProgress": "进行中",
+    "termsManaged": "术语管理",
+    "recentProjects": "近期项目",
+    "noProjects": "暂无项目，开始您的第一次翻译吧！",
+    "newTranslation": "新建翻译",
+    "viewAllProjects": "查看所有项目",
+    "quickActions": "快捷操作"
   },
   "tenant": {
     "title": "租户",
