@@ -4,9 +4,9 @@
   display: flex;
   flex-direction: column;
   height: 600px;
-  background: @color-bg-page;
+  background: var(--color-bg-page, @color-bg-page);
   border-radius: @border-radius-xl;
-  border: 1px solid @color-border-light;
+  border: 1px solid var(--color-border-light, @color-border-light);
   overflow: hidden;
 
   // ── Message Area ──
@@ -25,12 +25,12 @@
     }
 
     &::-webkit-scrollbar-thumb {
-      background: @color-border;
+      background: var(--color-border, @color-border);
       border-radius: 3px;
     }
 
     &::-webkit-scrollbar-thumb:hover {
-      background: @color-border-dark;
+      background: var(--color-border-dark, @color-border-dark);
     }
   }
 
@@ -46,7 +46,7 @@
 
   &__message-meta {
     font-size: 0.75rem;
-    color: @color-text-tertiary;
+    color: var(--color-text-tertiary, @color-text-tertiary);
     margin-bottom: 6px;
     display: flex;
     gap: 8px;
@@ -69,7 +69,7 @@
 
   &__message-bubble {
     background: var(--color-bg-chat-user, #E8E3DA);
-    color: @color-text-primary;
+    color: var(--color-text-primary, @color-text-primary);
     border-radius: 16px 16px 4px 16px;
     padding: 12px 16px;
     max-width: 75%;
@@ -90,7 +90,7 @@
     max-width: 85%;
     font-size: 0.9375rem;
     line-height: 1.8;
-    color: @color-text-primary;
+    color: var(--color-text-primary, @color-text-primary);
   }
 
   // ── Typing Indicator ──
@@ -110,7 +110,7 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: @color-text-tertiary;
+    background: var(--color-text-tertiary, @color-text-tertiary);
     animation: typing-bounce 1.4s ease-in-out infinite;
 
     &:nth-child(2) { animation-delay: 0.2s; }
@@ -119,9 +119,9 @@
 
   // ── Input Area ──
   &__input-area {
-    border-top: 1px solid @color-border-light;
+    border-top: 1px solid var(--color-border-light, @color-border-light);
     padding: 16px 24px;
-    background: @color-bg-page;
+    background: var(--color-bg-page, @color-bg-page);
     flex-shrink: 0;
   }
 
@@ -136,23 +136,23 @@
   &__input {
     flex: 1;
     height: 44px;
-    border: 1px solid @color-border;
+    border: 1px solid var(--color-border, @color-border);
     border-radius: 999px;
     padding: 0 16px;
     font-size: 0.9375rem;
     font-family: @font-family;
-    color: @color-text-primary;
-    background: @color-bg-elevated;
+    color: var(--color-text-primary, @color-text-primary);
+    background: var(--color-bg-elevated, @color-bg-elevated);
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
 
     &::placeholder {
-      color: @color-text-tertiary;
+      color: var(--color-text-tertiary, @color-text-tertiary);
     }
 
     &:focus {
-      border-color: @color-primary;
-      box-shadow: 0 0 0 3px @color-accent-focus;
+      border-color: var(--color-accent-primary, @color-primary);
+      box-shadow: 0 0 0 3px var(--color-accent-focus, @color-accent-focus);
     }
   }
 
@@ -160,8 +160,8 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: @color-primary;
-    color: @color-text-inverse;
+    background: var(--color-accent-primary, @color-primary);
+    color: var(--color-text-inverse, @color-text-inverse);
     border: none;
     cursor: pointer;
     display: flex;
@@ -171,7 +171,7 @@
     transition: background 0.15s;
 
     &:hover {
-      background: @color-primary-hover;
+      background: var(--color-accent-primary-hover, @color-primary-hover);
     }
 
     &:active {
@@ -195,7 +195,7 @@
     align-items: center;
     justify-content: center;
     height: 100%;
-    color: @color-text-tertiary;
+    color: var(--color-text-tertiary, @color-text-tertiary);
     font-size: 0.9375rem;
   }
 }

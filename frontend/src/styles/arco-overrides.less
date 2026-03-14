@@ -10,13 +10,14 @@
 
 .arco-btn-primary {
   border-radius: @border-radius-lg;
-  background: @color-primary;
-  border-color: @color-primary;
+  background: var(--color-accent-primary, @color-primary);
+  border-color: var(--color-accent-primary, @color-primary);
+  color: var(--color-text-inverse, @color-text-inverse);
   transition: background-color @transition-normal, border-color @transition-normal, transform @transition-normal;
 
   &:hover {
-    background: @color-primary-hover;
-    border-color: @color-primary-hover;
+    background: var(--color-accent-primary-hover, @color-primary-hover);
+    border-color: var(--color-accent-primary-hover, @color-primary-hover);
   }
 
   &:active {
@@ -26,34 +27,34 @@
 
 .arco-btn-secondary {
   border-radius: @border-radius-lg;
-  color: @color-text-secondary;
-  border-color: @color-border;
+  color: var(--color-text-secondary, @color-text-secondary);
+  border-color: var(--color-border, @color-border);
 
   &:hover {
-    color: @color-text-primary;
-    border-color: @color-border-dark;
-    background: @color-bg-hover;
+    color: var(--color-text-primary, @color-text-primary);
+    border-color: var(--color-border-dark, @color-border-dark);
+    background: var(--color-bg-hover, @color-bg-hover);
   }
 }
 
 .arco-btn-text {
   border-radius: @border-radius-lg;
-  color: @color-text-secondary;
+  color: var(--color-text-secondary, @color-text-secondary);
 
   &:hover {
-    color: @color-text-primary;
-    background: @color-bg-hover;
+    color: var(--color-text-primary, @color-text-primary);
+    background: var(--color-bg-hover, @color-bg-hover);
   }
 }
 
 .arco-btn-outline {
   border-radius: @border-radius-lg;
-  border-color: @color-border;
-  color: @color-text-primary;
+  border-color: var(--color-border, @color-border);
+  color: var(--color-text-primary, @color-text-primary);
 
   &:hover {
-    border-color: @color-primary;
-    color: @color-primary;
+    border-color: var(--color-accent-primary, @color-primary);
+    color: var(--color-accent-primary, @color-primary);
     background: @color-primary-light;
   }
 }
@@ -61,21 +62,26 @@
 // ─── Form Inputs ─────────────────────────────────────────
 .arco-input-wrapper {
   border-radius: @border-radius-lg;
-  border: 1px solid @color-border;
-  background: @color-bg-input;
+  border: 1px solid var(--color-border, @color-border);
+  background: var(--color-bg-input, @color-bg-input);
+  color: var(--color-text-primary, @color-text-primary);
   font-size: @font-size-md;
   font-family: @font-family;
   transition: border-color @transition-normal, box-shadow @transition-normal;
 
+  .arco-input {
+    color: var(--color-text-primary, @color-text-primary);
+  }
+
   &:hover {
-    border-color: @color-border-dark;
-    background: @color-bg-upload;
+    border-color: var(--color-border-dark, @color-border-dark);
+    background: var(--color-bg-upload, @color-bg-upload);
   }
 
   &.arco-input-wrapper-focus,
   &:focus-within {
-    border-color: @color-primary;
-    box-shadow: 0 0 0 3px @color-accent-focus;
+    border-color: var(--color-accent-primary, @color-primary);
+    box-shadow: 0 0 0 3px var(--color-accent-focus, @color-accent-focus);
   }
 }
 
@@ -88,7 +94,7 @@
 }
 
 .arco-form-label-item > label {
-  color: @color-text-secondary;
+  color: var(--color-text-secondary, @color-text-secondary);
   font-size: @font-size-sm;
   font-weight: @font-weight-medium;
 }
@@ -100,16 +106,18 @@
 // ─── Select ──────────────────────────────────────────────
 .arco-select-view {
   border-radius: @border-radius-lg !important;
-  border-color: @color-border !important;
+  border-color: var(--color-border, @color-border) !important;
+  background-color: var(--color-bg-input, @color-bg-input) !important;
+  color: var(--color-text-primary, @color-text-primary) !important;
 
   &:hover {
-    border-color: @color-border-dark !important;
+    border-color: var(--color-border-dark, @color-border-dark) !important;
   }
 }
 
 .arco-select-focused .arco-select-view {
-  border-color: @color-primary !important;
-  box-shadow: 0 0 0 3px @color-accent-focus !important;
+  border-color: var(--color-accent-primary, @color-primary) !important;
+  box-shadow: 0 0 0 3px var(--color-accent-focus, @color-accent-focus) !important;
 }
 
 // ─── Menu (Sidebar) ─────────────────────────────────────
@@ -159,30 +167,32 @@
 // ─── Cards ───────────────────────────────────────────────
 .arco-card {
   border-radius: @border-radius-xl;
-  border: 1px solid @color-border-light;
-  box-shadow: @shadow-xs;
+  border: 1px solid var(--color-border-light, @color-border-light);
+  box-shadow: var(--shadow-xs);
+  background-color: var(--color-bg-elevated, @color-bg-elevated);
+  color: var(--color-text-primary, @color-text-primary);
 }
 
 .arco-card-header {
-  border-bottom: 1px solid @color-border-light;
+  border-bottom: 1px solid var(--color-border-light, @color-border-light);
   font-weight: @font-weight-medium;
 }
 
 // ─── Tabs ────────────────────────────────────────────────
 .arco-tabs-header-nav-line .arco-tabs-header-ink-bar {
-  background: @color-primary;
+  background: var(--color-accent-primary, @color-primary);
   height: 2px;
 }
 
 .arco-tabs .arco-tabs-header-title,
 .arco-tabs-header-title {
   font-size: @font-size-md !important;
-  color: @color-text-secondary !important;
+  color: var(--color-text-secondary, @color-text-secondary) !important;
   font-weight: @font-weight-medium !important;
   transition: color @transition-fast;
 
   &:hover {
-    color: @color-text-primary !important;
+    color: var(--color-text-primary, @color-text-primary) !important;
   }
 }
 
@@ -190,7 +200,7 @@
 .arco-tabs-header-title-active,
 .arco-tabs .arco-tabs-header-title-active:hover,
 .arco-tabs-header-title-active:hover {
-  color: @color-text-primary !important;
+  color: var(--color-text-primary, @color-text-primary) !important;
   font-weight: @font-weight-semibold !important;
 }
 
@@ -203,17 +213,26 @@
 }
 
 // ─── Table ───────────────────────────────────────────────
+.arco-table {
+  background-color: var(--color-bg-elevated, @color-bg-elevated);
+  color: var(--color-text-primary, @color-text-primary);
+}
+
 .arco-table-th {
-  background: @color-bg-secondary !important;
+  background: var(--color-bg-secondary, @color-bg-secondary) !important;
   font-size: @font-size-xs;
   font-weight: @font-weight-semibold;
-  color: @color-text-secondary;
+  color: var(--color-text-secondary, @color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
+.arco-table-td {
+  color: var(--color-text-primary, @color-text-primary);
+}
+
 .arco-table-tr:hover .arco-table-td {
-  background: @color-bg-upload !important;
+  background: var(--color-bg-upload, @color-bg-upload) !important;
 }
 
 // ─── Tooltip ─────────────────────────────────────────────
@@ -235,11 +254,6 @@
   font-size: @font-size-sm;
 }
 
-// ─── Spin ────────────────────────────────────────────────
-.arco-spin-icon {
-  color: @color-primary;
-}
-
 // ─── Upload ──────────────────────────────────────────────
 .arco-upload-trigger {
   border-radius: @border-radius-xl !important;
@@ -248,5 +262,59 @@
 // ─── Radio ──────────────────────────────────────────────
 .arco-radio .arco-radio-label,
 .arco-radio-label {
-  color: @color-text-primary !important;
+  color: var(--color-text-primary, @color-text-primary) !important;
+}
+
+// ─── Spin ────────────────────────────────────────────────
+.arco-spin-icon {
+  color: var(--color-accent-primary, @color-primary);
+}
+
+// ─── Dark Mode Component Overrides ──────────────────────
+body[arco-theme="dark"] {
+  .arco-input,
+  .arco-textarea {
+    background-color: var(--color-bg-input) !important;
+    color: var(--color-text-primary) !important;
+    border-color: var(--color-border) !important;
+  }
+
+  .arco-select-popup {
+    background-color: var(--color-bg-elevated) !important;
+    border-color: var(--color-border) !important;
+  }
+
+  .arco-select-option {
+    color: var(--color-text-primary) !important;
+
+    &:hover,
+    &.arco-select-option-hover {
+      background-color: var(--color-bg-hover) !important;
+    }
+
+    &.arco-select-option-selected {
+      background-color: var(--color-bg-tertiary) !important;
+    }
+  }
+
+  .arco-modal,
+  .arco-drawer {
+    background-color: var(--color-bg-elevated) !important;
+    color: var(--color-text-primary) !important;
+  }
+
+  .arco-modal-header,
+  .arco-drawer-header {
+    border-bottom-color: var(--color-border) !important;
+  }
+
+  .arco-modal-footer,
+  .arco-drawer-footer {
+    border-top-color: var(--color-border) !important;
+  }
+
+  .arco-popover-content {
+    background-color: var(--color-bg-elevated) !important;
+    color: var(--color-text-primary) !important;
+  }
 }

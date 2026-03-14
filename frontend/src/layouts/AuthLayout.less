@@ -7,7 +7,7 @@
   // ─── Left Column: Form ──────────────────────────────────
   &__left {
     flex: 0 0 45%;
-    background: @color-bg-page;
+    background: var(--color-bg-page, @color-bg-page);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -23,12 +23,12 @@
     gap: 6px;
     padding: 6px 12px;
     background: none;
-    border: 1px solid @color-border;
+    border: 1px solid var(--color-border, @color-border);
     border-radius: @border-radius-lg;
     font-size: 0.8125rem;
     font-weight: @font-weight-medium;
     font-family: @font-family;
-    color: @color-text-secondary;
+    color: var(--color-text-secondary, @color-text-secondary);
     cursor: pointer;
     transition: border-color 0.2s, color 0.2s, background 0.2s;
     z-index: 10;
@@ -40,9 +40,9 @@
     }
 
     &:hover {
-      border-color: @color-border-dark;
-      color: @color-text-primary;
-      background: @color-bg-hover;
+      border-color: var(--color-border-dark, @color-border-dark);
+      color: var(--color-text-primary, @color-text-primary);
+      background: var(--color-bg-hover, @color-bg-hover);
     }
   }
 
@@ -96,7 +96,7 @@
   // ─── Right Column: Decorative ───────────────────────────
   &__right {
     flex: 0 0 55%;
-    background: @color-bg-secondary;
+    background: var(--color-bg-secondary, @color-bg-secondary);
     position: relative;
     overflow: hidden;
     display: flex;
@@ -141,7 +141,7 @@
     position: relative;
     z-index: 1;
     width: 420px;
-    background: @color-bg-elevated;
+    background: var(--color-bg-elevated, @color-bg-elevated);
     border-radius: @border-radius-2xl;
     box-shadow: @shadow-xl;
     padding: 24px;
@@ -186,7 +186,7 @@
   &__preview-label {
     font-size: 0.6875rem;
     font-weight: @font-weight-semibold;
-    color: @color-text-tertiary;
+    color: var(--color-text-tertiary, @color-text-tertiary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 10px;
@@ -194,7 +194,7 @@
 
   &__preview-line {
     height: 6px;
-    background: @color-bg-secondary;
+    background: var(--color-bg-secondary, @color-bg-secondary);
     border-radius: 3px;
     margin-bottom: 8px;
   }
@@ -209,7 +209,7 @@
     justify-content: center;
     flex-shrink: 0;
     align-self: center;
-    color: @color-text-tertiary;
+    color: var(--color-text-tertiary, @color-text-tertiary);
 
     svg {
       width: 20px;
@@ -242,14 +242,14 @@
     margin-top: @spacing-md + 4px;
     text-align: center;
     font-size: 0.875rem;
-    color: @color-text-secondary;
+    color: var(--color-text-secondary, @color-text-secondary);
 
     a {
-      color: @color-accent-link;
+      color: var(--color-accent-link, @color-accent-link);
       font-weight: @font-weight-medium;
 
       &:hover {
-        color: @color-accent-link-hover;
+        color: var(--color-accent-link-hover, @color-accent-link-hover);
         text-decoration: underline;
       }
     }
@@ -262,11 +262,11 @@
     margin-bottom: @spacing-sm;
 
     a {
-      color: @color-accent-link;
+      color: var(--color-accent-link, @color-accent-link);
       font-size: @font-size-sm;
 
       &:hover {
-        color: @color-accent-link-hover;
+        color: var(--color-accent-link-hover, @color-accent-link-hover);
       }
     }
   }
@@ -282,12 +282,12 @@
       content: "";
       flex: 1;
       height: 1px;
-      background: @color-border;
+      background: var(--color-border, @color-border);
     }
 
     span {
       font-size: 0.8125rem;
-      color: @color-text-tertiary;
+      color: var(--color-text-tertiary, @color-text-tertiary);
       white-space: nowrap;
     }
   }
@@ -306,7 +306,7 @@
     }
 
     &__left-inner {
-      background: @color-bg-elevated;
+      background: var(--color-bg-elevated, @color-bg-elevated);
       border-radius: @border-radius-2xl;
       box-shadow: @shadow-auth-card;
       padding: 40px 32px;

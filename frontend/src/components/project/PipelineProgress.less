@@ -4,7 +4,7 @@
   &__empty {
     padding: 24px;
     text-align: center;
-    color: @color-text-tertiary;
+    color: var(--color-text-tertiary, @color-text-tertiary);
     font-size: 0.9375rem;
   }
 
@@ -15,8 +15,8 @@
     border-radius: 999px;
     font-size: 0.8125rem;
     font-weight: @font-weight-medium;
-    color: @color-text-secondary;
-    background: @color-bg-secondary;
+    color: var(--color-text-secondary, @color-text-secondary);
+    background: var(--color-bg-secondary, @color-bg-secondary);
   }
 
   // ── Stepper ──
@@ -42,7 +42,7 @@
       top: 28px;
       bottom: 0;
       width: 2px;
-      background: @color-border-light;
+      background: var(--color-border-light, @color-border-light);
     }
 
     &--completed:not(:last-child)::before {
@@ -54,7 +54,7 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    border: 2px solid @color-border;
+    border: 2px solid var(--color-border, @color-border);
     background: transparent;
     flex-shrink: 0;
     display: flex;
@@ -98,7 +98,7 @@
     }
 
     &--pending {
-      border-color: @color-border;
+      border-color: var(--color-border, @color-border);
       background: transparent;
     }
   }
@@ -109,6 +109,7 @@
     border-radius: 50%;
     background: white;
   }
+
 
   &__step-content {
     margin-left: 16px;
@@ -124,7 +125,7 @@
   &__step-title {
     font-size: 1rem;
     font-weight: @font-weight-semibold;
-    color: @color-text-primary;
+    color: var(--color-text-primary, @color-text-primary);
   }
 
   &__step-status {
@@ -140,7 +141,7 @@
 
   &__step-description {
     font-size: 0.875rem;
-    color: @color-text-secondary;
+    color: var(--color-text-secondary, @color-text-secondary);
     margin-top: 4px;
     line-height: 1.6;
   }
@@ -151,7 +152,7 @@
     gap: 4px;
     margin-top: 8px;
     font-size: 0.875rem;
-    color: @color-accent-link;
+    color: var(--color-accent-link, @color-accent-link);
     text-decoration: none;
     font-weight: @font-weight-medium;
     cursor: pointer;
@@ -161,7 +162,7 @@
     transition: color 0.15s;
 
     &:hover {
-      color: @color-accent-link-hover;
+      color: var(--color-accent-link-hover, @color-accent-link-hover);
     }
 
     svg {

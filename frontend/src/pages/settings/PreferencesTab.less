@@ -5,9 +5,9 @@
 
   &__section {
     padding: @spacing-lg;
-    background: @color-bg-elevated;
+    background: var(--color-bg-elevated, @color-bg-elevated);
     border-radius: @border-radius-xl;
-    border: 1px solid @color-border-light;
+    border: 1px solid var(--color-border-light, @color-border-light);
     margin-bottom: @spacing-lg;
   }
 
@@ -20,13 +20,13 @@
   &__section-title {
     font-weight: @font-weight-medium;
     font-size: @font-size-lg;
-    color: @color-text-primary;
+    color: var(--color-text-primary, @color-text-primary);
     margin-bottom: @spacing-xxs;
   }
 
   &__section-desc {
     font-size: @font-size-sm;
-    color: @color-text-secondary;
+    color: var(--color-text-secondary, @color-text-secondary);
     margin-bottom: @spacing-md;
   }
 }

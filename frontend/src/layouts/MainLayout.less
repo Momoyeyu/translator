@@ -21,12 +21,12 @@
     }
 
     &::-webkit-scrollbar-thumb {
-      background: @color-border;
+      background: var(--color-border, @color-border);
       border-radius: 4px;
     }
 
     &::-webkit-scrollbar-thumb:hover {
-      background: @color-border-dark;
+      background: var(--color-border-dark, @color-border-dark);
     }
   }
 
