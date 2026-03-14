@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { Form, Input, Button } from '@arco-design/web-react';
-import { IconEmail } from '@arco-design/web-react/icon';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { authApi } from '@/api/auth';
@@ -8,21 +6,22 @@ import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { toast } from '@/utils/message';
 import type { BizError } from '@/api/client';
 
-const FormItem = Form.Item;
-
 export default function ForgotPasswordPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
 
   useDocumentTitle(t('auth.forgotPassword'));
 
-  const handleSubmit = async (values: { email: string }) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
     setLoading(true);
     try {
-      await authApi.forgotPassword(values);
-      toast.success(t('auth.codeSent', { email: values.email }));
-      navigate(`/reset-password?email=${encodeURIComponent(values.email)}`);
+      await authApi.forgotPassword({ email: email.trim() });
+      toast.success(t('auth.codeSent', { email: email.trim() }));
+      navigate(`/reset-password?email=${encodeURIComponent(email.trim())}`);
     } catch (err) {
       const bizErr = err as BizError;
       toast.error(bizErr.message || t('common.error'));
@@ -33,22 +32,29 @@ export default function ForgotPasswordPage() {
 
   return (
     <>
-      <Form size="large" onSubmit={handleSubmit} autoComplete="off">
-        <FormItem
-          field="email"
-          rules={[
-            { required: true, message: t('auth.emailRequired') },
-            { type: 'email', message: t('auth.emailInvalid') },
-          ]}
-        >
-          <Input prefix={<IconEmail />} placeholder={t('auth.email')} />
-        </FormItem>
-        <FormItem>
-          <Button type="primary" htmlType="submit" long loading={loading}>
-            {t('auth.sendResetCode')}
-          </Button>
-        </FormItem>
-      </Form>
+      <form className="auth-form" onSubmit={handleSubmit}>
+        <div className="auth-form__group">
+          <label className="auth-form__label" htmlFor="forgot-email">
+            {t('auth.email')}
+          </label>
+          <input
+            type="email"
+            id="forgot-email"
+            className="auth-form__input"
+            placeholder={t('auth.email')}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
+            required
+          />
+        </div>
+
+        <button type="submit" className="auth-form__btn-primary" disabled={loading}>
+          {loading ? <span className="auth-form__spinner" /> : null}
+          {t('auth.sendResetCode')}
+        </button>
+      </form>
+
       <div className="auth-layout__footer">
         <Link to="/login">{t('auth.goLogin')}</Link>
       </div>

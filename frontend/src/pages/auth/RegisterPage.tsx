@@ -1,6 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Form, Input, Button, Space } from '@arco-design/web-react';
-import { IconEmail, IconLock, IconCode, IconIdcard } from '@arco-design/web-react/icon';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { authApi } from '@/api/auth';
@@ -11,8 +9,6 @@ import { toast } from '@/utils/message';
 import type { BizError } from '@/api/client';
 import SSOButtons from '@/components/SSOButtons';
 
-const FormItem = Form.Item;
-
 export default function RegisterPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -21,6 +17,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [invitationCode, setInvitationCode] = useState('');
   const [code, setCode] = useState('');
   const [countdown, setCountdown] = useState(0);
@@ -33,29 +30,23 @@ export default function RegisterPage() {
     return () => clearTimeout(timer);
   }, [countdown]);
 
-  const handleStep1 = async (values: {
-    email: string;
-    password: string;
-    confirmPassword: string;
-    invitation_code?: string;
-  }) => {
-    if (values.password !== values.confirmPassword) {
+  const handleStep1 = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim() || !password.trim() || !confirmPassword.trim()) return;
+    if (password !== confirmPassword) {
       toast.error(t('auth.passwordMismatch'));
       return;
     }
     setLoading(true);
     try {
       await authApi.register({
-        email: values.email,
-        password: values.password,
-        invitation_code: values.invitation_code || undefined,
+        email: email.trim(),
+        password,
+        invitation_code: invitationCode.trim() || undefined,
       });
-      setEmail(values.email);
-      setPassword(values.password);
-      setInvitationCode(values.invitation_code || '');
       setStep(2);
       setCountdown(60);
-      toast.success(t('auth.codeSent', { email: values.email }));
+      toast.success(t('auth.codeSent', { email: email.trim() }));
     } catch (err) {
       const bizErr = err as BizError;
       toast.error(bizErr.message || t('common.error'));
@@ -83,7 +74,8 @@ export default function RegisterPage() {
     }
   }, [countdown, email, password, invitationCode, t]);
 
-  const handleVerify = async () => {
+  const handleVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!code || code.length < 4) {
       toast.error(t('auth.codeRequired'));
       return;
@@ -109,30 +101,38 @@ export default function RegisterPage() {
         <p className="auth-layout__hint">
           {t('auth.codeSent', { email })}
         </p>
-        <Space direction="vertical" size="large" style={{ width: '100%' }}>
-          <Input
-            size="large"
-            prefix={<IconCode />}
-            placeholder={t('auth.verificationCode')}
-            value={code}
-            onChange={setCode}
-            maxLength={6}
-          />
-          <Button type="primary" long size="large" loading={loading} onClick={handleVerify}>
+        <form className="auth-form" onSubmit={handleVerify}>
+          <div className="auth-form__group">
+            <label className="auth-form__label" htmlFor="verify-code">
+              {t('auth.verificationCode')}
+            </label>
+            <input
+              type="text"
+              id="verify-code"
+              className="auth-form__input"
+              placeholder={t('auth.verificationCode')}
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              maxLength={6}
+              autoComplete="one-time-code"
+            />
+          </div>
+
+          <button type="submit" className="auth-form__btn-primary" disabled={loading}>
+            {loading ? <span className="auth-form__spinner" /> : null}
             {t('auth.verify')}
-          </Button>
-          <div style={{ textAlign: 'center' }}>
+          </button>
+
+          <div className="auth-form__resend">
             {countdown > 0 ? (
-              <span style={{ color: 'var(--color-text-3)' }}>
-                {t('auth.resendCountdown', { seconds: countdown })}
-              </span>
+              <span>{t('auth.resendCountdown', { seconds: countdown })}</span>
             ) : (
-              <Button type="text" onClick={handleResend} loading={loading}>
+              <button type="button" onClick={handleResend} disabled={loading}>
                 {t('auth.resendCode')}
-              </Button>
+              </button>
             )}
           </div>
-        </Space>
+        </form>
         <div className="auth-layout__footer">
           {t('auth.hasAccount')} <Link to="/login">{t('auth.goLogin')}</Link>
         </div>
@@ -142,39 +142,77 @@ export default function RegisterPage() {
 
   return (
     <>
-      <Form
-        size="large"
-        onSubmit={handleStep1}
-        autoComplete="off"
-      >
-        <FormItem
-          field="email"
-          rules={[
-            { required: true, message: t('auth.emailRequired') },
-            { type: 'email', message: t('auth.emailInvalid') },
-          ]}
-        >
-          <Input prefix={<IconEmail />} placeholder={t('auth.email')} />
-        </FormItem>
-        <FormItem field="password" rules={[{ required: true, message: t('auth.passwordRequired') }]}>
-          <Input.Password prefix={<IconLock />} placeholder={t('auth.password')} />
-        </FormItem>
-        <FormItem
-          field="confirmPassword"
-          rules={[{ required: true, message: t('auth.passwordRequired') }]}
-        >
-          <Input.Password prefix={<IconLock />} placeholder={t('auth.confirmPassword')} />
-        </FormItem>
-        <FormItem field="invitation_code">
-          <Input prefix={<IconIdcard />} placeholder={`${t('auth.invitationCode')} (${t('auth.invitationCodePlaceholder')})`} />
-        </FormItem>
-        <FormItem>
-          <Button type="primary" htmlType="submit" long loading={loading}>
-            {t('auth.sendCode')}
-          </Button>
-        </FormItem>
-      </Form>
+      <form className="auth-form" onSubmit={handleStep1}>
+        <div className="auth-form__group">
+          <label className="auth-form__label" htmlFor="reg-email">
+            {t('auth.email')}
+          </label>
+          <input
+            type="email"
+            id="reg-email"
+            className="auth-form__input"
+            placeholder={t('auth.email')}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
+            required
+          />
+        </div>
+
+        <div className="auth-form__group">
+          <label className="auth-form__label" htmlFor="reg-password">
+            {t('auth.password')}
+          </label>
+          <input
+            type="password"
+            id="reg-password"
+            className="auth-form__input"
+            placeholder={t('auth.password')}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="new-password"
+            required
+          />
+        </div>
+
+        <div className="auth-form__group">
+          <label className="auth-form__label" htmlFor="reg-confirm-password">
+            {t('auth.confirmPassword')}
+          </label>
+          <input
+            type="password"
+            id="reg-confirm-password"
+            className="auth-form__input"
+            placeholder={t('auth.confirmPassword')}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            autoComplete="new-password"
+            required
+          />
+        </div>
+
+        <div className="auth-form__group">
+          <label className="auth-form__label" htmlFor="reg-invitation">
+            {t('auth.invitationCode')}
+          </label>
+          <input
+            type="text"
+            id="reg-invitation"
+            className="auth-form__input"
+            placeholder={`${t('auth.invitationCode')} (${t('auth.invitationCodePlaceholder')})`}
+            value={invitationCode}
+            onChange={(e) => setInvitationCode(e.target.value)}
+          />
+        </div>
+
+        <button type="submit" className="auth-form__btn-primary" disabled={loading}>
+          {loading ? <span className="auth-form__spinner" /> : null}
+          {t('auth.sendCode')}
+        </button>
+      </form>
+
       <SSOButtons />
+
       <div className="auth-layout__footer">
         {t('auth.hasAccount')} <Link to="/login">{t('auth.goLogin')}</Link>
       </div>
