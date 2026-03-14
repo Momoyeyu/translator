@@ -162,13 +162,13 @@
 
     &--1 { background: #E8C8A0; }
     &--2 { background: #D4CEC6; }
-    &--3 { background: @color-bg-secondary; }
+    &--3 { background: var(--color-bg-secondary, @color-bg-secondary); }
   }
 
   &__preview-title-bar {
     flex: 1;
     height: 10px;
-    background: @color-bg-secondary;
+    background: var(--color-bg-secondary, @color-bg-secondary);
     border-radius: 5px;
     margin-left: 8px;
   }
@@ -227,13 +227,13 @@
     border-radius: 999px;
     font-size: 0.6875rem;
     font-weight: @font-weight-medium;
-    color: @color-success;
+    color: var(--color-success, @color-success);
   }
 
   &__preview-badge-dot {
     width: 6px;
     height: 6px;
-    background: @color-success;
+    background: var(--color-success, @color-success);
     border-radius: 50%;
   }
 

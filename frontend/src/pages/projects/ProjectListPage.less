@@ -120,7 +120,7 @@
   &__progress-bar {
     flex: 1;
     height: 4px;
-    background: @color-bg-tertiary;
+    background: var(--color-bg-tertiary, @color-bg-tertiary);
     border-radius: 2px;
     overflow: hidden;
   }
@@ -154,35 +154,35 @@
     font-weight: @font-weight-medium;
 
     &--created {
-      color: @color-text-secondary;
-      background: @color-bg-secondary;
+      color: var(--color-text-secondary, @color-text-secondary);
+      background: var(--color-bg-secondary, @color-bg-secondary);
     }
 
     &--planning,
     &--translating,
     &--unifying {
-      color: @color-info;
+      color: var(--color-info, @color-info);
       background: rgba(90, 122, 155, 0.08);
     }
 
     &--clarifying {
-      color: @color-warning;
+      color: var(--color-warning, @color-warning);
       background: rgba(198, 122, 0, 0.08);
     }
 
     &--completed {
-      color: @color-success;
+      color: var(--color-success, @color-success);
       background: rgba(46, 125, 50, 0.08);
     }
 
     &--failed {
-      color: @color-danger;
+      color: var(--color-error, @color-danger);
       background: rgba(198, 40, 40, 0.08);
     }
 
     &--cancelled {
-      color: @color-text-tertiary;
-      background: @color-bg-secondary;
+      color: var(--color-text-tertiary, @color-text-tertiary);
+      background: var(--color-bg-secondary, @color-bg-secondary);
     }
   }
 
@@ -203,9 +203,9 @@
     border-radius: @border-radius-sm;
     background: linear-gradient(
       90deg,
-      @color-bg-secondary 25%,
-      @color-bg-page 50%,
-      @color-bg-secondary 75%
+      var(--color-bg-secondary, @color-bg-secondary) 25%,
+      var(--color-bg-page, @color-bg-page) 50%,
+      var(--color-bg-secondary, @color-bg-secondary) 75%
     );
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
@@ -253,8 +253,8 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: @color-primary;
-    color: @color-text-inverse;
+    background: var(--color-accent-primary, @color-primary);
+    color: var(--color-text-inverse, @color-text-inverse);
     border: none;
     cursor: pointer;
     display: flex;

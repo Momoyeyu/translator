@@ -46,7 +46,7 @@
     }
 
     &--completed:not(:last-child)::before {
-      background: @color-success;
+      background: var(--color-success, @color-success);
     }
   }
 
@@ -64,8 +64,8 @@
     z-index: 1;
 
     &--completed {
-      border-color: @color-success;
-      background: @color-success;
+      border-color: var(--color-success, @color-success);
+      background: var(--color-success, @color-success);
 
       svg {
         width: 14px;
@@ -75,20 +75,20 @@
     }
 
     &--awaiting {
-      border-color: @color-warning;
-      background: @color-warning;
+      border-color: var(--color-warning, @color-warning);
+      background: var(--color-warning, @color-warning);
       animation: pulse-step 2s ease-in-out infinite;
     }
 
     &--running {
-      border-color: @color-info;
-      background: @color-info;
+      border-color: var(--color-info, @color-info);
+      background: var(--color-info, @color-info);
       animation: pulse-step 2s ease-in-out infinite;
     }
 
     &--failed {
-      border-color: @color-danger;
-      background: @color-danger;
+      border-color: var(--color-error, @color-danger);
+      background: var(--color-error, @color-danger);
 
       svg {
         width: 14px;
@@ -132,11 +132,11 @@
     font-size: 0.875rem;
     font-weight: @font-weight-normal;
 
-    &--completed { color: @color-success; }
-    &--awaiting { color: @color-warning; }
-    &--running { color: @color-info; }
-    &--failed { color: @color-danger; }
-    &--pending { color: @color-text-tertiary; }
+    &--completed { color: var(--color-success, @color-success); }
+    &--awaiting { color: var(--color-warning, @color-warning); }
+    &--running { color: var(--color-info, @color-info); }
+    &--failed { color: var(--color-error, @color-danger); }
+    &--pending { color: var(--color-text-tertiary, @color-text-tertiary); }
   }
 
   &__step-description {
