@@ -1,25 +1,24 @@
 from __future__ import annotations
 
+from chunk.model import Chunk
 from logging.config import fileConfig
 
 from alembic import context
+from pipeline.event_store import PipelineEvent
 from sqlalchemy import engine_from_config, pool
 
-from conf.config import settings
-from conf.db import Base
-
+from artifact.model import Artifact
 from auth import model as auth_model
 from auth.oauth_model import OAuthAccount
-from tenant import model as tenant_model
-from user import model as user_model
-
-from project.model import TranslationProject
+from conf.config import settings
+from conf.db import Base
+from conversation.model import Conversation, Message
 from document.model import Document
-from chunk.model import Chunk
 from glossary.model import GlossaryTerm
 from pipeline.model import PipelineTask
-from artifact.model import Artifact
-from conversation.model import Conversation, Message
+from project.model import TranslationProject
+from tenant import model as tenant_model
+from user import model as user_model
 
 _ = user_model.User
 _ = auth_model.InvitationCode
@@ -33,6 +32,7 @@ _ = Document
 _ = Chunk
 _ = GlossaryTerm
 _ = PipelineTask
+_ = PipelineEvent
 _ = Artifact
 _ = Conversation
 _ = Message
