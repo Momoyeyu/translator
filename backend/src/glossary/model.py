@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 from uuid import UUID
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, Uuid, select
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, String, Text, Uuid, select
 from sqlalchemy.orm import Mapped, mapped_column
 from uuid6 import uuid7
 
@@ -16,6 +16,7 @@ class GlossaryTerm(Base):
     source_term: Mapped[str] = mapped_column(String(255))
     translated_term: Mapped[str] = mapped_column(String(255))
     confirmed: Mapped[bool] = mapped_column(Boolean, default=False)
+    confidence: Mapped[float] = mapped_column(Float, default=0.5)
     context: Mapped[str | None] = mapped_column(Text, default=None)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC))

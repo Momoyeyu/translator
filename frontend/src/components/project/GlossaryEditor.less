@@ -122,6 +122,115 @@
     }
   }
 
+  // ── Confidence Indicator ──
+  &__confidence {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__confidence-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &__confidence-pct {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary, @color-text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  // ── Add Term ──
+  &__header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__add-btn {
+    height: 32px;
+    padding: 0 14px;
+    border-radius: @border-radius-md;
+    font-size: 0.8125rem;
+    font-weight: @font-weight-medium;
+    font-family: @font-family;
+    cursor: pointer;
+    border: 1px solid var(--color-border, @color-border);
+    background: var(--color-bg-elevated, @color-bg-elevated);
+    color: var(--color-text-primary, @color-text-primary);
+    transition: background 0.15s, border-color 0.15s;
+
+    &:hover {
+      border-color: var(--color-accent-primary, @color-primary);
+      color: var(--color-accent-primary, @color-primary);
+    }
+  }
+
+  &__add-form {
+    background: var(--color-bg-secondary, @color-bg-secondary);
+    border: 1px solid var(--color-border-light, @color-border-light);
+    border-radius: @border-radius-xl;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  &__add-form-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  &__add-input {
+    height: 36px;
+    flex: 1;
+    min-width: 0;
+    border: 1px solid var(--color-border, @color-border);
+    border-radius: @border-radius-md;
+    padding: 0 12px;
+    font-size: 0.875rem;
+    font-family: @font-family;
+    color: var(--color-text-primary, @color-text-primary);
+    background: var(--color-bg-input, @color-bg-input);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:focus {
+      border-color: var(--color-accent-primary, @color-primary);
+      box-shadow: 0 0 0 3px var(--color-accent-focus, @color-accent-focus);
+    }
+
+    &--wide {
+      flex: 2;
+    }
+  }
+
+  &__add-submit {
+    height: 36px;
+    padding: 0 20px;
+    border-radius: @border-radius-md;
+    font-size: 0.875rem;
+    font-weight: @font-weight-medium;
+    font-family: @font-family;
+    cursor: pointer;
+    border: none;
+    background: var(--color-accent-primary, @color-primary);
+    color: var(--color-text-inverse, @color-text-inverse);
+    transition: background 0.15s;
+    white-space: nowrap;
+
+    &:hover {
+      background: var(--color-accent-primary-hover, @color-primary-hover);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
   // ── Inline Edit ──
   &__edit-input {
     width: 100%;

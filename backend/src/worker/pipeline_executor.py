@@ -17,6 +17,7 @@ from llm.prompts.plan import build_plan_messages
 from llm.prompts.translate import build_translate_messages
 from llm.prompts.unify import build_unify_messages
 from llm.service import LLMProfile, LLMService
+from llm.tools.web_search import search_term
 from pipeline.model import PipelineStage, PipelineTask, PipelineTaskStatus
 from project.model import ProjectStatus, TranslationProject
 from storage.service import StorageService
@@ -131,6 +132,7 @@ class PipelineExecutor(BaseWorker):
         source_text = "\n\n".join(c.source_text for c in chunks)
         source_lang = proj.source_language or "auto"
         target_lang = proj.target_language
+        confidence_threshold = config.get("confidence_threshold", 0.7)
 
         messages = build_clarify_messages(source_text, source_lang, target_lang)
         response = await self.llm.chat(messages, LLMProfile.FAST)
@@ -143,24 +145,58 @@ class PipelineExecutor(BaseWorker):
         if not isinstance(terms_data, list):
             terms_data = []
 
+        # For terms where search is suggested, enrich context with web search results
+        for item in terms_data:
+            if item.get("search_suggested"):
+                query = f"{item.get('source_term', '')} {target_lang} translation"
+                try:
+                    search_results = await search_term(query, max_results=3)
+                    if search_results:
+                        search_context = "; ".join(r["body"] for r in search_results[:2])
+                        existing_context = item.get("context", "") or ""
+                        item["context"] = f"{existing_context} [Web: {search_context}]".strip()
+                except Exception as e:
+                    logger.warning(f"Web search failed for term '{item.get('source_term')}': {e}")
+
+        uncertain_terms = []
         async with AsyncSessionLocal() as session:
             for item in terms_data:
+                confidence = float(item.get("confidence", 0.5))
+                is_confident = confidence >= confidence_threshold
                 term = GlossaryTerm(
                     project_id=project_id,
                     source_term=item.get("source_term", ""),
                     translated_term=item.get("translated_term", ""),
                     context=item.get("context", ""),
+                    confidence=confidence,
+                    confirmed=is_confident,  # auto-confirm high-confidence terms
                 )
                 session.add(term)
+                if not is_confident:
+                    uncertain_terms.append(item)
             await session.commit()
 
-        if terms_data:
-            # Pause: set task to awaiting_input
+        await publish_event(project_id, {
+            "seq": 0,
+            "event": "terms_extracted",
+            "data": {
+                "total_terms": len(terms_data),
+                "uncertain_terms": len(uncertain_terms),
+                "auto_confirmed": len(terms_data) - len(uncertain_terms),
+            },
+        })
+
+        if uncertain_terms:
+            # Pause: set task to awaiting_input for uncertain terms
             async with AsyncSessionLocal() as session:
                 result = await session.execute(select(PipelineTask).where(PipelineTask.id == task_id))
                 task = result.scalars().one()
                 task.status = PipelineTaskStatus.AWAITING_INPUT
-                task.result = {"terms_count": len(terms_data)}
+                task.result = {
+                    "terms_count": len(terms_data),
+                    "uncertain_count": len(uncertain_terms),
+                    "auto_confirmed": len(terms_data) - len(uncertain_terms),
+                }
 
                 proj_result = await session.execute(
                     select(TranslationProject).where(TranslationProject.id == project_id)
@@ -172,10 +208,10 @@ class PipelineExecutor(BaseWorker):
             await publish_event(project_id, {
                 "seq": 0,
                 "event": "clarify_request",
-                "data": {"terms_count": len(terms_data)},
+                "data": {"terms_count": len(uncertain_terms)},
             })
         else:
-            await self._complete_task(task_id, {"terms_count": 0})
+            await self._complete_task(task_id, {"terms_count": len(terms_data), "all_confident": True})
             await self._advance_stage(project_id, PipelineStage.TRANSLATE)
 
     async def _execute_translate(self, project_id: UUID, task_id: UUID) -> None:
