@@ -10,6 +10,7 @@ class UnsupportedFormatError(Exception):
 SUPPORTED_MIME_TYPES = {
     "text/plain",
     "text/markdown",
+    "text/x-markdown",
     "text/html",
     "application/pdf",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -20,7 +21,7 @@ def extract_text(data: bytes, mime_type: str) -> str:
     if mime_type not in SUPPORTED_MIME_TYPES:
         raise UnsupportedFormatError(mime_type)
 
-    if mime_type in ("text/plain", "text/markdown"):
+    if mime_type in ("text/plain", "text/markdown", "text/x-markdown"):
         return data.decode("utf-8")
 
     if mime_type == "text/html":
