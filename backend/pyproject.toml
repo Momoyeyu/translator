@@ -27,6 +27,7 @@ dependencies = [
     "redis>=5.0.0",
     "resend>=2.0.0",
     "uuid6>=2024.7.10",
+    "httpx-oauth>=0.16.0",
     "aiokafka>=0.12.0",
     "aiobotocore>=2.15.0",
     "aiofiles>=24.0.0",
