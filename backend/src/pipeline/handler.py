@@ -1,6 +1,8 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Request
+from pipeline.event_dto import PipelineEventResponse
+from pipeline.event_store import event_store
 
 from common.resp import Response, ok
 from middleware import auth
@@ -43,3 +45,17 @@ async def retry_pipeline(request: Request, project_id: UUID) -> Response:
     username = auth.get_username(request)
     task = await service.retry_pipeline(project_id, username)
     return ok(data=PipelineTaskResponse.model_validate(task).model_dump(mode="json"))
+
+
+@router.get("/events")
+async def get_events(
+    request: Request, project_id: UUID, after: int = 0, limit: int = 500
+) -> Response:
+    auth.get_username(request)
+    events = await event_store.get_events(project_id, after_sequence=after, limit=limit)
+    return ok(
+        data=[
+            PipelineEventResponse.model_validate(e).model_dump(mode="json")
+            for e in events
+        ]
+    )
