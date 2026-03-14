@@ -55,7 +55,7 @@
   &:hover {
     border-color: var(--color-accent-primary, @color-primary);
     color: var(--color-accent-primary, @color-primary);
-    background: @color-primary-light;
+    background: rgba(26, 26, 26, 0.06);
   }
 }
 
@@ -134,18 +134,18 @@
   margin: @spacing-xxs @spacing-sm;
   padding: 6px 12px;
   font-size: @font-size-body;
-  color: @color-text-sidebar-muted;
+  color: var(--color-text-sidebar-muted, @color-text-sidebar-muted);
   transition: all @transition-fast;
   line-height: 28px;
 
   &:hover {
-    background: @color-bg-sidebar-hover;
-    color: @color-text-sidebar;
+    background: var(--color-bg-sidebar-hover, @color-bg-sidebar-hover);
+    color: var(--color-text-sidebar, @color-text-sidebar);
   }
 
   &.arco-menu-selected {
-    background: @color-bg-sidebar-active;
-    color: @color-text-sidebar;
+    background: var(--color-bg-sidebar-active, @color-bg-sidebar-active);
+    color: var(--color-text-sidebar, @color-text-sidebar);
     font-weight: @font-weight-medium;
   }
 }

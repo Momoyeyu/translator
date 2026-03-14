@@ -9,7 +9,7 @@
     width: 48px;
     height: 4px;
     border-radius: 2px;
-    background: @color-primary;
+    background: var(--color-accent-primary, @color-primary);
     margin-bottom: @spacing-md;
   }
 
@@ -75,10 +75,10 @@
       width: 4px;
     }
 
-    &--blue::before  { background: @color-info; }
-    &--teal::before  { background: @color-success; }
-    &--purple::before { background: @color-accent-link; }
-    &--warm::before  { background: @color-warning; }
+    &--blue::before  { background: var(--color-info, @color-info); }
+    &--teal::before  { background: var(--color-success, @color-success); }
+    &--purple::before { background: var(--color-accent-link, @color-accent-link); }
+    &--warm::before  { background: var(--color-warning, @color-warning); }
   }
 
   &__stat-number {
@@ -107,9 +107,9 @@
     border-radius: @border-radius-sm;
     background: linear-gradient(
       90deg,
-      @color-bg-secondary 25%,
-      @color-bg-page 50%,
-      @color-bg-secondary 75%
+      var(--color-bg-secondary, @color-bg-secondary) 25%,
+      var(--color-bg-page, @color-bg-page) 50%,
+      var(--color-bg-secondary, @color-bg-secondary) 75%
     );
     background-size: 200% 100%;
     animation: dashboard-shimmer 1.5s infinite;
@@ -205,35 +205,35 @@
     white-space: nowrap;
 
     &--created {
-      color: @color-text-secondary;
-      background: @color-bg-secondary;
+      color: var(--color-text-secondary, @color-text-secondary);
+      background: var(--color-bg-secondary, @color-bg-secondary);
     }
 
     &--planning,
     &--translating,
     &--unifying {
-      color: @color-info;
+      color: var(--color-info, @color-info);
       background: rgba(90, 122, 155, 0.08);
     }
 
     &--clarifying {
-      color: @color-warning;
+      color: var(--color-warning, @color-warning);
       background: rgba(198, 122, 0, 0.08);
     }
 
     &--completed {
-      color: @color-success;
+      color: var(--color-success, @color-success);
       background: rgba(46, 125, 50, 0.08);
     }
 
     &--failed {
-      color: @color-danger;
+      color: var(--color-error, @color-danger);
       background: rgba(198, 40, 40, 0.08);
     }
 
     &--cancelled {
-      color: @color-text-tertiary;
-      background: @color-bg-secondary;
+      color: var(--color-text-tertiary, @color-text-tertiary);
+      background: var(--color-bg-secondary, @color-bg-secondary);
     }
   }
 
@@ -242,9 +242,9 @@
     border-radius: @border-radius-sm;
     background: linear-gradient(
       90deg,
-      @color-bg-secondary 25%,
-      @color-bg-page 50%,
-      @color-bg-secondary 75%
+      var(--color-bg-secondary, @color-bg-secondary) 25%,
+      var(--color-bg-page, @color-bg-page) 50%,
+      var(--color-bg-secondary, @color-bg-secondary) 75%
     );
     background-size: 200% 100%;
     animation: dashboard-shimmer 1.5s infinite;

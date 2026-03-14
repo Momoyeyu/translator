@@ -81,7 +81,7 @@
     transition: border-color 0.15s;
 
     &:hover {
-      border-color: @color-primary;
+      border-color: var(--color-accent-primary, @color-primary);
     }
 
     &--readonly {
@@ -89,7 +89,7 @@
       border-bottom: none;
 
       &:hover {
-        border-color: @color-border;
+        border-color: var(--color-border, @color-border);
       }
     }
   }
@@ -109,11 +109,11 @@
     justify-content: center;
 
     &--confirmed {
-      color: @color-success;
+      color: var(--color-success, @color-success);
     }
 
     &--pending {
-      color: @color-text-tertiary;
+      color: var(--color-text-tertiary, @color-text-tertiary);
     }
 
     svg {

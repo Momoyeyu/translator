@@ -98,7 +98,7 @@
     }
 
     &--has-file {
-      border-color: @color-success;
+      border-color: var(--color-success, @color-success);
       border-style: solid;
       background: rgba(46, 125, 50, 0.04);
     }
@@ -129,7 +129,7 @@
 
   &__upload-filename {
     font-size: 0.9375rem;
-    color: @color-success;
+    color: var(--color-success, @color-success);
     font-weight: @font-weight-medium;
   }
 
