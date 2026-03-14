@@ -19,11 +19,14 @@ export default function SettingsPage() {
   return (
     <>
       <PageHeader title={t('settings.title')} />
-      <div className="settings-tabs">
+      <div className="settings-tabs" role="tablist">
         {TAB_KEYS.map((key) => (
           <button
             key={key}
             type="button"
+            role="tab"
+            aria-selected={activeTab === key}
+            aria-controls={`settings-tabpanel-${key}`}
             className={`settings-tabs__btn${activeTab === key ? ' settings-tabs__btn--active' : ''}`}
             onClick={() => setActiveTab(key)}
           >
@@ -31,7 +34,7 @@ export default function SettingsPage() {
           </button>
         ))}
       </div>
-      <div className="settings-page__tab-content">
+      <div className="settings-page__tab-content" role="tabpanel" id={`settings-tabpanel-${activeTab}`}>
         {activeTab === 'profile' && <ProfileTab />}
         {activeTab === 'security' && <SecurityTab />}
         {activeTab === 'preferences' && <PreferencesTab />}

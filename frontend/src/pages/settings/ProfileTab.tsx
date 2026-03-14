@@ -50,8 +50,9 @@ export default function ProfileTab() {
       </div>
       <form className="settings-form" onSubmit={handleSave}>
         <div className="settings-form__group">
-          <label className="settings-form__label">{t('settings.emailLabel')}</label>
+          <label className="settings-form__label" htmlFor="profile-email">{t('settings.emailLabel')}</label>
           <input
+            id="profile-email"
             className="settings-form__input"
             type="email"
             value={user.email}
@@ -59,8 +60,9 @@ export default function ProfileTab() {
           />
         </div>
         <div className="settings-form__group">
-          <label className="settings-form__label">{t('settings.usernameLabel')}</label>
+          <label className="settings-form__label" htmlFor="profile-username">{t('settings.usernameLabel')}</label>
           <input
+            id="profile-username"
             className="settings-form__input"
             type="text"
             value={username}

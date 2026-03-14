@@ -44,33 +44,39 @@ export default function SecurityTab() {
     <div className="security-tab">
       <form className="settings-form" onSubmit={handleSubmit}>
         <div className="settings-form__group">
-          <label className="settings-form__label">{t('auth.oldPassword')}</label>
+          <label className="settings-form__label" htmlFor="sec-old-password">{t('auth.oldPassword')}</label>
           <input
+            id="sec-old-password"
             className="settings-form__input"
             type="password"
             value={oldPassword}
             onChange={(e) => setOldPassword(e.target.value)}
             placeholder={t('auth.oldPassword')}
+            autoComplete="current-password"
           />
         </div>
         <div className="settings-form__group">
-          <label className="settings-form__label">{t('auth.newPassword')}</label>
+          <label className="settings-form__label" htmlFor="sec-new-password">{t('auth.newPassword')}</label>
           <input
+            id="sec-new-password"
             className="settings-form__input"
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             placeholder={t('auth.newPassword')}
+            autoComplete="new-password"
           />
         </div>
         <div className="settings-form__group">
-          <label className="settings-form__label">{t('auth.confirmNewPassword')}</label>
+          <label className="settings-form__label" htmlFor="sec-confirm-password">{t('auth.confirmNewPassword')}</label>
           <input
+            id="sec-confirm-password"
             className="settings-form__input"
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder={t('auth.confirmNewPassword')}
+            autoComplete="new-password"
           />
         </div>
         <button

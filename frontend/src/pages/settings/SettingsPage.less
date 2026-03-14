@@ -164,8 +164,8 @@
     height: 40px;
     padding: 0 16px;
     background: transparent;
-    color: var(--color-danger, @color-danger);
-    border: 1px solid var(--color-danger, @color-danger);
+    color: var(--color-error, @color-danger);
+    border: 1px solid var(--color-error, @color-danger);
     border-radius: @border-radius-lg;
     font-size: @font-size-sm;
     font-weight: @font-weight-medium;
@@ -179,7 +179,7 @@
     gap: 6px;
 
     &:hover {
-      background: var(--color-danger, @color-danger);
+      background: var(--color-error, @color-danger);
       color: var(--color-text-inverse, @color-text-inverse);
     }
 
@@ -219,7 +219,7 @@
     // Danger variant
     &--danger {
       border-color: rgba(198, 40, 40, 0.2);
-      border-top-color: var(--color-danger, @color-danger);
+      border-top-color: var(--color-error, @color-danger);
     }
   }
 }
