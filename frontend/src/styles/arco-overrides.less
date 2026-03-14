@@ -174,21 +174,32 @@
   height: 2px;
 }
 
+.arco-tabs .arco-tabs-header-title,
 .arco-tabs-header-title {
-  font-size: @font-size-md;
-  color: @color-text-secondary;
-  font-weight: @font-weight-medium;
+  font-size: @font-size-md !important;
+  color: @color-text-secondary !important;
+  font-weight: @font-weight-medium !important;
   transition: color @transition-fast;
 
   &:hover {
-    color: @color-text-primary;
+    color: @color-text-primary !important;
   }
 }
 
+.arco-tabs .arco-tabs-header-title-active,
 .arco-tabs-header-title-active,
+.arco-tabs .arco-tabs-header-title-active:hover,
 .arco-tabs-header-title-active:hover {
-  color: @color-text-primary;
-  font-weight: @font-weight-semibold;
+  color: @color-text-primary !important;
+  font-weight: @font-weight-semibold !important;
+}
+
+.arco-tabs-header-nav {
+  background: transparent !important;
+}
+
+.arco-tabs-content {
+  background: transparent !important;
 }
 
 // ─── Table ───────────────────────────────────────────────
