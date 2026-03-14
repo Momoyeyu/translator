@@ -7,7 +7,6 @@ from artifact.model import Artifact, get_artifacts_by_project
 from artifact.pdf_service import markdown_to_pdf
 from common import erri
 from conf.db import AsyncSessionLocal
-from project.model import TranslationProject
 from storage.service import StorageService
 
 
@@ -22,11 +21,10 @@ async def get_project_artifacts(project_id: UUID, username: str) -> list[Artifac
     return await get_artifacts_by_project(project_id)
 
 
-async def export_artifact_as_pdf(project_id: UUID, artifact_id: UUID, username: str) -> Artifact:
-    """Convert an existing markdown artifact to PDF and store as new artifact."""
+async def generate_pdf_on_the_fly(project_id: UUID, artifact_id: UUID, username: str) -> tuple[bytes, str]:
+    """Generate PDF from a markdown artifact without storing it."""
     await _verify_project_ownership(project_id, username)
 
-    # Single read session: load both artifact and project
     async with AsyncSessionLocal() as session:
         result = await session.execute(
             select(Artifact).where(Artifact.id == artifact_id, Artifact.project_id == project_id)
@@ -35,43 +33,20 @@ async def export_artifact_as_pdf(project_id: UUID, artifact_id: UUID, username: 
         if not artifact:
             raise erri.not_found("Artifact not found")
         if artifact.format != "markdown":
-            raise erri.bad_request("Only markdown artifacts can be exported as PDF")
+            raise erri.bad_request("Can only export markdown artifacts to PDF")
 
-        proj_result = await session.execute(
-            select(TranslationProject).where(TranslationProject.id == project_id)
-        )
-        proj = proj_result.scalars().one()
-
+    # Download the markdown content
     storage = StorageService()
     md_bytes = await storage.download_file(artifact.storage_key)
     md_text = md_bytes.decode("utf-8")
 
-    loop = asyncio.get_running_loop()
-    pdf_bytes = await loop.run_in_executor(None, markdown_to_pdf, md_text, artifact.title)
+    # Generate PDF in memory (no storage)
+    pdf_bytes = await asyncio.to_thread(markdown_to_pdf, md_text, artifact.title)
 
-    storage_key, _ = await storage.upload_file(
-        tenant_id=proj.tenant_id,
-        project_id=project_id,
-        category="artifact",
-        data=pdf_bytes,
-        content_type="application/pdf",
-        ext="pdf",
-    )
+    safe_title = "".join(c for c in artifact.title if c.isalnum() or c in " -_").strip()
+    filename = f"{safe_title or 'translation'}.pdf"
 
-    # Single write session: create the PDF artifact
-    async with AsyncSessionLocal() as session:
-        pdf_artifact = Artifact(
-            project_id=project_id,
-            document_id=artifact.document_id,
-            title=artifact.title.replace(" - Translation", " - Translation (PDF)") if " - Translation" in artifact.title else f"{artifact.title} (PDF)",
-            format="pdf",
-            storage_key=storage_key,
-            file_size=len(pdf_bytes),
-        )
-        session.add(pdf_artifact)
-        await session.commit()
-        await session.refresh(pdf_artifact)
-        return pdf_artifact
+    return pdf_bytes, filename
 
 
 async def download_artifact(project_id: UUID, artifact_id: UUID, username: str) -> tuple[bytes, str, str]:
