@@ -94,6 +94,9 @@ export const getArtifacts = (projectId: string) =>
 export const downloadArtifact = (projectId: string, artifactId: string) =>
   client.get(`/projects/${projectId}/artifacts/${artifactId}/download`, { responseType: 'blob' }) as Promise<Blob>;
 
+export const exportPdf = (projectId: string, artifactId: string) =>
+  client.post(`/projects/${projectId}/artifacts/${artifactId}/export-pdf`) as Promise<Artifact>;
+
 // Chat
 export const sendChatMessage = (projectId: string, content: string) =>
   client.post(`/projects/${projectId}/chat`, { content }) as Promise<ChatMessage>;
