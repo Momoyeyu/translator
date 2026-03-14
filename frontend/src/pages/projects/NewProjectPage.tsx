@@ -1,8 +1,8 @@
-import { Button, Card, Form, Input, Message, Select, Upload } from '@arco-design/web-react';
-import { IconUpload } from '@arco-design/web-react/icon';
-import { useState } from 'react';
+import { Message, Select } from '@arco-design/web-react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createProject } from '../../api/project';
+import './NewProjectPage.less';
 
 const LANGUAGES = [
   { label: 'Chinese (zh)', value: 'zh' },
@@ -17,12 +17,37 @@ const LANGUAGES = [
   { label: 'Portuguese (pt)', value: 'pt' },
 ];
 
+const FORMALITY_OPTIONS = [
+  { label: 'Neutral', value: 'neutral' },
+  { label: 'Formal', value: 'formal' },
+  { label: 'Informal', value: 'informal' },
+];
+
 export default function NewProjectPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [title, setTitle] = useState('');
+  const [targetLanguage, setTargetLanguage] = useState('');
+  const [sourceLanguage, setSourceLanguage] = useState('');
+  const [formality, setFormality] = useState('neutral');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = async (values: Record<string, string | undefined>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (f) setFile(f);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) {
+      Message.error('Please enter a title');
+      return;
+    }
+    if (!targetLanguage) {
+      Message.error('Please select a target language');
+      return;
+    }
     if (!file) {
       Message.error('Please upload a document');
       return;
@@ -32,12 +57,12 @@ export default function NewProjectPage() {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('title', values.title!);
-      formData.append('target_language', values.target_language!);
-      if (values.source_language) {
-        formData.append('source_language', values.source_language);
+      formData.append('title', title.trim());
+      formData.append('target_language', targetLanguage);
+      if (sourceLanguage) {
+        formData.append('source_language', sourceLanguage);
       }
-      formData.append('formality', values.formality ?? 'neutral');
+      formData.append('formality', formality);
 
       const res = await createProject(formData);
       Message.success('Project created');
@@ -51,52 +76,104 @@ export default function NewProjectPage() {
   };
 
   return (
-    <div style={{ padding: 24, maxWidth: 600, margin: '0 auto' }}>
-      <Card title="New Translation Project">
-        <Form layout="vertical" onSubmit={handleSubmit}>
-          <Form.Item label="Title" field="title" rules={[{ required: true }]}>
-            <Input placeholder="Project title" />
-          </Form.Item>
+    <div className="new-project">
+      <button className="new-project__back" onClick={() => navigate('/projects')}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12" />
+          <polyline points="12 19 5 12 12 5" />
+        </svg>
+        Projects
+      </button>
 
-          <Form.Item label="Document">
-            <Upload
-              accept=".txt,.md,.html,.pdf,.docx"
-              limit={1}
-              onChange={(_, currentFile) => {
-                if (currentFile.originFile) {
-                  setFile(currentFile.originFile);
-                }
-              }}
-            >
-              <Button icon={<IconUpload />}>Upload Document</Button>
-            </Upload>
-          </Form.Item>
+      <h1 className="new-project__title">New Translation Project</h1>
 
-          <Form.Item label="Target Language" field="target_language" rules={[{ required: true }]}>
-            <Select options={LANGUAGES} placeholder="Select target language" />
-          </Form.Item>
-
-          <Form.Item label="Source Language (optional)" field="source_language">
-            <Select options={LANGUAGES} placeholder="Auto-detect" allowClear />
-          </Form.Item>
-
-          <Form.Item label="Formality" field="formality" initialValue="neutral">
-            <Select
-              options={[
-                { label: 'Neutral', value: 'neutral' },
-                { label: 'Formal', value: 'formal' },
-                { label: 'Informal', value: 'informal' },
-              ]}
+      <div className="new-project__form-card">
+        <form onSubmit={handleSubmit}>
+          <div className="new-project__form-group">
+            <label className="new-project__form-label" htmlFor="np-title">Title</label>
+            <input
+              type="text"
+              id="np-title"
+              className="new-project__form-input"
+              placeholder="Project title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
             />
-          </Form.Item>
+          </div>
 
-          <Form.Item>
-            <Button type="primary" htmlType="submit" loading={loading} long>
-              Create & Start Translation
-            </Button>
-          </Form.Item>
-        </Form>
-      </Card>
+          <div className="new-project__form-group">
+            <label className="new-project__form-label">Document</label>
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: 'none' }}
+              accept=".txt,.md,.html,.pdf,.docx"
+              onChange={handleFileChange}
+            />
+            <div
+              className={`new-project__upload-zone${file ? ' new-project__upload-zone--has-file' : ''}`}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {file ? (
+                <div className="new-project__upload-filename">{file.name}</div>
+              ) : (
+                <>
+                  <div className="new-project__upload-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="17 8 12 3 7 8" />
+                      <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                  </div>
+                  <div className="new-project__upload-text">Drop file here or click to browse</div>
+                  <div className="new-project__upload-hint">.txt, .md, .html, .pdf, .docx</div>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="new-project__form-group">
+            <label className="new-project__form-label">Target Language</label>
+            <Select
+              options={LANGUAGES}
+              placeholder="Select target language"
+              value={targetLanguage || undefined}
+              onChange={(val) => setTargetLanguage(val)}
+              style={{ width: '100%' }}
+              size="large"
+            />
+          </div>
+
+          <div className="new-project__form-group">
+            <label className="new-project__form-label">Source Language (optional)</label>
+            <Select
+              options={LANGUAGES}
+              placeholder="Auto-detect"
+              value={sourceLanguage || undefined}
+              onChange={(val) => setSourceLanguage(val)}
+              allowClear
+              style={{ width: '100%' }}
+              size="large"
+            />
+          </div>
+
+          <div className="new-project__form-group">
+            <label className="new-project__form-label">Formality</label>
+            <Select
+              options={FORMALITY_OPTIONS}
+              value={formality}
+              onChange={(val) => setFormality(val)}
+              style={{ width: '100%' }}
+              size="large"
+            />
+          </div>
+
+          <button type="submit" className="new-project__btn-submit" disabled={loading}>
+            {loading ? <span className="new-project__spinner" /> : null}
+            Create & Start Translation
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

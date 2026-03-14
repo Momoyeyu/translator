@@ -1,38 +1,51 @@
 // ─── Color Palette ───────────────────────────────────────
-// Core Notion palette
-@color-primary:           #2383e2;
-@color-primary-hover:     #1a73d1;
-@color-primary-light:     rgba(35, 131, 226, 0.08);
+// Warm editorial palette inspired by Claude.ai / Anthropic.com
+@color-primary:           #1A1A1A;
+@color-primary-hover:     #333333;
+@color-primary-light:     rgba(26, 26, 26, 0.06);
 
 // Backgrounds
-@color-bg-page:           #ffffff;
-@color-bg-secondary:      #f7f7f5;
-@color-bg-sidebar:        #f7f7f5;
-@color-bg-hover:          rgba(55, 53, 47, 0.04);
-@color-bg-active:         rgba(55, 53, 47, 0.08);
+@color-bg-page:           #F5F0E8;
+@color-bg-secondary:      #EDE8DF;
+@color-bg-tertiary:       #E6E0D5;
+@color-bg-sidebar:        #2C2820;
+@color-bg-sidebar-hover:  #3A352C;
+@color-bg-sidebar-active: #443E34;
+@color-bg-hover:          rgba(26, 26, 26, 0.04);
+@color-bg-active:         rgba(26, 26, 26, 0.08);
 @color-bg-input:          #ffffff;
+@color-bg-elevated:       #ffffff;
+@color-bg-upload:         #FAF8F4;
 
 // Text
-@color-text-primary:      #1a1a1a;
-@color-text-secondary:    #6b6b6b;
-@color-text-tertiary:     #9b9a97;
-@color-text-disabled:     #c7c6c4;
+@color-text-primary:      #1A1A1A;
+@color-text-secondary:    #6B6258;
+@color-text-tertiary:     #9C9488;
+@color-text-disabled:     #B8B2A8;
+@color-text-inverse:      #FFFFFF;
+@color-text-sidebar:      #D4CFC7;
+@color-text-sidebar-muted:#8C8579;
+
+// Accent
+@color-accent-link:       #8B6834;
+@color-accent-link-hover: #6B4E24;
+@color-accent-focus:      rgba(139, 104, 52, 0.3);
 
 // Borders
-@color-border:            #e9e9e7;
-@color-border-light:      #f0f0ee;
-@color-border-dark:       #d3d3d0;
+@color-border:            #DDD8CF;
+@color-border-light:      #E8E3DA;
+@color-border-dark:       #C4BEB5;
 
 // Semantic
-@color-success:           #0f7b0f;
-@color-warning:           #cf8600;
-@color-danger:            #e03e3e;
+@color-success:           #2E7D32;
+@color-warning:           #C67A00;
+@color-danger:            #C62828;
+@color-info:              #5A7A9B;
 
 // ─── Typography ──────────────────────────────────────────
-@font-family:             -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                          "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
-                          "Helvetica Neue", sans-serif;
-@font-family-mono:        "SF Mono", SFMono-Regular, ui-monospace,
+@font-family-heading:     "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
+@font-family:             "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+@font-family-mono:        "JetBrains Mono", "SF Mono", SFMono-Regular, ui-monospace,
                           Menlo, Consolas, "Liberation Mono", monospace;
 
 @font-size-xs:            12px;
@@ -42,18 +55,18 @@
 @font-size-lg:            16px;
 @font-size-heading:       20px;
 @font-size-title:         28px;
-@font-size-display:       32px;
-@font-size-hero:          36px;
+@font-size-display:       36px;
+@font-size-hero:          56px;
 
 @font-weight-normal:      400;
 @font-weight-medium:      500;
 @font-weight-semibold:    600;
 @font-weight-bold:        700;
 
-@letter-spacing-tight:    -0.5px;
-@letter-spacing-normal:   -0.2px;
-@line-height-body:        1.5;
-@line-height-heading:     1.3;
+@letter-spacing-tight:    -0.02em;
+@letter-spacing-normal:   -0.01em;
+@line-height-body:        1.6;
+@line-height-heading:     1.2;
 
 // ─── Spacing ─────────────────────────────────────────────
 @spacing-xxs:             2px;
@@ -69,44 +82,33 @@
 @sidebar-width:           240px;
 @sidebar-width-collapsed: 60px;
 @header-height:           48px;
-@content-max-width:       720px;
-@auth-card-width:         360px;
+@content-max-width:       1120px;
+@auth-card-width:         400px;
 
 // ─── Borders & Shadows ──────────────────────────────────
 @border-radius-sm:        4px;
 @border-radius-md:        6px;
 @border-radius-lg:        8px;
 @border-radius-xl:        12px;
+@border-radius-2xl:       16px;
 
 @shadow-xs:               0 1px 2px rgba(0, 0, 0, 0.04);
-@shadow-sm:               0 1px 3px rgba(0, 0, 0, 0.06),
-                          0 1px 2px rgba(0, 0, 0, 0.04);
-@shadow-md:               0 4px 8px rgba(0, 0, 0, 0.08),
-                          0 2px 4px rgba(0, 0, 0, 0.04);
-@shadow-lg:               0 8px 24px rgba(0, 0, 0, 0.12);
-@shadow-card:             0 1px 3px rgba(0, 0, 0, 0.06);
-@shadow-dropdown:         0 4px 12px rgba(0, 0, 0, 0.12);
-
-// ─── Accent Colors ──────────────────────────────────────
-@color-accent-blue:       #2383e2;
-@color-accent-purple:     #7c5cfc;
-@color-accent-teal:       #14c9c9;
-
-// ─── Gradients ──────────────────────────────────────────
-@gradient-primary:        linear-gradient(135deg, #2383e2 0%, #7c5cfc 100%);
-@gradient-primary-dark:   linear-gradient(135deg, #5ba3e8 0%, #9b83fd 100%);
-
-// ─── Enhanced Shadows ───────────────────────────────────
-@shadow-card-hover:       0 8px 32px rgba(0, 0, 0, 0.08),
-                          0 2px 8px rgba(0, 0, 0, 0.04);
-@shadow-glow-primary:     0 0 0 1px rgba(35, 131, 226, 0.1),
-                          0 4px 16px rgba(35, 131, 226, 0.08);
+@shadow-sm:               0 1px 3px rgba(0, 0, 0, 0.04);
+@shadow-md:               0 4px 8px rgba(0, 0, 0, 0.06);
+@shadow-lg:               0 8px 24px rgba(0, 0, 0, 0.06);
+@shadow-xl:               0 24px 80px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
+@shadow-card:             0 1px 3px rgba(0, 0, 0, 0.04);
+@shadow-card-hover:       0 8px 24px rgba(0, 0, 0, 0.06);
+@shadow-dropdown:         0 4px 12px rgba(0, 0, 0, 0.08);
 @shadow-auth-card:        0 16px 48px rgba(0, 0, 0, 0.08),
                           0 2px 8px rgba(0, 0, 0, 0.04);
 
 // ─── Decorative ─────────────────────────────────────────
 @dot-pattern-size:        24px;
-@dot-pattern-color:       rgba(55, 53, 47, 0.05);
+@dot-pattern-color:       rgba(55, 53, 47, 0.03);
+
+// ─── Gradients ──────────────────────────────────────────
+@gradient-primary:        linear-gradient(135deg, #1A1A1A 0%, #333333 100%);
 
 // ─── Transitions ─────────────────────────────────────────
 @transition-fast:         0.1s ease;

@@ -5,30 +5,39 @@
   font-weight: @font-weight-medium;
   letter-spacing: @letter-spacing-normal;
   transition: all @transition-normal;
+  font-family: @font-family;
 }
 
 .arco-btn-primary {
-  border-radius: @border-radius-md;
-  transition: background-color @transition-normal, border-color @transition-normal, box-shadow @transition-normal, transform @transition-normal;
+  border-radius: @border-radius-lg;
+  background: @color-primary;
+  border-color: @color-primary;
+  transition: background-color @transition-normal, border-color @transition-normal, transform @transition-normal;
 
   &:hover {
-    box-shadow: 0 4px 12px rgba(35, 131, 226, 0.25);
-    transform: translateY(-0.5px);
+    background: @color-primary-hover;
+    border-color: @color-primary-hover;
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 }
 
 .arco-btn-secondary {
-  border-radius: @border-radius-md;
+  border-radius: @border-radius-lg;
   color: @color-text-secondary;
+  border-color: @color-border;
 
   &:hover {
     color: @color-text-primary;
+    border-color: @color-border-dark;
     background: @color-bg-hover;
   }
 }
 
 .arco-btn-text {
-  border-radius: @border-radius-md;
+  border-radius: @border-radius-lg;
   color: @color-text-secondary;
 
   &:hover {
@@ -38,7 +47,7 @@
 }
 
 .arco-btn-outline {
-  border-radius: @border-radius-md;
+  border-radius: @border-radius-lg;
   border-color: @color-border;
   color: @color-text-primary;
 
@@ -51,29 +60,31 @@
 
 // ─── Form Inputs ─────────────────────────────────────────
 .arco-input-wrapper {
-  border-radius: @border-radius-md;
+  border-radius: @border-radius-lg;
   border: 1px solid @color-border;
   background: @color-bg-input;
-  font-size: @font-size-body;
+  font-size: @font-size-md;
+  font-family: @font-family;
   transition: border-color @transition-normal, box-shadow @transition-normal;
 
   &:hover {
     border-color: @color-border-dark;
+    background: @color-bg-upload;
   }
 
   &.arco-input-wrapper-focus,
   &:focus-within {
     border-color: @color-primary;
-    box-shadow: 0 0 0 3px rgba(35, 131, 226, 0.1);
+    box-shadow: 0 0 0 3px @color-accent-focus;
   }
 }
 
 .arco-input-password {
-  border-radius: @border-radius-md;
+  border-radius: @border-radius-lg;
 }
 
 .arco-input-wrapper.arco-input-wrapper-large {
-  height: 40px;
+  height: 44px;
 }
 
 .arco-form-label-item > label {
@@ -86,6 +97,21 @@
   margin-bottom: @spacing-md;
 }
 
+// ─── Select ──────────────────────────────────────────────
+.arco-select-view {
+  border-radius: @border-radius-lg !important;
+  border-color: @color-border !important;
+
+  &:hover {
+    border-color: @color-border-dark !important;
+  }
+}
+
+.arco-select-focused .arco-select-view {
+  border-color: @color-primary !important;
+  box-shadow: 0 0 0 3px @color-accent-focus !important;
+}
+
 // ─── Menu (Sidebar) ─────────────────────────────────────
 .arco-menu {
   background: transparent;
@@ -96,22 +122,22 @@
 }
 
 .arco-menu-light .arco-menu-item {
-  border-radius: @border-radius-md;
+  border-radius: @border-radius-lg;
   margin: @spacing-xxs @spacing-sm;
   padding: 6px 12px;
   font-size: @font-size-body;
-  color: @color-text-secondary;
+  color: @color-text-sidebar-muted;
   transition: all @transition-fast;
   line-height: 28px;
 
   &:hover {
-    background: @color-bg-hover;
-    color: @color-text-primary;
+    background: @color-bg-sidebar-hover;
+    color: @color-text-sidebar;
   }
 
   &.arco-menu-selected {
-    background: @color-bg-active;
-    color: @color-text-primary;
+    background: @color-bg-sidebar-active;
+    color: @color-text-sidebar;
     font-weight: @font-weight-medium;
   }
 }
@@ -132,7 +158,7 @@
 
 // ─── Cards ───────────────────────────────────────────────
 .arco-card {
-  border-radius: @border-radius-lg;
+  border-radius: @border-radius-xl;
   border: 1px solid @color-border-light;
   box-shadow: @shadow-xs;
 }
@@ -144,12 +170,12 @@
 
 // ─── Tabs ────────────────────────────────────────────────
 .arco-tabs-header-nav-line .arco-tabs-header-ink-bar {
-  background: @gradient-primary;
+  background: @color-primary;
   height: 2px;
 }
 
 .arco-tabs-header-title {
-  font-size: @font-size-body;
+  font-size: @font-size-md;
   color: @color-text-secondary;
   font-weight: @font-weight-medium;
   transition: color @transition-fast;
@@ -165,6 +191,20 @@
   font-weight: @font-weight-semibold;
 }
 
+// ─── Table ───────────────────────────────────────────────
+.arco-table-th {
+  background: @color-bg-secondary !important;
+  font-size: @font-size-xs;
+  font-weight: @font-weight-semibold;
+  color: @color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.arco-table-tr:hover .arco-table-td {
+  background: @color-bg-upload !important;
+}
+
 // ─── Tooltip ─────────────────────────────────────────────
 .arco-tooltip-content {
   border-radius: @border-radius-sm;
@@ -173,7 +213,7 @@
 
 // ─── Messages / Toasts ──────────────────────────────────
 .arco-message {
-  border-radius: @border-radius-md;
+  border-radius: @border-radius-lg;
   box-shadow: @shadow-md;
   font-size: @font-size-sm;
 }
@@ -189,87 +229,7 @@
   color: @color-primary;
 }
 
-// ─── Dark Mode ───────────────────────────────────────────
-body[arco-theme='dark'] {
-  .arco-btn-secondary {
-    color: var(--color-text-2);
-
-    &:hover {
-      color: var(--color-text-1);
-      background: rgba(255, 255, 255, 0.08);
-    }
-  }
-
-  .arco-btn-text {
-    color: var(--color-text-2);
-
-    &:hover {
-      color: var(--color-text-1);
-      background: rgba(255, 255, 255, 0.08);
-    }
-  }
-
-  .arco-btn-outline {
-    border-color: var(--color-border);
-    color: var(--color-text-1);
-
-    &:hover {
-      border-color: @color-primary;
-      color: @color-primary;
-    }
-  }
-
-  .arco-input-wrapper {
-    border-color: var(--color-border);
-    background: var(--color-bg-2);
-
-    &:hover {
-      border-color: var(--color-border-2);
-    }
-
-    &.arco-input-wrapper-focus,
-    &:focus-within {
-      border-color: @color-primary;
-      box-shadow: 0 0 0 2px rgba(35, 131, 226, 0.2);
-    }
-  }
-
-  .arco-form-label-item > label {
-    color: var(--color-text-2);
-  }
-
-  .arco-menu-light .arco-menu-item {
-    color: var(--color-text-2);
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--color-text-1);
-    }
-
-    &.arco-menu-selected {
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--color-text-1);
-    }
-  }
-
-  .arco-card {
-    border-color: var(--color-border);
-  }
-
-  .arco-card-header {
-    border-color: var(--color-border);
-  }
-
-  .arco-tabs-header-title {
-    color: var(--color-text-2);
-
-    &:hover {
-      color: var(--color-text-1);
-    }
-  }
-
-  .arco-tabs-header-title-active,
-  .arco-tabs-header-title-active:hover {
-    color: var(--color-text-1);
-  }
+// ─── Upload ──────────────────────────────────────────────
+.arco-upload-trigger {
+  border-radius: @border-radius-xl !important;
 }

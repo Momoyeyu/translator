@@ -1,6 +1,6 @@
-import { Button, Card, Message, Space, Tabs, Typography } from '@arco-design/web-react';
+import { Card, Message } from '@arco-design/web-react';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   confirmGlossary,
   cancelPipeline,
@@ -18,9 +18,13 @@ import PipelineProgress from '../../components/project/PipelineProgress';
 import GlossaryEditor from '../../components/project/GlossaryEditor';
 import ArtifactList from '../../components/project/ArtifactList';
 import ChatPanel from '../../components/project/ChatPanel';
+import './ProjectDetailPage.less';
+
+type TabKey = 'pipeline' | 'glossary' | 'artifacts' | 'chat';
 
 export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const token = getAccessToken();
   const {
     currentProject,
@@ -33,6 +37,7 @@ export default function ProjectDetailPage() {
     setArtifacts,
   } = useProjectStore();
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<TabKey>('pipeline');
 
   useProjectWebSocket(id, token ?? undefined);
 
@@ -98,53 +103,109 @@ export default function ProjectDetailPage() {
     return <Card loading style={{ margin: 24 }} />;
   }
 
+  const isChatDisabled = currentProject.status !== 'completed';
+
   return (
-    <div style={{ padding: 24, maxWidth: 1000, margin: '0 auto' }}>
-      <Space style={{ marginBottom: 16, justifyContent: 'space-between', width: '100%' }}>
+    <div className="project-detail">
+      {/* Back Link */}
+      <button className="project-detail__back" onClick={() => navigate('/projects')}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12" />
+          <polyline points="12 19 5 12 12 5" />
+        </svg>
+        Projects
+      </button>
+
+      {/* Hero Section */}
+      <div className="project-detail__hero">
         <div>
-          <Typography.Title heading={4}>{currentProject.title}</Typography.Title>
-          <Typography.Text type="secondary">
-            {currentProject.source_language || 'auto'} → {currentProject.target_language}
-          </Typography.Text>
+          <h1 className="project-detail__hero-title">{currentProject.title}</h1>
+          <div className="project-detail__hero-lang">
+            {currentProject.source_language || 'Auto'} &rarr; {currentProject.target_language}
+          </div>
         </div>
-        <Space>
+        <div className="project-detail__hero-actions">
           {currentProject.status === 'created' && (
-            <Button type="primary" onClick={handleStart}>Start Translation</Button>
+            <button className="project-detail__btn-primary" onClick={handleStart}>
+              Start Translation
+            </button>
           )}
           {currentProject.status === 'clarifying' && (
-            <Button type="primary" onClick={handleConfirm}>Confirm Terms & Continue</Button>
+            <button className="project-detail__btn-primary" onClick={handleConfirm}>
+              Confirm Terms & Continue
+            </button>
           )}
           {currentProject.status === 'failed' && (
-            <Button onClick={handleRetry}>Retry</Button>
+            <button className="project-detail__btn-outline" onClick={handleRetry}>
+              Retry
+            </button>
           )}
           {!['completed', 'failed', 'cancelled', 'created'].includes(currentProject.status) && (
-            <Button status="danger" onClick={handleCancel}>Cancel</Button>
+            <button className="project-detail__btn-danger" onClick={handleCancel}>
+              Cancel
+            </button>
           )}
-        </Space>
-      </Space>
+        </div>
+      </div>
 
-      <Tabs defaultActiveTab="pipeline">
-        <Tabs.TabPane key="pipeline" title="Pipeline">
-          <PipelineProgress tasks={pipelineTasks} projectStatus={currentProject.status} />
-        </Tabs.TabPane>
+      {/* Tab Bar */}
+      <div className="project-detail__tab-bar">
+        <button
+          className={`project-detail__tab-item${activeTab === 'pipeline' ? ' project-detail__tab-item--active' : ''}`}
+          onClick={() => setActiveTab('pipeline')}
+        >
+          Pipeline
+        </button>
+        <button
+          className={`project-detail__tab-item${activeTab === 'glossary' ? ' project-detail__tab-item--active' : ''}`}
+          onClick={() => setActiveTab('glossary')}
+        >
+          Terms <span className="project-detail__tab-count">({glossaryTerms.length})</span>
+        </button>
+        <button
+          className={`project-detail__tab-item${activeTab === 'artifacts' ? ' project-detail__tab-item--active' : ''}`}
+          onClick={() => setActiveTab('artifacts')}
+        >
+          Output
+        </button>
+        <button
+          className={`project-detail__tab-item${activeTab === 'chat' ? ' project-detail__tab-item--active' : ''}${isChatDisabled ? ' project-detail__tab-item--disabled' : ''}`}
+          onClick={() => !isChatDisabled && setActiveTab('chat')}
+          disabled={isChatDisabled}
+        >
+          Chat
+        </button>
+      </div>
 
-        <Tabs.TabPane key="glossary" title={`Glossary (${glossaryTerms.length})`}>
+      {/* Tab Content */}
+      <div className="project-detail__tab-content">
+        {activeTab === 'pipeline' && (
+          <>
+            <PipelineProgress tasks={pipelineTasks} projectStatus={currentProject.status} />
+            {currentProject.status === 'clarifying' && (
+              <div className="project-detail__confirm-section">
+                <button className="project-detail__btn-confirm" onClick={handleConfirm}>
+                  Confirm Terms & Continue
+                </button>
+              </div>
+            )}
+          </>
+        )}
+        {activeTab === 'glossary' && (
           <GlossaryEditor
             projectId={id!}
             terms={glossaryTerms}
             editable={currentProject.status === 'clarifying'}
             onRefresh={fetchAll}
           />
-        </Tabs.TabPane>
-
-        <Tabs.TabPane key="artifacts" title="Output">
+        )}
+        {activeTab === 'artifacts' && (
           <ArtifactList projectId={id!} artifacts={artifacts} />
-        </Tabs.TabPane>
-
-        <Tabs.TabPane key="chat" title="Chat" disabled={currentProject.status !== 'completed'}>
+        )}
+        {activeTab === 'chat' && (
           <ChatPanel projectId={id!} />
-        </Tabs.TabPane>
-      </Tabs>
+        )}
+      </div>
     </div>
   );
 }

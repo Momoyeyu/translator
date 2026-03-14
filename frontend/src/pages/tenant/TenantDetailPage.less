@@ -27,8 +27,8 @@
   }
 
   .arco-table-th {
-    background: transparent;
-    font-weight: @font-weight-medium;
+    background: @color-bg-secondary;
+    font-weight: @font-weight-semibold;
     color: @color-text-secondary;
     font-size: @font-size-sm;
     text-transform: uppercase;
@@ -42,13 +42,5 @@
   .arco-table-border .arco-table-container {
     border: 1px solid @color-border-light;
     border-radius: @border-radius-lg;
-  }
-}
-
-body[arco-theme='dark'] {
-  .tenant-detail-page {
-    .arco-table-th {
-      color: var(--color-text-3);
-    }
   }
 }

@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Translator — Sign In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --color-bg-page: #F5F0E8;
+      --color-bg-elevated: #FFFFFF;
+      --color-bg-secondary: #EDE8DF;
+      --color-bg-tertiary: #E6E0D5;
+      --color-text-primary: #1A1A1A;
+      --color-text-secondary: #6B6258;
+      --color-text-tertiary: #9C9488;
+      --color-text-inverse: #FFFFFF;
+      --color-accent-primary: #1A1A1A;
+      --color-accent-primary-hover: #333333;
+      --color-accent-link: #8B6834;
+      --color-accent-link-hover: #6B4E24;
+      --color-accent-focus: rgba(139, 104, 52, 0.3);
+      --color-border: #DDD8CF;
+      --color-border-input-focus: #1A1A1A;
+      --font-heading: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
+      --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: var(--color-text-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .login-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Left Column */
+    .login-left {
+      flex: 0 0 45%;
+      background: var(--color-bg-page);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .login-left-inner {
+      max-width: 400px;
+      width: 100%;
+      padding: 64px 48px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .brand-logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--color-accent-primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-logo-icon svg {
+      width: 20px;
+      height: 20px;
+      color: var(--color-text-inverse);
+    }
+
+    .brand-title {
+      font-family: var(--font-heading);
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .brand-tagline {
+      font-family: var(--font-body);
+      font-size: 1.0625rem;
+      font-weight: 400;
+      color: var(--color-text-secondary);
+      margin-top: 12px;
+      line-height: 1.6;
+    }
+
+    .login-form {
+      margin-top: 40px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      height: 48px;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 0 16px;
+      font-size: 0.9375rem;
+      font-family: var(--font-body);
+      color: var(--color-text-primary);
+      background: var(--color-bg-elevated);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-input::placeholder {
+      color: var(--color-text-tertiary);
+    }
+
+    .form-input:focus {
+      border-color: var(--color-border-input-focus);
+      box-shadow: 0 0 0 3px var(--color-accent-focus);
+    }
+
+    .form-input:hover:not(:focus) {
+      background: #FAFAF7;
+    }
+
+    .btn-primary {
+      width: 100%;
+      height: 48px;
+      background: var(--color-accent-primary);
+      color: var(--color-text-inverse);
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 8px;
+    }
+
+    .btn-primary:hover {
+      background: var(--color-accent-primary-hover);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .login-links {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    .login-links a {
+      font-size: 0.875rem;
+      color: var(--color-accent-link);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .login-links a:hover {
+      color: var(--color-accent-link-hover);
+      text-decoration: underline;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 28px 0;
+      gap: 16px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--color-border);
+    }
+
+    .divider span {
+      font-size: 0.8125rem;
+      color: var(--color-text-tertiary);
+      white-space: nowrap;
+    }
+
+    .btn-social {
+      width: 100%;
+      height: 48px;
+      background: var(--color-bg-elevated);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      font-family: var(--font-body);
+      color: var(--color-text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-social:hover {
+      border-color: #C4BEB5;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .btn-social:active {
+      transform: scale(0.98);
+    }
+
+    .btn-social svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Right Column */
+    .login-right {
+      flex: 0 0 55%;
+      background: var(--color-bg-secondary);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Decorative elements */
+    .deco-circle {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+    }
+
+    .deco-circle-1 {
+      width: 500px;
+      height: 500px;
+      background: rgba(198, 172, 128, 0.3);
+      top: -100px;
+      right: -100px;
+    }
+
+    .deco-circle-2 {
+      width: 400px;
+      height: 400px;
+      background: rgba(139, 104, 52, 0.15);
+      bottom: -80px;
+      left: -60px;
+    }
+
+    .deco-circle-3 {
+      width: 300px;
+      height: 300px;
+      background: rgba(228, 215, 193, 0.5);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Product preview mockup */
+    .preview-mockup {
+      position: relative;
+      z-index: 1;
+      width: 420px;
+      background: var(--color-bg-elevated);
+      border-radius: 16px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+      padding: 24px;
+      transform: rotate(-2deg);
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .preview-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .preview-dot-1 { background: #E8C8A0; }
+    .preview-dot-2 { background: #D4CEC6; }
+    .preview-dot-3 { background: #EDE8DF; }
+
+    .preview-title-bar {
+      flex: 1;
+      height: 10px;
+      background: var(--color-bg-secondary);
+      border-radius: 5px;
+      margin-left: 8px;
+    }
+
+    .preview-content {
+      display: flex;
+      gap: 16px;
+    }
+
+    .preview-source, .preview-target {
+      flex: 1;
+    }
+
+    .preview-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+    }
+
+    .preview-line {
+      height: 6px;
+      background: var(--color-bg-secondary);
+      border-radius: 3px;
+      margin-bottom: 8px;
+    }
+
+    .preview-line:nth-child(2) { width: 100%; }
+    .preview-line:nth-child(3) { width: 85%; }
+    .preview-line:nth-child(4) { width: 92%; }
+    .preview-line:nth-child(5) { width: 70%; }
+
+    .preview-target .preview-line {
+      background: rgba(139, 104, 52, 0.12);
+    }
+
+    .preview-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      align-self: center;
+      color: var(--color-text-tertiary);
+    }
+
+    .preview-arrow svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .preview-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 16px;
+      padding: 4px 12px;
+      background: rgba(46, 125, 50, 0.08);
+      border-radius: 999px;
+      font-size: 0.6875rem;
+      font-weight: 500;
+      color: #2E7D32;
+    }
+
+    .preview-badge-dot {
+      width: 6px;
+      height: 6px;
+      background: #2E7D32;
+      border-radius: 50%;
+    }
+
+    /* Top-right actions */
+    .top-actions {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      display: flex;
+      gap: 8px;
+      z-index: 2;
+    }
+
+    .top-action-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.08);
+      color: var(--color-text-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      backdrop-filter: blur(8px);
+    }
+
+    .top-action-btn:hover {
+      background: rgba(255,255,255,0.2);
+      border-color: rgba(255,255,255,0.25);
+    }
+
+    .top-action-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Responsive */
+    @media (max-width: 960px) {
+      .login-right {
+        display: none;
+      }
+
+      .login-left {
+        flex: 1;
+        width: 100%;
+      }
+
+      .login-left-inner {
+        background: var(--color-bg-elevated);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+        padding: 40px 32px;
+        max-width: 440px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .login-left-inner {
+        max-width: none;
+        margin: 0 16px;
+        border-radius: 16px;
+        padding: 32px 24px;
+      }
+
+      .brand-title {
+        font-size: 2.5rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <!-- Left Column: Form -->
+    <div class="login-left">
+      <div class="login-left-inner">
+        <div class="brand-logo">
+          <div class="brand-logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 8l6 6"/>
+              <path d="M4 14l6-6 2-3"/>
+              <path d="M2 5h12"/>
+              <path d="M7 2h1"/>
+              <path d="M14 18l4-4 4 4"/>
+              <path d="M14 22h8"/>
+            </svg>
+          </div>
+        </div>
+
+        <h1 class="brand-title">Translator</h1>
+        <p class="brand-tagline">AI-powered document translation with human-quality precision.</p>
+
+        <form class="login-form" onsubmit="return false;">
+          <div class="form-group">
+            <label class="form-label" for="email">Email</label>
+            <input type="email" id="email" class="form-input" placeholder="you@example.com" autocomplete="email">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <input type="password" id="password" class="form-input" placeholder="Enter your password" autocomplete="current-password">
+          </div>
+
+          <button type="submit" class="btn-primary">Sign In</button>
+
+          <div class="login-links">
+            <a href="#">Forgot password?</a>
+            <a href="#">Create an account</a>
+          </div>
+
+          <div class="divider">
+            <span>or continue with</span>
+          </div>
+
+          <button type="button" class="btn-social">
+            <svg viewBox="0 0 24 24">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+            Continue with Google
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Column: Decorative -->
+    <div class="login-right">
+      <div class="top-actions">
+        <button class="top-action-btn" title="Toggle theme">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+        </button>
+        <button class="top-action-btn" title="Language">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="deco-circle deco-circle-1"></div>
+      <div class="deco-circle deco-circle-2"></div>
+      <div class="deco-circle deco-circle-3"></div>
+
+      <!-- Product Preview Mockup -->
+      <div class="preview-mockup">
+        <div class="preview-header">
+          <span class="preview-dot preview-dot-1"></span>
+          <span class="preview-dot preview-dot-2"></span>
+          <span class="preview-dot preview-dot-3"></span>
+          <div class="preview-title-bar"></div>
+        </div>
+
+        <div class="preview-content">
+          <div class="preview-source">
+            <div class="preview-label">English</div>
+            <div class="preview-line" style="width: 100%"></div>
+            <div class="preview-line" style="width: 85%"></div>
+            <div class="preview-line" style="width: 92%"></div>
+            <div class="preview-line" style="width: 70%"></div>
+          </div>
+
+          <div class="preview-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </div>
+
+          <div class="preview-target">
+            <div class="preview-label">Chinese</div>
+            <div class="preview-line" style="width: 90%"></div>
+            <div class="preview-line" style="width: 100%"></div>
+            <div class="preview-line" style="width: 78%"></div>
+            <div class="preview-line" style="width: 88%"></div>
+          </div>
+        </div>
+
+        <div class="preview-badge">
+          <span class="preview-badge-dot"></span>
+          Translating... 80%
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
