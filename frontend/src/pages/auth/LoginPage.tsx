@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { toast } from '@/utils/message';
 import type { BizError } from '@/api/client';
+import SSOButtons from '@/components/SSOButtons';
 import './LoginPage.less';
 
 export default function LoginPage() {
@@ -95,6 +96,8 @@ export default function LoginPage() {
         </div>
 
       </form>
+
+      <SSOButtons />
     </>
   );
 }

@@ -36,3 +36,19 @@ export interface ResetPasswordRequest {
   code: string;
   new_password: string;
 }
+
+// SSO / OAuth2
+export interface OAuthAuthorizeResponse {
+  authorization_url: string;
+}
+
+export interface LinkedProvider {
+  provider: string;
+  email: string | null;
+  linked_at: string;
+}
+
+export interface LinkedProvidersResponse {
+  providers: LinkedProvider[];
+  has_password: boolean;
+}
