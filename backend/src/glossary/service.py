@@ -4,6 +4,7 @@ from sqlalchemy import select
 
 from common import erri
 from conf.db import AsyncSessionLocal
+from glossary.dto import CreateGlossaryTermRequest
 from glossary.model import GlossaryTerm
 
 
@@ -32,6 +33,23 @@ async def update_term(project_id: UUID, term_id: UUID, translated_term: str, use
         if not term:
             raise erri.not_found("Term not found")
         term.translated_term = translated_term
+        await session.commit()
+        await session.refresh(term)
+        return term
+
+
+async def create_term(project_id: UUID, body: CreateGlossaryTermRequest, username: str) -> GlossaryTerm:
+    await _verify_project_ownership(project_id, username)
+    async with AsyncSessionLocal() as session:
+        term = GlossaryTerm(
+            project_id=project_id,
+            source_term=body.source_term,
+            translated_term=body.translated_term,
+            context=body.context,
+            confirmed=True,  # manually added terms are pre-confirmed
+            confidence=1.0,
+        )
+        session.add(term)
         await session.commit()
         await session.refresh(term)
         return term

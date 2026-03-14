@@ -26,6 +26,7 @@ export interface GlossaryTerm {
   source_term: string;
   translated_term: string;
   confirmed: boolean;
+  confidence: number;
   context: string | null;
 }
 
@@ -86,6 +87,9 @@ export const getGlossary = (projectId: string) =>
 
 export const updateTerm = (projectId: string, termId: string, translatedTerm: string) =>
   client.put(`/projects/${projectId}/glossary/${termId}`, { translated_term: translatedTerm }) as Promise<GlossaryTerm>;
+
+export const createTerm = (projectId: string, data: { source_term: string; translated_term: string; context?: string }) =>
+  client.post(`/projects/${projectId}/glossary`, data) as Promise<GlossaryTerm>;
 
 // Artifacts
 export const getArtifacts = (projectId: string) =>
