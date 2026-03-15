@@ -25,7 +25,9 @@ def test_event_types():
     assert PipelineEventType.UNIFY_RESULT == "unify_result"
     assert PipelineEventType.PIPELINE_COMPLETED == "pipeline_completed"
     assert PipelineEventType.PIPELINE_FAILED == "pipeline_failed"
-    assert len(PipelineEventType) == 17
+    assert PipelineEventType.CLARIFY_REQUEST == "clarify_request"
+    assert PipelineEventType.PIPELINE_STAGE_STARTED == "pipeline_stage_started"
+    assert len(PipelineEventType) == 19
 
 
 def test_stage_data():

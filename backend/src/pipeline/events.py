@@ -22,6 +22,8 @@ class PipelineEventType(StrEnum):
     ARTIFACT_CREATED = "artifact_created"
     PIPELINE_COMPLETED = "pipeline_completed"
     PIPELINE_FAILED = "pipeline_failed"
+    CLARIFY_REQUEST = "clarify_request"
+    PIPELINE_STAGE_STARTED = "pipeline_stage_started"
 
 
 class StageData(BaseModel):

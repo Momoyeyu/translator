@@ -25,8 +25,11 @@ class PipelineEvent(Base):
 
 
 class EventStore:
-    async def emit(self, project_id: UUID, stage: str, event_type: PipelineEventType, data: BaseModel | None = None) -> PipelineEvent:
+    async def emit(self, project_id: UUID, stage: str, event_type: PipelineEventType | str, data: BaseModel | dict | None = None) -> PipelineEvent:
         from ws.manager import publish_event
+
+        event_type_value = event_type.value if isinstance(event_type, PipelineEventType) else event_type
+        data_dict = data.model_dump() if isinstance(data, BaseModel) else data
 
         async with AsyncSessionLocal() as session:
             result = await session.execute(
@@ -37,9 +40,9 @@ class EventStore:
             event = PipelineEvent(
                 project_id=project_id,
                 stage=stage,
-                event_type=event_type.value,
+                event_type=event_type_value,
                 sequence=next_seq,
-                data=data.model_dump() if data else None,
+                data=data_dict,
             )
             session.add(event)
             await session.commit()
@@ -47,9 +50,9 @@ class EventStore:
 
         await publish_event(project_id, {
             "seq": event.sequence,
-            "event": event_type.value,
+            "event": event_type_value,
             "stage": stage,
-            "data": data.model_dump() if data else None,
+            "data": data_dict,
         })
         return event
 
