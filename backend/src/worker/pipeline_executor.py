@@ -68,9 +68,14 @@ class PipelineExecutor(BaseWorker):
 
         except Exception as e:
             logger.exception(f"Stage {stage} failed for project {project_id}: {e}")
-            await self._fail_task(project_id, task_id, str(e))
+            await self._fail_task(project_id, task_id, str(e), stage=stage)
 
     async def _execute_plan(self, project_id: UUID, task_id: UUID) -> None:
+        await publish_event(project_id, {
+            "event": "stage_started", "stage": "plan",
+            "data": {"message": "Analyzing document structure..."},
+        })
+
         async with AsyncSessionLocal() as session:
             doc_result = await session.execute(select(Document).where(Document.project_id == project_id))
             doc = doc_result.scalars().one()
@@ -92,6 +97,17 @@ class PipelineExecutor(BaseWorker):
         if not isinstance(chunks_data, list):
             chunks_data = [{"chunk_index": 0, "source_text": doc.extracted_text, "metadata": {}}]
 
+        # Emit each planned chunk
+        for i, item in enumerate(chunks_data):
+            await publish_event(project_id, {
+                "event": "chunk_planned", "stage": "plan",
+                "data": {
+                    "chunk_index": item.get("chunk_index", i),
+                    "source_preview": item["source_text"][:200],
+                    "token_count": len(item["source_text"].split()),
+                },
+            })
+
         async with AsyncSessionLocal() as session:
             # Delete existing chunks (idempotency)
             existing = await session.execute(select(Chunk).where(Chunk.project_id == project_id))
@@ -109,10 +125,20 @@ class PipelineExecutor(BaseWorker):
                 session.add(chunk)
             await session.commit()
 
+        await publish_event(project_id, {
+            "event": "stage_completed", "stage": "plan",
+            "data": {"chunks_count": len(chunks_data)},
+        })
+
         await self._complete_task(task_id, {"chunks_count": len(chunks_data)})
         await self._advance_stage(project_id, PipelineStage.CLARIFY)
 
     async def _execute_clarify(self, project_id: UUID, task_id: UUID) -> None:
+        await publish_event(project_id, {
+            "event": "stage_started", "stage": "clarify",
+            "data": {"message": "Identifying specialized terms..."},
+        })
+
         async with AsyncSessionLocal() as session:
             chunks_result = await session.execute(
                 select(Chunk).where(Chunk.project_id == project_id).order_by(Chunk.chunk_index)
@@ -125,6 +151,10 @@ class PipelineExecutor(BaseWorker):
 
         config = proj.config or {}
         if config.get("skip_clarify"):
+            await publish_event(project_id, {
+                "event": "stage_completed", "stage": "clarify",
+                "data": {"skipped": True, "terms_count": 0},
+            })
             await self._complete_task(task_id, {"terms_count": 0, "skipped": True})
             await self._advance_stage(project_id, PipelineStage.TRANSLATE)
             return
@@ -133,6 +163,11 @@ class PipelineExecutor(BaseWorker):
         source_lang = proj.source_language or "auto"
         target_lang = proj.target_language
         confidence_threshold = config.get("confidence_threshold", 0.7)
+
+        await publish_event(project_id, {
+            "event": "llm_thinking", "stage": "clarify",
+            "data": {"message": "Extracting specialized terms..."},
+        })
 
         messages = build_clarify_messages(source_text, source_lang, target_lang)
         response = await self.llm.chat(messages, LLMProfile.FAST)
@@ -145,12 +180,34 @@ class PipelineExecutor(BaseWorker):
         if not isinstance(terms_data, list):
             terms_data = []
 
+        await publish_event(project_id, {
+            "event": "terms_found", "stage": "clarify",
+            "data": {"total": len(terms_data)},
+        })
+
         # For terms where search is suggested, enrich context with web search results
         for item in terms_data:
             if item.get("search_suggested"):
                 query = f"{item.get('source_term', '')} {target_lang} translation"
+                await publish_event(project_id, {
+                    "event": "tool_call", "stage": "clarify",
+                    "data": {
+                        "tool": "web_search",
+                        "input": {"query": query},
+                        "status": "calling",
+                    },
+                })
                 try:
                     search_results = await search_term(query, max_results=3)
+                    await publish_event(project_id, {
+                        "event": "tool_result", "stage": "clarify",
+                        "data": {
+                            "tool": "web_search",
+                            "query": query,
+                            "results_count": len(search_results) if search_results else 0,
+                            "preview": search_results[0]["body"][:200] if search_results else "",
+                        },
+                    })
                     if search_results:
                         search_context = "; ".join(r["body"] for r in search_results[:2])
                         existing_context = item.get("context", "") or ""
@@ -175,20 +232,36 @@ class PipelineExecutor(BaseWorker):
         if uncertain_terms:
             async with AsyncSessionLocal() as session:
                 for item in uncertain_terms:
+                    confidence = float(item.get("confidence", 0.5))
                     term = GlossaryTerm(
                         project_id=project_id,
                         source_term=item.get("source_term", ""),
                         translated_term=item.get("translated_term", ""),
                         context=item.get("context", ""),
-                        confidence=float(item.get("confidence", 0.5)),
+                        confidence=confidence,
                         confirmed=False,
                     )
                     session.add(term)
+
+                    await publish_event(project_id, {
+                        "event": "term_uncertain", "stage": "clarify",
+                        "data": {
+                            "source_term": item.get("source_term", ""),
+                            "translated_term": item.get("translated_term", ""),
+                            "confidence": confidence,
+                            "context": item.get("context", "")[:200],
+                        },
+                    })
                 await session.commit()
 
+        if confident_terms:
+            await publish_event(project_id, {
+                "event": "terms_auto_confirmed", "stage": "clarify",
+                "data": {"count": len(confident_terms)},
+            })
+
         await publish_event(project_id, {
-            "seq": 0,
-            "event": "terms_extracted",
+            "event": "terms_extracted", "stage": "clarify",
             "data": {
                 "total_terms": len(terms_data),
                 "uncertain_terms": len(uncertain_terms),
@@ -218,11 +291,18 @@ class PipelineExecutor(BaseWorker):
                 await session.commit()
 
             await publish_event(project_id, {
-                "seq": 0,
+                "event": "stage_completed", "stage": "clarify",
+                "data": {"status": "awaiting_input", "uncertain_count": len(uncertain_terms)},
+            })
+            await publish_event(project_id, {
                 "event": "clarify_request",
                 "data": {"terms_count": len(uncertain_terms)},
             })
         else:
+            await publish_event(project_id, {
+                "event": "stage_completed", "stage": "clarify",
+                "data": {"terms_count": len(terms_data), "uncertain_count": 0},
+            })
             await self._complete_task(task_id, {
                 "terms_count": len(terms_data),
                 "uncertain_count": 0,
@@ -231,6 +311,11 @@ class PipelineExecutor(BaseWorker):
             await self._advance_stage(project_id, PipelineStage.TRANSLATE)
 
     async def _execute_translate(self, project_id: UUID, task_id: UUID) -> None:
+        await publish_event(project_id, {
+            "event": "stage_started", "stage": "translate",
+            "data": {"message": "Translating document chunks..."},
+        })
+
         async with AsyncSessionLocal() as session:
             chunks_result = await session.execute(
                 select(Chunk).where(Chunk.project_id == project_id).order_by(Chunk.chunk_index)
@@ -263,6 +348,15 @@ class PipelineExecutor(BaseWorker):
         previous_context = ""
 
         for i, chunk in enumerate(chunks):
+            await publish_event(project_id, {
+                "event": "chunk_translating", "stage": "translate",
+                "data": {
+                    "chunk_index": i,
+                    "total_chunks": len(chunks),
+                    "source_preview": chunk.source_text[:150],
+                },
+            })
+
             messages = build_translate_messages(
                 chunk.source_text, target_lang, glossary, previous_context, config
             )
@@ -279,15 +373,29 @@ class PipelineExecutor(BaseWorker):
             previous_context = translated[-200:] if len(translated) > 200 else translated
 
             await publish_event(project_id, {
-                "seq": 0,
-                "event": "pipeline_progress",
-                "data": {"stage": "translate", "current_chunk": i + 1, "total_chunks": len(chunks)},
+                "event": "chunk_translated", "stage": "translate",
+                "data": {
+                    "chunk_index": i,
+                    "total_chunks": len(chunks),
+                    "source_text": chunk.source_text,
+                    "translated_text": translated,
+                },
             })
+
+        await publish_event(project_id, {
+            "event": "stage_completed", "stage": "translate",
+            "data": {"chunks_translated": len(chunks)},
+        })
 
         await self._complete_task(task_id, {"chunks_translated": len(chunks)})
         await self._advance_stage(project_id, PipelineStage.UNIFY)
 
     async def _execute_unify(self, project_id: UUID, task_id: UUID) -> None:
+        await publish_event(project_id, {
+            "event": "stage_started", "stage": "unify",
+            "data": {"message": "Assembling and polishing final document..."},
+        })
+
         async with AsyncSessionLocal() as session:
             chunks_result = await session.execute(
                 select(Chunk).where(Chunk.project_id == project_id).order_by(Chunk.chunk_index)
@@ -302,6 +410,14 @@ class PipelineExecutor(BaseWorker):
 
         messages = build_unify_messages(chunks, proj.target_language)
         final_md = await self.llm.chat(messages, LLMProfile.PRO)
+
+        await publish_event(project_id, {
+            "event": "unify_result", "stage": "unify",
+            "data": {
+                "preview": final_md[:500],
+                "total_length": len(final_md),
+            },
+        })
 
         # Store markdown artifact only (PDF is generated on-the-fly via export endpoint)
         storage = StorageService()
@@ -334,8 +450,23 @@ class PipelineExecutor(BaseWorker):
             p.status = ProjectStatus.COMPLETED
             await session.commit()
 
+        await publish_event(project_id, {
+            "event": "artifact_created", "stage": "unify",
+            "data": {
+                "artifact_id": str(artifact.id),
+                "format": "markdown",
+                "file_size": len(md_bytes),
+                "title": artifact.title,
+            },
+        })
+
+        await publish_event(project_id, {
+            "event": "stage_completed", "stage": "unify",
+            "data": {"message": "Translation complete"},
+        })
+
         await self._complete_task(task_id, {"artifact_format": "markdown", "file_size": len(md_bytes)})
-        await publish_event(project_id, {"seq": 0, "event": "pipeline_completed", "data": {}})
+        await publish_event(project_id, {"event": "pipeline_completed", "data": {}})
 
     async def _complete_task(self, task_id: UUID, result: dict) -> None:
         async with AsyncSessionLocal() as session:
@@ -346,7 +477,7 @@ class PipelineExecutor(BaseWorker):
             task.result = result
             await session.commit()
 
-    async def _fail_task(self, project_id: UUID, task_id: UUID, error: str) -> None:
+    async def _fail_task(self, project_id: UUID, task_id: UUID, error: str, stage: str = "unknown") -> None:
         async with AsyncSessionLocal() as session:
             res = await session.execute(select(PipelineTask).where(PipelineTask.id == task_id))
             task = res.scalars().one()
@@ -360,7 +491,8 @@ class PipelineExecutor(BaseWorker):
             proj.status = ProjectStatus.FAILED
             await session.commit()
 
-        await publish_event(project_id, {"seq": 0, "event": "pipeline_failed", "data": {"error": error}})
+        await publish_event(project_id, {"event": "stage_failed", "stage": stage, "data": {"error": error}})
+        await publish_event(project_id, {"event": "pipeline_failed", "data": {"error": error}})
 
     async def _advance_stage(self, project_id: UUID, next_stage: PipelineStage) -> None:
         """Enqueue the next pipeline stage."""
