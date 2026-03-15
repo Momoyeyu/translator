@@ -27,6 +27,7 @@ EXEMPT_PATHS: set[str] = {"/api/v1", "/api/v1/", "/health", "/ready", "/acps/rpc
 EXEMPT_PATTERNS: list[re.Pattern[str]] = [
     re.compile(r"^/api/v1/auth/[^/]+/authorize$"),
     re.compile(r"^/api/v1/auth/[^/]+/callback$"),
+    re.compile(r"^/ws/"),  # WebSocket endpoints handle their own auth
 ]
 _EXEMPT_ENDPOINT_ATTR = "__jwt_exempt__"
 _ROUTES_FROZEN_ATTR = "__jwt_routes_frozen__"
