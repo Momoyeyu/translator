@@ -9,15 +9,19 @@ class PipelineEventType(StrEnum):
     STAGE_COMPLETED = "stage_completed"
     STAGE_FAILED = "stage_failed"
     LLM_THINKING = "llm_thinking"
-    TOOL_CALL_START = "tool_call_start"
-    TOOL_CALL_RESULT = "tool_call_result"
+    TOOL_CALL = "tool_call"
+    TOOL_RESULT = "tool_result"
     CHUNK_PLANNED = "chunk_planned"
-    TERM_EXTRACTED = "term_extracted"
-    TERMS_AWAITING = "terms_awaiting"
+    TERMS_FOUND = "terms_found"
+    TERM_UNCERTAIN = "term_uncertain"
+    TERMS_AUTO_CONFIRMED = "terms_auto_confirmed"
+    TERMS_EXTRACTED = "terms_extracted"
+    CHUNK_TRANSLATING = "chunk_translating"
     CHUNK_TRANSLATED = "chunk_translated"
-    CHUNK_STREAMING = "chunk_streaming"
-    UNIFY_COMPLETE = "unify_complete"
+    UNIFY_RESULT = "unify_result"
     ARTIFACT_CREATED = "artifact_created"
+    PIPELINE_COMPLETED = "pipeline_completed"
+    PIPELINE_FAILED = "pipeline_failed"
 
 
 class StageData(BaseModel):
@@ -27,13 +31,11 @@ class StageData(BaseModel):
 
 class ChunkPlannedData(BaseModel):
     chunk_index: int
-    source_text: str
+    source_preview: str
     token_count: int | None = None
-    metadata: dict | None = None
 
 
 class TermExtractedData(BaseModel):
-    term_id: str | None = None
     source_term: str
     translated_term: str
     confidence: float = 0.5
@@ -41,28 +43,43 @@ class TermExtractedData(BaseModel):
 
 
 class ToolCallData(BaseModel):
-    tool_name: str
-    tool_input: dict = {}
-    result: str | None = None
-    duration_ms: int | None = None
+    tool: str
+    input: dict = {}
+    status: str = "calling"
+
+
+class ToolResultData(BaseModel):
+    tool: str
+    query: str
+    results_count: int = 0
+    preview: str = ""
+
+
+class ChunkTranslatingData(BaseModel):
+    chunk_index: int
+    total_chunks: int
+    source_preview: str
 
 
 class ChunkTranslatedData(BaseModel):
     chunk_index: int
+    total_chunks: int
+    source_text: str
     translated_text: str
 
 
-class ChunkStreamingData(BaseModel):
-    chunk_index: int
-    delta: str
-
-
 class LLMThinkingData(BaseModel):
-    content: str
-    stage: str
+    message: str
+    stage: str | None = None
+
+
+class UnifyResultData(BaseModel):
+    preview: str
+    total_length: int
 
 
 class ArtifactCreatedData(BaseModel):
     artifact_id: str
     format: str
     file_size: int
+    title: str | None = None
