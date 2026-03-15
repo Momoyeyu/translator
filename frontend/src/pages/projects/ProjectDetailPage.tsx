@@ -1,9 +1,12 @@
 import { Message } from '@arco-design/web-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import {
   confirmGlossary,
   cancelPipeline,
+  downloadArtifact,
   getArtifacts,
   getGlossary,
   getPipeline,
@@ -19,6 +22,7 @@ import { useProjectWebSocket } from '../../hooks/useProjectWebSocket';
 import { getAccessToken } from '../../utils/token';
 import ArtifactList from '../../components/project/ArtifactList';
 import ChatPanel from '../../components/project/ChatPanel';
+import EventCard from '../../components/project/EventCard';
 import FloatingTOC from '../../components/project/FloatingTOC';
 import './ProjectDetailPage.less';
 
@@ -32,7 +36,9 @@ type StreamItem =
   | { type: 'term'; data: GlossaryTerm }
   | { type: 'confirm-action'; count: number }
   | { type: 'chunk'; data: PipelineEvent }
+  | { type: 'event'; event: PipelineEvent }
   | { type: 'artifact'; artifacts: Artifact[] }
+  | { type: 'markdown-preview' }
   | { type: 'chat' }
   | { type: 'start-prompt' };
 
@@ -72,6 +78,20 @@ function confidenceClass(confidence: number): string {
   return 'low';
 }
 
+/** Event types that are already rendered via the REST-based stream items */
+const SKIP_EVENT_TYPES = new Set([
+  'chunk_translated',
+  'stage_started',
+  'stage_completed',
+  'stage_failed',
+  'pipeline_stage_started',
+  'pipeline_stage_completed',
+  'pipeline_stage_failed',
+  'pipeline_completed',
+  'pipeline_failed',
+  'pipeline_cancelled',
+]);
+
 export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -90,6 +110,7 @@ export default function ProjectDetailPage() {
   } = useProjectStore();
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState('plan');
+  const [markdownContent, setMarkdownContent] = useState<string>('');
   const streamRef = useRef<HTMLDivElement>(null);
 
   useProjectWebSocket(id, token ?? undefined);
@@ -121,6 +142,19 @@ export default function ProjectDetailPage() {
   useEffect(() => {
     fetchAll();
   }, [fetchAll]);
+
+  // ── Fetch markdown content when artifacts are available ──
+  useEffect(() => {
+    if (artifacts.length > 0 && id) {
+      const mdArtifact = artifacts.find(a => a.format === 'markdown');
+      if (mdArtifact) {
+        downloadArtifact(id, mdArtifact.id)
+          .then(blob => blob.text())
+          .then(text => setMarkdownContent(text))
+          .catch(() => { /* ignore download errors */ });
+      }
+    }
+  }, [artifacts, id]);
 
   // ── Intersection observer for active TOC section ──
   useEffect(() => {
@@ -192,6 +226,13 @@ export default function ProjectDetailPage() {
     }
   };
 
+  // ── Helper: get events for a given stage, excluding types already rendered ──
+  const getStageEvents = useCallback((stage: string): PipelineEvent[] => {
+    return pipelineEvents
+      .filter(e => e.stage === stage && !SKIP_EVENT_TYPES.has(e.event_type))
+      .sort((a, b) => a.sequence - b.sequence);
+  }, [pipelineEvents]);
+
   // ── Build stream items ──
   const streamItems = useMemo((): StreamItem[] => {
     if (!currentProject) return [];
@@ -217,6 +258,13 @@ export default function ProjectDetailPage() {
       if (planTask?.status === 'running') {
         items.push({ type: 'thinking', text: getThinkingText('plan') });
       }
+
+      // Render fine-grained events for plan stage
+      const planEvents = getStageEvents('plan');
+      planEvents.forEach(event => {
+        items.push({ type: 'event', event });
+      });
+
       if (planTask?.status === 'completed') {
         items.push({ type: 'stage-complete', text: getStageCompleteText('plan', planTask.result) });
       }
@@ -233,6 +281,12 @@ export default function ProjectDetailPage() {
       if (clarifyTask?.status === 'running') {
         items.push({ type: 'thinking', text: getThinkingText('clarify') });
       }
+
+      // Render fine-grained events for clarify stage
+      const clarifyEvents = getStageEvents('clarify');
+      clarifyEvents.forEach(event => {
+        items.push({ type: 'event', event });
+      });
 
       // Term cards
       if (glossaryTerms.length > 0) {
@@ -261,6 +315,12 @@ export default function ProjectDetailPage() {
     );
     if (translateTask || chunkEvents.length > 0) {
       items.push({ type: 'divider', label: 'Translate', sectionId: 'section-translate' });
+
+      // Render fine-grained events for translate stage (non-chunk_translated)
+      const translateEvents = getStageEvents('translate');
+      translateEvents.forEach(event => {
+        items.push({ type: 'event', event });
+      });
 
       // Show completed chunks
       chunkEvents.forEach((event) => {
@@ -292,8 +352,16 @@ export default function ProjectDetailPage() {
         items.push({ type: 'thinking', text: getThinkingText('unify') });
       }
 
+      // Render fine-grained events for unify stage
+      const unifyEvents = getStageEvents('unify');
+      unifyEvents.forEach(event => {
+        items.push({ type: 'event', event });
+      });
+
       if (artifacts.length > 0) {
         items.push({ type: 'artifact', artifacts });
+        // Markdown preview after artifacts
+        items.push({ type: 'markdown-preview' });
       }
 
       if (unifyTask?.status === 'completed') {
@@ -311,7 +379,7 @@ export default function ProjectDetailPage() {
     }
 
     return items;
-  }, [currentProject, pipelineTasks, glossaryTerms, artifacts, pipelineEvents]);
+  }, [currentProject, pipelineTasks, glossaryTerms, artifacts, pipelineEvents, getStageEvents]);
 
   // ── TOC sections (derived from stream items) ──
   const tocSections = useMemo(() => {
@@ -445,6 +513,13 @@ export default function ProjectDetailPage() {
           </div>
         );
 
+      case 'event':
+        return (
+          <div key={`event-${item.event.id || item.event.sequence}`} className="card-enter" style={style}>
+            <EventCard event={item.event} />
+          </div>
+        );
+
       case 'chunk':
         return <ChunkCard key={`chunk-${item.data.id || item.data.sequence}`} event={item.data} style={style} />;
 
@@ -452,6 +527,19 @@ export default function ProjectDetailPage() {
         return (
           <div key="artifacts" className="stream-card card-enter" style={style}>
             <ArtifactList projectId={id!} artifacts={item.artifacts} />
+          </div>
+        );
+
+      case 'markdown-preview':
+        if (!markdownContent) return null;
+        return (
+          <div key="markdown-preview" className="stream-card card-enter pipeline-stream__preview" style={style}>
+            <div className="pipeline-stream__preview-header">
+              <h3>Translation Preview</h3>
+            </div>
+            <div className="pipeline-stream__preview-content chat-message__markdown">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdownContent}</ReactMarkdown>
+            </div>
           </div>
         );
 
@@ -547,8 +635,8 @@ function TermCard({ term, style }: { term: GlossaryTerm; style: React.CSSPropert
 
 function ChunkCard({ event, style }: { event: PipelineEvent; style: React.CSSProperties }) {
   const data = event.data || {};
-  const source = String(data.source || data.content || '');
-  const translated = String(data.translated || data.translation || '');
+  const source = String(data.source || data.source_text || data.content || '');
+  const translated = String(data.translated || data.translated_text || data.translation || '');
   const chunkIndex = data.index != null ? Number(data.index) + 1 : data.chunk_index != null ? Number(data.chunk_index) + 1 : '?';
 
   return (
