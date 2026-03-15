@@ -33,9 +33,31 @@ export default function NewProjectPage() {
   const [formality, setFormality] = useState('neutral');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [dragOver, setDragOver] = useState(false);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (f) setFile(f);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOver(false);
+    const f = e.dataTransfer.files?.[0];
+    if (f) setFile(f);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOver(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -111,8 +133,11 @@ export default function NewProjectPage() {
               onChange={handleFileChange}
             />
             <div
-              className={`new-project__upload-zone${file ? ' new-project__upload-zone--has-file' : ''}`}
-              onClick={() => fileInputRef.current?.click()}
+              className={`new-project__upload-zone${file ? ' new-project__upload-zone--has-file' : ''}${dragOver ? ' new-project__upload-zone--drag-over' : ''}`}
+              onClick={(e) => { e.preventDefault(); fileInputRef.current?.click(); }}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
             >
               {file ? (
                 <div className="new-project__upload-filename">{file.name}</div>
