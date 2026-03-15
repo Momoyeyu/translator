@@ -158,23 +158,33 @@ class PipelineExecutor(BaseWorker):
                 except Exception as e:
                     logger.warning(f"Web search failed for term '{item.get('source_term')}': {e}")
 
+        # Split terms into uncertain (needs user review) and confident (kept in memory)
         uncertain_terms = []
-        async with AsyncSessionLocal() as session:
-            for item in terms_data:
-                confidence = float(item.get("confidence", 0.5))
-                is_confident = confidence >= confidence_threshold
-                term = GlossaryTerm(
-                    project_id=project_id,
-                    source_term=item.get("source_term", ""),
-                    translated_term=item.get("translated_term", ""),
-                    context=item.get("context", ""),
-                    confidence=confidence,
-                    confirmed=is_confident,  # auto-confirm high-confidence terms
-                )
-                session.add(term)
-                if not is_confident:
-                    uncertain_terms.append(item)
-            await session.commit()
+        confident_terms = []
+        for item in terms_data:
+            confidence = float(item.get("confidence", 0.5))
+            if confidence >= confidence_threshold:
+                confident_terms.append({
+                    "source_term": item.get("source_term", ""),
+                    "translated_term": item.get("translated_term", ""),
+                })
+            else:
+                uncertain_terms.append(item)
+
+        # Only store uncertain terms in DB for user review
+        if uncertain_terms:
+            async with AsyncSessionLocal() as session:
+                for item in uncertain_terms:
+                    term = GlossaryTerm(
+                        project_id=project_id,
+                        source_term=item.get("source_term", ""),
+                        translated_term=item.get("translated_term", ""),
+                        context=item.get("context", ""),
+                        confidence=float(item.get("confidence", 0.5)),
+                        confirmed=False,
+                    )
+                    session.add(term)
+                await session.commit()
 
         await publish_event(project_id, {
             "seq": 0,
@@ -182,9 +192,11 @@ class PipelineExecutor(BaseWorker):
             "data": {
                 "total_terms": len(terms_data),
                 "uncertain_terms": len(uncertain_terms),
-                "auto_confirmed": len(terms_data) - len(uncertain_terms),
+                "auto_confirmed": len(confident_terms),
             },
         })
+
+        confident_terms_list = confident_terms  # list of {source_term, translated_term}
 
         if uncertain_terms:
             # Pause: set task to awaiting_input for uncertain terms
@@ -195,7 +207,7 @@ class PipelineExecutor(BaseWorker):
                 task.result = {
                     "terms_count": len(terms_data),
                     "uncertain_count": len(uncertain_terms),
-                    "auto_confirmed": len(terms_data) - len(uncertain_terms),
+                    "confident_terms": confident_terms_list,
                 }
 
                 proj_result = await session.execute(
@@ -211,7 +223,11 @@ class PipelineExecutor(BaseWorker):
                 "data": {"terms_count": len(uncertain_terms)},
             })
         else:
-            await self._complete_task(task_id, {"terms_count": len(terms_data), "all_confident": True})
+            await self._complete_task(task_id, {
+                "terms_count": len(terms_data),
+                "uncertain_count": 0,
+                "confident_terms": confident_terms_list,
+            })
             await self._advance_stage(project_id, PipelineStage.TRANSLATE)
 
     async def _execute_translate(self, project_id: UUID, task_id: UUID) -> None:
@@ -220,10 +236,23 @@ class PipelineExecutor(BaseWorker):
                 select(Chunk).where(Chunk.project_id == project_id).order_by(Chunk.chunk_index)
             )
             chunks = list(chunks_result.scalars().all())
+
+            # Load confirmed terms from DB (user-reviewed uncertain terms)
             glossary_result = await session.execute(
                 select(GlossaryTerm).where(GlossaryTerm.project_id == project_id, GlossaryTerm.confirmed == True)  # noqa: E712
             )
             glossary = [{"source_term": t.source_term, "translated_term": t.translated_term} for t in glossary_result.scalars().all()]
+
+            # Also load confident terms from clarify task result (kept in memory, not in DB)
+            clarify_task_result = await session.execute(
+                select(PipelineTask).where(
+                    PipelineTask.project_id == project_id, PipelineTask.stage == PipelineStage.CLARIFY.value
+                )
+            )
+            clarify_task = clarify_task_result.scalars().one_or_none()
+            if clarify_task and clarify_task.result and "confident_terms" in clarify_task.result:
+                glossary.extend(clarify_task.result["confident_terms"])
+
             proj_result = await session.execute(
                 select(TranslationProject).where(TranslationProject.id == project_id)
             )
