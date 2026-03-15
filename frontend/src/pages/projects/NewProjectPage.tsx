@@ -31,6 +31,8 @@ export default function NewProjectPage() {
   const [targetLanguage, setTargetLanguage] = useState('');
   const [sourceLanguage, setSourceLanguage] = useState('');
   const [formality, setFormality] = useState('neutral');
+  const [inputMode, setInputMode] = useState<'file' | 'text'>('file');
+  const [textContent, setTextContent] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [dragOver, setDragOver] = useState(false);
@@ -70,15 +72,30 @@ export default function NewProjectPage() {
       Message.error('Please select a target language');
       return;
     }
-    if (!file) {
-      Message.error('Please upload a document');
-      return;
+
+    if (inputMode === 'text') {
+      if (!textContent.trim()) {
+        Message.error('Please enter some text');
+        return;
+      }
+    } else {
+      if (!file) {
+        Message.error('Please upload a document');
+        return;
+      }
     }
 
     setLoading(true);
     try {
       const formData = new FormData();
-      formData.append('file', file);
+
+      if (inputMode === 'text') {
+        const textBlob = new Blob([textContent], { type: 'text/plain' });
+        formData.append('file', textBlob, 'input.txt');
+      } else {
+        formData.append('file', file!);
+      }
+
       formData.append('title', title.trim());
       formData.append('target_language', targetLanguage);
       if (sourceLanguage) {
@@ -125,36 +142,66 @@ export default function NewProjectPage() {
 
           <div className="new-project__form-group">
             <label className="new-project__form-label">Document</label>
-            <input
-              type="file"
-              ref={fileInputRef}
-              style={{ display: 'none' }}
-              accept=".txt,.md,.html,.pdf,.docx"
-              onChange={handleFileChange}
-            />
-            <div
-              className={`new-project__upload-zone${file ? ' new-project__upload-zone--has-file' : ''}${dragOver ? ' new-project__upload-zone--drag-over' : ''}`}
-              onClick={(e) => { e.preventDefault(); fileInputRef.current?.click(); }}
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-            >
-              {file ? (
-                <div className="new-project__upload-filename">{file.name}</div>
-              ) : (
-                <>
-                  <div className="new-project__upload-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                      <polyline points="17 8 12 3 7 8" />
-                      <line x1="12" y1="3" x2="12" y2="15" />
-                    </svg>
-                  </div>
-                  <div className="new-project__upload-text">Drop file here or click to browse</div>
-                  <div className="new-project__upload-hint">.txt, .md, .html, .pdf, .docx</div>
-                </>
-              )}
+
+            <div className="new-project__input-toggle">
+              <button
+                type="button"
+                className={`new-project__toggle-btn${inputMode === 'file' ? ' active' : ''}`}
+                onClick={() => setInputMode('file')}
+              >
+                Upload File
+              </button>
+              <button
+                type="button"
+                className={`new-project__toggle-btn${inputMode === 'text' ? ' active' : ''}`}
+                onClick={() => setInputMode('text')}
+              >
+                Paste Text
+              </button>
             </div>
+
+            {inputMode === 'text' ? (
+              <textarea
+                className="new-project__text-input"
+                placeholder="Paste your text here..."
+                value={textContent}
+                onChange={(e) => setTextContent(e.target.value)}
+                rows={10}
+              />
+            ) : (
+              <>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                  accept=".txt,.md,.html,.pdf,.docx"
+                  onChange={handleFileChange}
+                />
+                <div
+                  className={`new-project__upload-zone${file ? ' new-project__upload-zone--has-file' : ''}${dragOver ? ' new-project__upload-zone--drag-over' : ''}`}
+                  onClick={(e) => { e.preventDefault(); fileInputRef.current?.click(); }}
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                >
+                  {file ? (
+                    <div className="new-project__upload-filename">{file.name}</div>
+                  ) : (
+                    <>
+                      <div className="new-project__upload-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                          <polyline points="17 8 12 3 7 8" />
+                          <line x1="12" y1="3" x2="12" y2="15" />
+                        </svg>
+                      </div>
+                      <div className="new-project__upload-text">Drop file here or click to browse</div>
+                      <div className="new-project__upload-hint">.txt, .md, .html, .pdf, .docx</div>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
           </div>
 
           <div className="new-project__form-group">

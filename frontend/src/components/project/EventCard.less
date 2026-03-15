@@ -1,5 +1,10 @@
 @import '../../styles/variables.less';
 
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.3; }
+}
+
 .event-card {
   position: relative;
   background: var(--color-bg-elevated, @color-bg-elevated);
@@ -65,7 +70,49 @@
     margin-left: auto;
   }
 
-  // ── Collapsible (tool calls, llm thinking, chunk planned) ──
+  // ── Inline text (terms_found, terms_auto_confirmed) ──
+  &__inline-text {
+    font-size: @font-size-body;
+    color: var(--color-text-primary, @color-text-primary);
+    line-height: 1.5;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    strong {
+      font-weight: @font-weight-semibold;
+    }
+
+    &--success {
+      color: var(--color-success, @color-success);
+    }
+  }
+
+  // ── LLM Thinking ──
+  &__thinking {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  &__thinking-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-info, @color-info);
+    animation: pulse-dot 1.4s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  &__thinking-text {
+    font-size: @font-size-body;
+    font-style: italic;
+    color: var(--color-text-secondary, @color-text-secondary);
+  }
+
+  // ── Collapsible (tool calls, tool results, defaults) ──
   &__collapsible {
     cursor: pointer;
     user-select: none;
@@ -80,14 +127,15 @@
   }
 
   &__chevron {
-    width: 14px;
-    height: 14px;
+    font-size: @font-size-xs;
     flex-shrink: 0;
-    transition: transform 0.2s ease;
     color: var(--color-text-tertiary, @color-text-tertiary);
+    width: 14px;
+    text-align: center;
+    transition: color 0.15s;
 
     &--open {
-      transform: rotate(90deg);
+      color: var(--color-text-secondary, @color-text-secondary);
     }
   }
 
@@ -107,6 +155,16 @@
     }
   }
 
+  &__tool-icon {
+    flex-shrink: 0;
+    font-size: @font-size-body;
+
+    &--result {
+      color: var(--color-success, @color-success);
+      font-weight: @font-weight-bold;
+    }
+  }
+
   &__preview {
     font-size: @font-size-sm;
     color: var(--color-text-tertiary, @color-text-tertiary);
@@ -117,8 +175,12 @@
     margin-left: 4px;
   }
 
+  &__body {
+    margin-top: 8px;
+  }
+
   &__code {
-    margin: 8px 0 0;
+    margin: 0;
     padding: 12px;
     background: var(--color-bg-secondary, @color-bg-secondary);
     border-radius: @border-radius-md;
@@ -129,6 +191,8 @@
     white-space: pre-wrap;
     word-break: break-word;
     color: var(--color-text-primary, @color-text-primary);
+    max-height: 300px;
+    overflow-y: auto;
   }
 
   &__thinking-content {
@@ -161,7 +225,20 @@
     }
   }
 
-  // ── Term extracted row ──
+  // ── Term uncertain card ──
+  &__term-uncertain {
+    // Variants handled by parent border
+  }
+
+  &__term-context {
+    margin-top: 6px;
+    font-size: @font-size-xs;
+    color: var(--color-text-tertiary, @color-text-tertiary);
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  // ── Term row ──
   &__term-row {
     display: flex;
     align-items: center;
@@ -206,11 +283,41 @@
     }
   }
 
-  // ── Chunk translated (side-by-side) ──
-  &__chunk-pair {
+  // ── Chunk cards (planned, translating, translated) ──
+  &__chunk {
+    // Container for chunk events
+  }
+
+  &__chunk-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  &__chunk-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: @border-radius-sm;
+    font-size: 11px;
+    font-weight: @font-weight-semibold;
+    color: var(--color-info, @color-info);
+    background: rgba(90, 122, 155, 0.12);
+  }
+
+  &__chunk-preview {
+    font-size: @font-size-sm;
+    color: var(--color-text-tertiary, @color-text-tertiary);
+    line-height: 1.6;
+    margin-top: 4px;
+  }
+
+  &__chunk-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
+    margin-top: 4px;
 
     @media (max-width: 640px) {
       grid-template-columns: 1fr;
@@ -218,7 +325,7 @@
   }
 
   &__chunk-source,
-  &__chunk-target {
+  &__chunk-translated {
     min-width: 0;
   }
 
@@ -240,6 +347,19 @@
     word-break: break-word;
   }
 
+  // ── Unify result ──
+  &__unify-preview {
+    margin-top: 8px;
+    padding: 12px;
+    background: var(--color-bg-secondary, @color-bg-secondary);
+    border-radius: @border-radius-md;
+    font-size: @font-size-sm;
+    line-height: 1.7;
+    color: var(--color-text-secondary, @color-text-secondary);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
   // ── Artifact created ──
   &__artifact {
     display: flex;
@@ -249,6 +369,13 @@
     color: var(--color-text-primary, @color-text-primary);
   }
 
+  &__artifact-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
   &__artifact-title {
     font-weight: @font-weight-medium;
   }
@@ -256,7 +383,6 @@
   &__artifact-format {
     display: inline-flex;
     align-items: center;
-    margin-left: 8px;
     padding: 1px 8px;
     border-radius: @border-radius-sm;
     font-size: @font-size-xs;
@@ -265,5 +391,10 @@
     letter-spacing: 0.03em;
     color: var(--color-text-secondary, @color-text-secondary);
     background: var(--color-bg-secondary, @color-bg-secondary);
+  }
+
+  &__artifact-size {
+    font-size: @font-size-xs;
+    color: var(--color-text-tertiary, @color-text-tertiary);
   }
 }
