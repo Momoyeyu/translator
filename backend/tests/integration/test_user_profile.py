@@ -66,11 +66,12 @@ class TestUsernameChange:
         assert "access_token" in data
         assert "refresh_token" in data
 
-        # Old token should fail (username in JWT is stale)
+        # Old access token still works because JWT sub=user_id (immutable)
         old_resp = client.get("/api/v1/user/me", headers=headers)
-        assert old_resp.json()["code"] != Code.OK
+        assert old_resp.json()["code"] == Code.OK
+        assert old_resp.json()["data"]["username"] == "my-new-name"
 
-        # New token should work
+        # New token should also work
         new_headers = {"Authorization": f"Bearer {data['access_token']}"}
         new_resp = client.get("/api/v1/user/me", headers=new_headers)
         assert new_resp.json()["code"] == Code.OK

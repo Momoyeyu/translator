@@ -197,15 +197,18 @@ def _jwt() -> PyJWT:
     return PyJWT()
 
 
-def create_access_token(username: str) -> tuple[str, int]:
+def create_access_token(user_id: UUID, username: str) -> tuple[str, int]:
     """Create a JWT access token for the user.
+
+    The ``sub`` claim stores the immutable user_id UUID so that downstream
+    middleware never needs a DB lookup to identify the caller.
 
     Returns:
         A tuple of (access_token, expires_in).
     """
     now = int(time.time())
     expires_in = settings.jwt_expire_seconds
-    payload = {"sub": username, "iat": now, "exp": now + expires_in}
+    payload = {"sub": str(user_id), "username": username, "iat": now, "exp": now + expires_in}
     token = _jwt().encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
     return token, expires_in
 
@@ -219,7 +222,7 @@ def create_token(user: User) -> TokenPair:
     if user.id is None:
         raise erri.internal("User ID is required for token creation")
 
-    access_token, expires_in = create_access_token(user.username)
+    access_token, expires_in = create_access_token(user.id, user.username)
     refresh_token_str = create_refresh_token(user.id, user.username)
 
     return TokenPair(
@@ -246,7 +249,7 @@ def refresh_tokens(refresh_token: str) -> TokenPair:
         raise erri.unauthorized("Invalid or expired refresh token")
 
     new_token, user_data = result
-    access_token, expires_in = create_access_token(user_data["username"])
+    access_token, expires_in = create_access_token(UUID(user_data["user_id"]), user_data["username"])
 
     return TokenPair(
         access_token=access_token,

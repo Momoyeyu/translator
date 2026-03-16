@@ -8,17 +8,17 @@ from conversation.model import Message, MessageRole, get_messages, get_or_create
 from project.model import ProjectStatus
 
 
-async def _verify_project_ownership(project_id: UUID, username: str) -> None:
+async def _verify_project_ownership(project_id: UUID, user_id: UUID) -> None:
     from project.service import get_project_detail
 
-    await get_project_detail(project_id, username)
+    await get_project_detail(project_id, user_id)
 
 
-async def send_chat_message(project_id: UUID, username: str, content: str) -> Message:
+async def send_chat_message(project_id: UUID, user_id: UUID, content: str) -> Message:
     """Send a user message and enqueue LLM response generation."""
     from project.service import get_project_detail
 
-    project = await get_project_detail(project_id, username)
+    project = await get_project_detail(project_id, user_id)
     if project.status != ProjectStatus.COMPLETED:
         raise erri.bad_request("Chat is available only after translation is completed")
 
@@ -50,7 +50,7 @@ async def send_chat_message(project_id: UUID, username: str, content: str) -> Me
     return msg
 
 
-async def get_chat_history(project_id: UUID, username: str, cursor: UUID | None = None, limit: int = 50) -> list[Message]:
-    await _verify_project_ownership(project_id, username)
+async def get_chat_history(project_id: UUID, user_id: UUID, cursor: UUID | None = None, limit: int = 50) -> list[Message]:
+    await _verify_project_ownership(project_id, user_id)
     conv = await get_or_create_conversation(project_id)
     return await get_messages(conv.id, cursor=cursor, limit=limit)

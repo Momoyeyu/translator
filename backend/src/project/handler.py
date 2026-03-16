@@ -22,7 +22,8 @@ async def create_project(
     domain: str | None = Form(None),
     skip_clarify: bool = Form(False),
 ) -> Response:
-    username = auth.get_username(request)
+    user_id = auth.get_user_id(request)
+    tenant_id = auth.get_tenant_id(request) or user_id  # fallback to user_id
 
     file_data = await file.read()
     max_bytes = settings.max_upload_size_mb * 1024 * 1024
@@ -33,7 +34,8 @@ async def create_project(
     config = ProjectConfig(formality=formality, domain=domain, skip_clarify=skip_clarify)
 
     project = await service.create_project(
-        username=username,
+        user_id=user_id,
+        tenant_id=tenant_id,
         title=title,
         target_language=target_language,
         source_language=source_language,
@@ -47,27 +49,27 @@ async def create_project(
 
 @router.get("")
 async def list_projects(request: Request, page: int = 1, page_size: int = 20) -> Response:
-    username = auth.get_username(request)
-    projects = await service.get_user_projects(username, page, min(page_size, 100))
+    user_id = auth.get_user_id(request)
+    projects = await service.get_user_projects(user_id, page, min(page_size, 100))
     return ok(data=[ProjectResponse.model_validate(p).model_dump(mode="json") for p in projects])
 
 
 @router.get("/{project_id}")
 async def get_project(request: Request, project_id: UUID) -> Response:
-    username = auth.get_username(request)
-    project = await service.get_project_detail(project_id, username)
+    user_id = auth.get_user_id(request)
+    project = await service.get_project_detail(project_id, user_id)
     return ok(data=ProjectResponse.model_validate(project).model_dump(mode="json"))
 
 
 @router.patch("/{project_id}")
 async def update_project(request: Request, project_id: UUID, body: UpdateProjectRequest) -> Response:
-    username = auth.get_username(request)
-    project = await service.update_project(project_id, username, body)
+    user_id = auth.get_user_id(request)
+    project = await service.update_project(project_id, user_id, body)
     return ok(data=ProjectResponse.model_validate(project).model_dump(mode="json"))
 
 
 @router.delete("/{project_id}")
 async def delete_project(request: Request, project_id: UUID) -> Response:
-    username = auth.get_username(request)
-    await service.delete_project(project_id, username)
+    user_id = auth.get_user_id(request)
+    await service.delete_project(project_id, user_id)
     return ok(message="Project deleted")

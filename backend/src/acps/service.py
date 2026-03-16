@@ -1,4 +1,10 @@
-"""ACPs service layer — maps AIP task commands to internal pipeline operations."""
+"""ACPs service layer — maps AIP task commands to internal pipeline operations.
+
+**Tenant gap**: The in-memory task registry has no user_id or tenant_id.
+When integrating with the real pipeline, each task will need a system
+user/tenant so that project ownership checks and storage paths work
+correctly.  See ``acps/handler.py`` docstring for the planned approach.
+"""
 
 from __future__ import annotations
 
