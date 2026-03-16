@@ -10,20 +10,11 @@ from document.model import Document
 from project.dto import ProjectConfig, UpdateProjectRequest
 from project.model import ProjectStatus, TranslationProject
 from storage.service import StorageService
-from user.model import get_user
-
-
-async def _resolve_user(username: str):
-    """Look up user by username, return (user_id, tenant_id)."""
-    user = await get_user(username)
-    if not user:
-        raise erri.not_found("User not found")
-    # For v1, use user.id as both user_id and tenant_id
-    return user.id, user.id
 
 
 async def create_project(
-    username: str,
+    user_id: UUID,
+    tenant_id: UUID,
     title: str,
     target_language: str,
     source_language: str | None,
@@ -32,7 +23,6 @@ async def create_project(
     file_data: bytes,
     mime_type: str,
 ) -> TranslationProject:
-    user_id, tenant_id = await _resolve_user(username)
 
     import asyncio
 
@@ -84,8 +74,7 @@ async def create_project(
         return project
 
 
-async def get_project_detail(project_id: UUID, username: str) -> TranslationProject:
-    user_id, _ = await _resolve_user(username)
+async def get_project_detail(project_id: UUID, user_id: UUID) -> TranslationProject:
     async with AsyncSessionLocal() as session:
         result = await session.execute(
             select(TranslationProject).where(
@@ -100,8 +89,7 @@ async def get_project_detail(project_id: UUID, username: str) -> TranslationProj
         return project
 
 
-async def get_user_projects(username: str, page: int = 1, page_size: int = 20) -> list[TranslationProject]:
-    user_id, _ = await _resolve_user(username)
+async def get_user_projects(user_id: UUID, page: int = 1, page_size: int = 20) -> list[TranslationProject]:
     async with AsyncSessionLocal() as session:
         result = await session.execute(
             select(TranslationProject)
@@ -113,8 +101,7 @@ async def get_user_projects(username: str, page: int = 1, page_size: int = 20) -
         return list(result.scalars().all())
 
 
-async def update_project(project_id: UUID, username: str, body: UpdateProjectRequest) -> TranslationProject:
-    user_id, _ = await _resolve_user(username)
+async def update_project(project_id: UUID, user_id: UUID, body: UpdateProjectRequest) -> TranslationProject:
     async with AsyncSessionLocal() as session:
         result = await session.execute(
             select(TranslationProject).where(
@@ -138,10 +125,9 @@ async def update_project(project_id: UUID, username: str, body: UpdateProjectReq
         return project
 
 
-async def delete_project(project_id: UUID, username: str) -> None:
+async def delete_project(project_id: UUID, user_id: UUID) -> None:
     from datetime import UTC, datetime
 
-    user_id, _ = await _resolve_user(username)
     async with AsyncSessionLocal() as session:
         result = await session.execute(
             select(TranslationProject).where(

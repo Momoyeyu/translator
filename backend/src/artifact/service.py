@@ -10,20 +10,20 @@ from conf.db import AsyncSessionLocal
 from storage.service import StorageService
 
 
-async def _verify_project_ownership(project_id: UUID, username: str) -> None:
+async def _verify_project_ownership(project_id: UUID, user_id: UUID) -> None:
     from project.service import get_project_detail
 
-    await get_project_detail(project_id, username)
+    await get_project_detail(project_id, user_id)
 
 
-async def get_project_artifacts(project_id: UUID, username: str) -> list[Artifact]:
-    await _verify_project_ownership(project_id, username)
+async def get_project_artifacts(project_id: UUID, user_id: UUID) -> list[Artifact]:
+    await _verify_project_ownership(project_id, user_id)
     return await get_artifacts_by_project(project_id)
 
 
-async def generate_pdf_on_the_fly(project_id: UUID, artifact_id: UUID, username: str) -> tuple[bytes, str]:
+async def generate_pdf_on_the_fly(project_id: UUID, artifact_id: UUID, user_id: UUID) -> tuple[bytes, str]:
     """Generate PDF from a markdown artifact without storing it."""
-    await _verify_project_ownership(project_id, username)
+    await _verify_project_ownership(project_id, user_id)
 
     async with AsyncSessionLocal() as session:
         result = await session.execute(
@@ -49,9 +49,9 @@ async def generate_pdf_on_the_fly(project_id: UUID, artifact_id: UUID, username:
     return pdf_bytes, filename
 
 
-async def download_artifact(project_id: UUID, artifact_id: UUID, username: str) -> tuple[bytes, str, str]:
+async def download_artifact(project_id: UUID, artifact_id: UUID, user_id: UUID) -> tuple[bytes, str, str]:
     """Returns (file_data, content_type, filename)."""
-    await _verify_project_ownership(project_id, username)
+    await _verify_project_ownership(project_id, user_id)
     async with AsyncSessionLocal() as session:
         result = await session.execute(
             select(Artifact).where(Artifact.id == artifact_id, Artifact.project_id == project_id)

@@ -1,4 +1,14 @@
-"""ACPs AIP JSON-RPC 2.0 handler and ACS well-known endpoint."""
+"""ACPs AIP JSON-RPC 2.0 handler and ACS well-known endpoint.
+
+ACPs endpoints are JWT-exempt (via ``@exempt`` and ``EXEMPT_PATHS``).
+Authentication is handled by mTLS client certificates verified by a
+TLS-terminating proxy, or skipped entirely when ``acps_mock_auth=True``.
+
+**Tenant gap**: ACPs tasks currently run without user or tenant context.
+When full multi-tenant support is needed, the AIP caller should supply a
+system user/tenant identity (e.g. via a service account token or an
+``X-Tenant-ID`` header negotiated at the mTLS layer).
+"""
 
 from __future__ import annotations
 

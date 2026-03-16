@@ -1,3 +1,5 @@
+from uuid import UUID
+
 import pytest
 
 from common import erri
@@ -5,6 +7,8 @@ from common.resp import Code
 from common.utils import get_password_hash
 from user import service
 from user.model import User
+
+_ALICE_ID = UUID("01936b2a-7c00-7000-8000-000000000001")
 
 
 def async_return(value):
@@ -24,49 +28,65 @@ async def test_get_user_profile_not_found(monkeypatch: pytest.MonkeyPatch):
 
 
 async def test_get_user_profile_success(monkeypatch: pytest.MonkeyPatch):
-    user = User(id=1, username="alice", email="alice@test.com", hashed_password="x")
+    user = User(id=_ALICE_ID, username="alice", email="alice@test.com", hashed_password="x")
     monkeypatch.setattr(service, "get_user", async_return(user), raising=True)
     result = await service.get_user_profile("alice")
     assert result.username == "alice"
     assert result.email == "alice@test.com"
 
 
-async def test_update_my_profile_not_found(monkeypatch: pytest.MonkeyPatch):
-    monkeypatch.setattr(service, "update_user_profile", async_return(None), raising=True)
+async def test_get_user_profile_by_id_not_found(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(service, "get_user_by_id", async_return(None), raising=True)
     with pytest.raises(erri.BusinessError) as exc:
-        await service.update_my_profile("alice")
+        await service.get_user_profile_by_id(_ALICE_ID)
+    assert exc.value.code == Code.NOT_FOUND
+
+
+async def test_get_user_profile_by_id_success(monkeypatch: pytest.MonkeyPatch):
+    user = User(id=_ALICE_ID, username="alice", email="alice@test.com", hashed_password="x")
+    monkeypatch.setattr(service, "get_user_by_id", async_return(user), raising=True)
+    result = await service.get_user_profile_by_id(_ALICE_ID)
+    assert result.username == "alice"
+    assert result.email == "alice@test.com"
+
+
+async def test_update_my_profile_not_found(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(service, "get_user_by_id", async_return(None), raising=True)
+    with pytest.raises(erri.BusinessError) as exc:
+        await service.update_my_profile(_ALICE_ID)
     assert exc.value.code == Code.NOT_FOUND
 
 
 async def test_update_my_profile_success(monkeypatch: pytest.MonkeyPatch):
-    user = User(id=1, username="alice", email="alice@test.com", hashed_password="x", avatar_url="http://img.png")
+    user = User(id=_ALICE_ID, username="alice", email="alice@test.com", hashed_password="x", avatar_url="http://img.png")
+    monkeypatch.setattr(service, "get_user_by_id", async_return(user), raising=True)
     monkeypatch.setattr(service, "update_user_profile", async_return(user), raising=True)
-    result, token_pair = await service.update_my_profile("alice", avatar_url="http://img.png")
+    result, token_pair = await service.update_my_profile(_ALICE_ID, avatar_url="http://img.png")
     assert result.avatar_url == "http://img.png"
     assert token_pair is None
 
 
 async def test_change_password_user_not_found(monkeypatch: pytest.MonkeyPatch):
-    monkeypatch.setattr(service, "get_user", async_return(None), raising=True)
+    monkeypatch.setattr(service, "get_user_by_id", async_return(None), raising=True)
     with pytest.raises(erri.BusinessError) as exc:
-        await service.change_password("alice", "old", "NewPass1")
+        await service.change_password(_ALICE_ID, "old", "NewPass1")
     assert exc.value.code == Code.NOT_FOUND
 
 
 async def test_change_password_wrong_old_password(monkeypatch: pytest.MonkeyPatch):
-    user = User(id=1, username="alice", email="alice@test.com", hashed_password=get_password_hash("correct"))
-    monkeypatch.setattr(service, "get_user", async_return(user), raising=True)
+    user = User(id=_ALICE_ID, username="alice", email="alice@test.com", hashed_password=get_password_hash("correct"))
+    monkeypatch.setattr(service, "get_user_by_id", async_return(user), raising=True)
     with pytest.raises(erri.BusinessError) as exc:
-        await service.change_password("alice", "wrong", "NewPass1")
+        await service.change_password(_ALICE_ID, "wrong", "NewPass1")
     assert exc.value.code == Code.BAD_REQUEST
 
 
 async def test_change_password_success(monkeypatch: pytest.MonkeyPatch):
-    user = User(id=1, username="alice", email="alice@test.com", hashed_password=get_password_hash("old"))
-    monkeypatch.setattr(service, "get_user", async_return(user), raising=True)
+    user = User(id=_ALICE_ID, username="alice", email="alice@test.com", hashed_password=get_password_hash("old"))
+    monkeypatch.setattr(service, "get_user_by_id", async_return(user), raising=True)
     monkeypatch.setattr(service, "update_user_password", async_return(True), raising=True)
 
     monkeypatch.setattr(service, "revoke_all_for_user", lambda uid: 0)
 
-    result = await service.change_password("alice", "old", "NewPass1")
+    result = await service.change_password(_ALICE_ID, "old", "NewPass1")
     assert result is True

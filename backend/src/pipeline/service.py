@@ -13,11 +13,11 @@ from project.model import ProjectStatus, TranslationProject
 from ws.manager import publish_event
 
 
-async def start_pipeline(project_id: UUID, username: str) -> list[PipelineTask]:
+async def start_pipeline(project_id: UUID, user_id: UUID) -> list[PipelineTask]:
     """Create pipeline tasks and enqueue the first stage."""
     from project.service import get_project_detail
 
-    project = await get_project_detail(project_id, username)
+    project = await get_project_detail(project_id, user_id)
     if project.status != ProjectStatus.CREATED:
         raise erri.bad_request("Pipeline already started or project not in 'created' status")
 
@@ -87,11 +87,11 @@ async def get_pipeline_status(project_id: UUID) -> list[PipelineTask]:
         return list(result.scalars().all())
 
 
-async def confirm_glossary(project_id: UUID, username: str) -> None:
+async def confirm_glossary(project_id: UUID, user_id: UUID) -> None:
     """Confirm all glossary terms and resume pipeline from translate stage."""
     from project.service import get_project_detail
 
-    project = await get_project_detail(project_id, username)
+    project = await get_project_detail(project_id, user_id)
     if project.status != ProjectStatus.CLARIFYING:
         raise erri.bad_request("Project is not in clarifying status")
 
@@ -148,11 +148,11 @@ async def confirm_glossary(project_id: UUID, username: str) -> None:
     await publish_event(project_id, {"seq": 0, "event": "pipeline_stage_started", "data": {"stage": "translate"}})
 
 
-async def cancel_pipeline(project_id: UUID, username: str) -> None:
+async def cancel_pipeline(project_id: UUID, user_id: UUID) -> None:
     """Cancel a running pipeline."""
     from project.service import get_project_detail
 
-    project = await get_project_detail(project_id, username)
+    project = await get_project_detail(project_id, user_id)
     if project.status in (ProjectStatus.COMPLETED, ProjectStatus.FAILED, ProjectStatus.CANCELLED):
         raise erri.bad_request("Pipeline is already in a terminal state")
 
@@ -176,11 +176,11 @@ async def cancel_pipeline(project_id: UUID, username: str) -> None:
     await publish_event(project_id, {"seq": 0, "event": "pipeline_cancelled", "data": {}})
 
 
-async def retry_pipeline(project_id: UUID, username: str) -> PipelineTask:
+async def retry_pipeline(project_id: UUID, user_id: UUID) -> PipelineTask:
     """Retry the last failed stage."""
     from project.service import get_project_detail
 
-    project = await get_project_detail(project_id, username)
+    project = await get_project_detail(project_id, user_id)
     if project.status != ProjectStatus.FAILED:
         raise erri.bad_request("Can only retry failed pipelines")
 

@@ -2,6 +2,7 @@ import re
 from collections.abc import Awaitable, Callable
 from functools import cache
 from typing import Any, NoReturn
+from uuid import UUID
 
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
@@ -84,19 +85,58 @@ def verify_token(token: str) -> dict[str, Any]:
         raise erri.unauthorized("Invalid token") from None
 
 
-def get_username(request: Request) -> str:
-    """Get the username from the request state or Authorization header."""
-    state_user = getattr(request.state, "user", None)
-    if isinstance(state_user, str) and state_user:
-        return state_user
+def get_user_id(request: Request) -> UUID:
+    """Get the user_id (UUID) from request state, set by JWT middleware.
 
+    Zero DB lookup — the user_id comes directly from the JWT ``sub`` claim.
+    """
+    uid = getattr(request.state, "user_id", None)
+    if isinstance(uid, UUID):
+        return uid
+
+    # Fallback: parse from Authorization header (no middleware path)
     authorization = request.headers.get("Authorization")
     if authorization and authorization.startswith("Bearer "):
         token = authorization.split(" ", 1)[1]
         payload = verify_token(token)
         sub = payload.get("sub")
         if isinstance(sub, str) and sub:
-            return sub
+            try:
+                return UUID(sub)
+            except ValueError:
+                raise erri.unauthorized("Invalid token: sub is not a valid UUID") from None
+
+    raise erri.unauthorized("Unauthorized")
+
+
+def get_tenant_id(request: Request) -> UUID | None:
+    """Read the optional ``X-Tenant-ID`` header.
+
+    Returns None when the header is absent (e.g. SSO users without a tenant).
+    """
+    raw = request.headers.get("X-Tenant-ID")
+    if not raw:
+        return None
+    try:
+        return UUID(raw)
+    except ValueError:
+        raise erri.bad_request("Invalid X-Tenant-ID header") from None
+
+
+def get_username(request: Request) -> str:
+    """Get the username from request state (set by JWT middleware ``username`` claim)."""
+    state_username = getattr(request.state, "username", None)
+    if isinstance(state_username, str) and state_username:
+        return state_username
+
+    # Fallback: parse from Authorization header (no middleware path)
+    authorization = request.headers.get("Authorization")
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.split(" ", 1)[1]
+        payload = verify_token(token)
+        username = payload.get("username")
+        if isinstance(username, str) and username:
+            return username
 
     raise erri.unauthorized("Unauthorized")
 
@@ -128,5 +168,22 @@ def setup_auth_middleware(app: FastAPI) -> None:
             payload = verify_token(token)
         except erri.BusinessError as e:
             return JSONResponse(status_code=e.status_code, content=resp.error(e.code, e.message).model_dump())
-        request.state.user = payload.get("sub")
+
+        # Parse sub as UUID — old username-based tokens get clean 401
+        sub = payload.get("sub")
+        if not isinstance(sub, str) or not sub:
+            return JSONResponse(
+                status_code=401,
+                content=resp.error(resp.Code.UNAUTHORIZED, "Invalid token: missing sub").model_dump(),
+            )
+        try:
+            user_id = UUID(sub)
+        except ValueError:
+            return JSONResponse(
+                status_code=401,
+                content=resp.error(resp.Code.UNAUTHORIZED, "Invalid token: sub is not a valid UUID").model_dump(),
+            )
+
+        request.state.user_id = user_id
+        request.state.username = payload.get("username", "")
         return await call_next(request)
